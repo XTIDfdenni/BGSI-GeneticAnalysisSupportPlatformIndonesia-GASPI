@@ -1,0 +1,6 @@
+.terraform*
+backend.tf
+builds
+.DS_Store
+.pnpm-store
+errored.tfstate
