@@ -25,7 +25,7 @@ ENVIRONMENT = """export const environment = {{
   }},
   api_endpoint_svep: {{
     name: 'svep',
-    endpoint: '{api_endpoint_sbeacon}',
+    endpoint: '{api_endpoint_svep}',
     region: '{region}',
   }},
 }};"""
@@ -72,7 +72,7 @@ def build(cmd: str, dir: str):
         stdout=sys.stderr,
     )
     code = out.wait()
-    assert code == 0, "ERROR: ng build returned non-zero exit"
+    assert code == 0, "ERROR: ng build returned non-zero exit" + cmd + "\n" + dir
 
 
 def setup_env(

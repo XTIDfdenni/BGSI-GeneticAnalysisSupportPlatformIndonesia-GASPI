@@ -32,8 +32,22 @@ variable "gaspi-admin-password" {
 }
 
 # bucket prefixes
+variable "variants-bucket-prefix" {
+  type        = string
+  description = "Prefix for the variants S3 bucket"
+}
+
+variable "metadata-bucket-prefix" {
+  type        = string
+  description = "Prefix for the metadata S3 bucket"
+}
+
+variable "lambda-layers-bucket-prefix" {
+  type        = string
+  description = "Prefix for the lambda layers S3 bucket"
+}
+
 variable "dataportal-bucket-prefix" {
   type        = string
-  description = "Prefix for bucket names"
-  default     = "dataportal-"
+  description = "Prefix for the dataportal S3 bucket"
 }
