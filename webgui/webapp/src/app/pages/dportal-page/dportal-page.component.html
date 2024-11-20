@@ -5,7 +5,7 @@
   </mat-card-content>
 </mat-card>
 <br />
-@if ((auth.userGroups | async)!.has("admin-group")) {
+@if ((auth.userGroups | async)!.has("administrators")) {
   <app-admin-section />
   <br />
 }

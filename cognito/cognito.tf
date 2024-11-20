@@ -50,7 +50,7 @@ resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {
 # groups
 # 
 resource "aws_cognito_user_group" "admin_group" {
-  name         = "admininstrators"
+  name         = "administrators"
   user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
   description  = "Group of users who can has admin privileges"
   role_arn     = aws_iam_role.admin_group_role.arn

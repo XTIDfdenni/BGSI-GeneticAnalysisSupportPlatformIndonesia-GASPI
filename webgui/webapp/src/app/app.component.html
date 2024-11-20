@@ -46,7 +46,7 @@
         <a [routerLink]="['clinic']" accesskey="3" title="">Clinic</a>
       </li>
     }
-    @if ((auth.userGroups | async)!.has("admin-group")) {
+    @if ((auth.userGroups | async)!.has("administrators")) {
       <li class="bui-menu-item" [routerLinkActive]="'active'">
         <a [routerLink]="['admin']" title="">Admin</a>
       </li>
