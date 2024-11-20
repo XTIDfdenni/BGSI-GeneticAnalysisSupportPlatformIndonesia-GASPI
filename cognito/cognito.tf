@@ -1,8 +1,9 @@
 # 
 # Pool and client
 # 
-resource "aws_cognito_user_pool" "beacon_user_pool" {
-  name = "sbeacon-users"
+resource "aws_cognito_user_pool" "gaspi_user_pool" {
+  name = "gaspi-users"
+  tags = var.common-tags
 
   admin_create_user_config {
     allow_admin_create_user_only = true
@@ -33,10 +34,10 @@ resource "aws_cognito_user_pool" "beacon_user_pool" {
   }
 }
 
-resource "aws_cognito_user_pool_client" "beacon_user_pool_client" {
-  name = "sbeacon-users-client"
+resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {
+  name = "gaspi-users-client"
 
-  user_pool_id = aws_cognito_user_pool.beacon_user_pool.id
+  user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
 
   explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH",
@@ -48,14 +49,14 @@ resource "aws_cognito_user_pool_client" "beacon_user_pool_client" {
 # 
 # groups
 # 
-resource "aws_cognito_user_group" "admin-group" {
+resource "aws_cognito_user_group" "admin_group" {
   name         = "admininstrators"
-  user_pool_id = aws_cognito_user_pool.beacon_user_pool.id
+  user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
   description  = "Group of users who can has admin privileges"
-  role_arn     = aws_iam_role.admin-group-role.arn
+  role_arn     = aws_iam_role.admin_group_role.arn
 }
 
-data "aws_iam_policy_document" "admin-group-assume-role-policy" {
+data "aws_iam_policy_document" "admin_group_assume_role_policy" {
   statement {
     principals {
       type        = "Federated"
@@ -67,7 +68,7 @@ data "aws_iam_policy_document" "admin-group-assume-role-policy" {
     condition {
       test     = "StringEquals"
       variable = "cognito-identity.amazonaws.com:aud"
-      values   = [aws_cognito_identity_pool.beacon_identity_pool.id]
+      values   = [aws_cognito_identity_pool.gaspi_identity_pool.id]
     }
 
     condition {
@@ -78,19 +79,19 @@ data "aws_iam_policy_document" "admin-group-assume-role-policy" {
   }
 }
 
-resource "aws_iam_role" "admin-group-role" {
-  name               = "sbeacon-admin-group-role"
-  assume_role_policy = data.aws_iam_policy_document.admin-group-assume-role-policy.json
+resource "aws_iam_role" "admin_group_role" {
+  name               = "gaspi-admin-group-role"
+  assume_role_policy = data.aws_iam_policy_document.admin_group_assume_role_policy.json
 }
 
-data "aws_iam_policy_document" "admin-group-role-policy" {
+data "aws_iam_policy_document" "admin_group_role_policy" {
   # project access
   statement {
     actions = [
       "s3:*"
     ]
     resources = [
-      "${aws_s3_bucket.dataportal-bucket.arn}/projects/*",
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/projects/*",
     ]
   }
 
@@ -103,7 +104,7 @@ data "aws_iam_policy_document" "admin-group-role-policy" {
     ]
 
     resources = [
-      aws_s3_bucket.dataportal-bucket.arn,
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*",
     ]
 
     condition {
@@ -127,34 +128,34 @@ data "aws_iam_policy_document" "admin-group-role-policy" {
     ]
 
     resources = [
-      "${aws_s3_bucket.dataportal-bucket.arn}/private/$${cognito-identity.amazonaws.com:sub}/*",
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/private/$${cognito-identity.amazonaws.com:sub}/*",
     ]
   }
 }
 
-resource "aws_iam_policy" "admin-group-role-policy" {
-  name        = "sbeacon-admin-group-role-policy"
+resource "aws_iam_policy" "admin_group_role_policy" {
+  name        = "gaspi-admin-group-role-policy"
   description = "admin group permissions"
-  policy      = data.aws_iam_policy_document.admin-group-role-policy.json
+  policy      = data.aws_iam_policy_document.admin_group_role_policy.json
 
 }
 
-resource "aws_iam_role_policy_attachment" "admin-group-role-policy-attachment" {
-  role       = aws_iam_role.admin-group-role.name
-  policy_arn = aws_iam_policy.admin-group-role-policy.arn
+resource "aws_iam_role_policy_attachment" "admin_group_role_policy_attachment" {
+  role       = aws_iam_role.admin_group_role.name
+  policy_arn = aws_iam_policy.admin_group_role_policy.arn
 }
 
 # 
 # default users
 # 
 resource "aws_cognito_user" "guest" {
-  user_pool_id = aws_cognito_user_pool.beacon_user_pool.id
-  username     = var.beacon-guest-username
-  password     = var.beacon-guest-password
+  user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
+  username     = var.gaspi-guest-username
+  password     = var.gaspi-guest-password
 
   attributes = {
     terraform      = true
-    email          = var.beacon-guest-username
+    email          = var.gaspi-guest-username
     email_verified = true
     given_name     = "Guest"
     family_name    = "Guest"
@@ -162,15 +163,15 @@ resource "aws_cognito_user" "guest" {
 }
 
 resource "aws_cognito_user" "admin" {
-  user_pool_id = aws_cognito_user_pool.beacon_user_pool.id
-  username     = var.beacon-admin-username
-  password     = var.beacon-admin-password
+  user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
+  username     = var.gaspi-admin-username
+  password     = var.gaspi-admin-password
 
   attributes = {
     terraform      = true
     given_name     = "Admin"
     family_name    = "Admin"
-    email          = var.beacon-admin-username
+    email          = var.gaspi-admin-username
     email_verified = true
   }
 }
@@ -179,8 +180,8 @@ resource "aws_cognito_user" "admin" {
 # group assignments
 # 
 # admin
-resource "aws_cognito_user_in_group" "admin-admin-access" {
-  user_pool_id = aws_cognito_user_pool.beacon_user_pool.id
-  group_name   = aws_cognito_user_group.admin-group.name
+resource "aws_cognito_user_in_group" "admin_in_admin_group" {
+  user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
+  group_name   = aws_cognito_user_group.admin_group.name
   username     = aws_cognito_user.admin.username
 }

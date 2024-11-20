@@ -23,6 +23,11 @@ ENVIRONMENT = """export const environment = {{
     endpoint: '{api_endpoint_sbeacon}',
     region: '{region}',
   }},
+  api_endpoint_svep: {{
+    name: 'svep',
+    endpoint: '{api_endpoint_sbeacon}',
+    region: '{region}',
+  }},
 }};"""
 
 
@@ -78,6 +83,7 @@ def setup_env(
     user_pool_web_client_id: str,
     data_portal_bucket: str,
     api_endpoint_sbeacon: str,
+    api_endpoint_svep: str,
     dir: str,
 ):
     with open(
@@ -93,6 +99,7 @@ def setup_env(
                 data_portal_bucket=data_portal_bucket,
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
+                api_endpoint_svep=api_endpoint_svep,
             )
         )
     with open(os.path.join(dir, "src/environments/environment.ts"), "w") as f:
@@ -106,6 +113,7 @@ def setup_env(
                 data_portal_bucket=data_portal_bucket,
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
+                api_endpoint_svep=api_endpoint_svep,
             )
         )
 
@@ -122,6 +130,7 @@ if __name__ == "__main__":
     identity_pool_id = args["identity_pool_id"]
     user_pool_web_client_id = args["user_pool_web_client_id"]
     api_endpoint_sbeacon = args["api_endpoint_sbeacon"]
+    api_endpoint_svep = args["api_endpoint_svep"]
     data_portal_bucket = args["data_portal_bucket"]
 
     setup_env(
@@ -132,6 +141,7 @@ if __name__ == "__main__":
         user_pool_web_client_id,
         data_portal_bucket,
         api_endpoint_sbeacon,
+        api_endpoint_svep,
         webapp_dir,
     )
     npm_install(install_cmd, webapp_dir)

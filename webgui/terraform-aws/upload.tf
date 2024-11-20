@@ -12,6 +12,7 @@ data "external" "build" {
     user_pool_web_client_id = var.user_pool_web_client_id
     data_portal_bucket      = var.data_portal_bucket
     api_endpoint_sbeacon    = var.api_endpoint_sbeacon
+    api_endpoint_svep       = var.api_endpoint_svep
   }
   working_dir = path.module
 }

@@ -64,3 +64,8 @@ variable "api_endpoint_sbeacon" {
   type        = string
   description = "API endpoint for sbeacon."
 }
+
+variable "api_endpoint_svep" {
+  type        = string
+  description = "API endpoint for svep."
+}

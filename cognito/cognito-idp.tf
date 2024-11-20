@@ -1,15 +1,16 @@
-resource "aws_cognito_identity_pool" "beacon_identity_pool" {
-  identity_pool_name               = "sbeacon-users"
+resource "aws_cognito_identity_pool" "gaspi_identity_pool" {
+  identity_pool_name               = "gaspi-users"
   allow_unauthenticated_identities = false
+  tags                             = var.common-tags
 
   cognito_identity_providers {
-    client_id     = aws_cognito_user_pool_client.beacon_user_pool_client.id
-    provider_name = aws_cognito_user_pool.beacon_user_pool.endpoint
+    client_id     = aws_cognito_user_pool_client.gaspi_user_pool_client.id
+    provider_name = aws_cognito_user_pool.gaspi_user_pool.endpoint
   }
 }
 
 # authenticated role
-data "aws_iam_policy_document" "beacon_authenticated" {
+data "aws_iam_policy_document" "gaspi_authenticated" {
   statement {
     effect = "Allow"
 
@@ -23,7 +24,7 @@ data "aws_iam_policy_document" "beacon_authenticated" {
     condition {
       test     = "StringEquals"
       variable = "cognito-identity.amazonaws.com:aud"
-      values   = [aws_cognito_identity_pool.beacon_identity_pool.id]
+      values   = [aws_cognito_identity_pool.gaspi_identity_pool.id]
     }
 
     condition {
@@ -34,13 +35,13 @@ data "aws_iam_policy_document" "beacon_authenticated" {
   }
 }
 
-resource "aws_iam_role" "beacon_authenticated" {
-  name               = "beacon_authenticated"
-  assume_role_policy = data.aws_iam_policy_document.beacon_authenticated.json
+resource "aws_iam_role" "gaspi_authenticated" {
+  name               = "gaspi_authenticated"
+  assume_role_policy = data.aws_iam_policy_document.gaspi_authenticated.json
 }
 
 # this is the defauly policy for the authenticated role
-data "aws_iam_policy_document" "beacon_authenticated_role_policy" {
+data "aws_iam_policy_document" "gaspi_authenticated_role_policy" {
   statement {
     effect = "Allow"
 
@@ -49,7 +50,7 @@ data "aws_iam_policy_document" "beacon_authenticated_role_policy" {
     ]
 
     resources = [
-      aws_s3_bucket.dataportal-bucket.arn,
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*",
     ]
 
     condition {
@@ -72,19 +73,19 @@ data "aws_iam_policy_document" "beacon_authenticated_role_policy" {
     ]
 
     resources = [
-      "${aws_s3_bucket.dataportal-bucket.arn}/private/$${cognito-identity.amazonaws.com:sub}/*",
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/private/$${cognito-identity.amazonaws.com:sub}/*",
     ]
   }
 }
 
-resource "aws_iam_role_policy" "beacon_authenticated" {
+resource "aws_iam_role_policy" "gaspi_authenticated" {
   name   = "authenticated_policy"
-  role   = aws_iam_role.beacon_authenticated.id
-  policy = data.aws_iam_policy_document.beacon_authenticated_role_policy.json
+  role   = aws_iam_role.gaspi_authenticated.id
+  policy = data.aws_iam_policy_document.gaspi_authenticated_role_policy.json
 }
 
 # unauthenticated role
-data "aws_iam_policy_document" "beacon_unauthenticated" {
+data "aws_iam_policy_document" "gaspi_unauthenticated" {
   statement {
     effect = "Allow"
 
@@ -98,7 +99,7 @@ data "aws_iam_policy_document" "beacon_unauthenticated" {
     condition {
       test     = "StringEquals"
       variable = "cognito-identity.amazonaws.com:aud"
-      values   = [aws_cognito_identity_pool.beacon_identity_pool.id]
+      values   = [aws_cognito_identity_pool.gaspi_identity_pool.id]
     }
 
     condition {
@@ -109,12 +110,12 @@ data "aws_iam_policy_document" "beacon_unauthenticated" {
   }
 }
 
-resource "aws_iam_role" "beacon_unauthenticated" {
-  name               = "beacon_unauthenticated"
-  assume_role_policy = data.aws_iam_policy_document.beacon_unauthenticated.json
+resource "aws_iam_role" "gaspi_unauthenticated" {
+  name               = "gaspi_unauthenticated"
+  assume_role_policy = data.aws_iam_policy_document.gaspi_unauthenticated.json
 }
 
-data "aws_iam_policy_document" "beacon_unauthenticated_role_policy" {
+data "aws_iam_policy_document" "gaspi_unauthenticated_role_policy" {
   statement {
     effect = "Deny"
 
@@ -126,25 +127,25 @@ data "aws_iam_policy_document" "beacon_unauthenticated_role_policy" {
   }
 }
 
-resource "aws_iam_role_policy" "beacon_unauthenticated" {
+resource "aws_iam_role_policy" "gaspi_unauthenticated" {
   name   = "unauthenticated_policy"
-  role   = aws_iam_role.beacon_unauthenticated.id
-  policy = data.aws_iam_policy_document.beacon_unauthenticated_role_policy.json
+  role   = aws_iam_role.gaspi_unauthenticated.id
+  policy = data.aws_iam_policy_document.gaspi_unauthenticated_role_policy.json
 }
 
 
-resource "aws_cognito_identity_pool_roles_attachment" "beacon_cognito_roles" {
-  identity_pool_id = aws_cognito_identity_pool.beacon_identity_pool.id
+resource "aws_cognito_identity_pool_roles_attachment" "gaspi_cognito_roles" {
+  identity_pool_id = aws_cognito_identity_pool.gaspi_identity_pool.id
 
   role_mapping {
-    identity_provider         = "${aws_cognito_user_pool.beacon_user_pool.endpoint}:${aws_cognito_user_pool_client.beacon_user_pool_client.id}"
+    identity_provider         = "${aws_cognito_user_pool.gaspi_user_pool.endpoint}:${aws_cognito_user_pool_client.gaspi_user_pool_client.id}"
     type                      = "Token"
     ambiguous_role_resolution = "AuthenticatedRole"
   }
 
   roles = {
-    "authenticated"   = aws_iam_role.beacon_authenticated.arn
-    "unauthenticated" = aws_iam_role.beacon_unauthenticated.arn
+    "authenticated"   = aws_iam_role.gaspi_authenticated.arn
+    "unauthenticated" = aws_iam_role.gaspi_unauthenticated.arn
   }
 }
 
