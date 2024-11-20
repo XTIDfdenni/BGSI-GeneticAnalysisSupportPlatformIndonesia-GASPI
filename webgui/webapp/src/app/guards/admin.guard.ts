@@ -13,7 +13,7 @@ export const adminGuard: CanActivateFn = async (route, state) => {
       [],
     );
 
-    return groups.includes('admin-group');
+    return groups.includes('administrators');
   } catch (error) {
     return router.parseUrl('/login');
   }
