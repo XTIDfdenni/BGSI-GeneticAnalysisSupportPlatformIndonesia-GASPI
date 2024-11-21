@@ -38,10 +38,7 @@ import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/
 })
 export class AdminUserClickDialogComponent implements OnInit {
   protected initialGroups: any = {
-    admin: false,
-    record: false,
-    count: false,
-    boolean: false,
+    administrators: false,
   };
   protected form: FormGroup;
   protected loading = false;
@@ -55,10 +52,7 @@ export class AdminUserClickDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.form = this.fb.group({
-      admin: [false],
-      record: [false],
-      count: [false],
-      boolean: [false],
+      administrators: [false],
     });
   }
 
@@ -79,10 +73,11 @@ export class AdminUserClickDialogComponent implements OnInit {
         _.each(groupNames, (gn: string) => {
           userGroups[gn] = true;
         });
+        console.log(userGroups);
         _.merge(this.initialGroups, userGroups);
         this.form.patchValue(userGroups);
         if (user === authorizer) {
-          this.form.get('admin')?.disable();
+          this.form.get('administrators')?.disable();
           this.disableDelete = true;
         }
         this.loading = false;
