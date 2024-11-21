@@ -73,7 +73,6 @@ export class AdminUserClickDialogComponent implements OnInit {
         _.each(groupNames, (gn: string) => {
           userGroups[gn] = true;
         });
-        console.log(userGroups);
         _.merge(this.initialGroups, userGroups);
         this.form.patchValue(userGroups);
         if (user === authorizer) {
