@@ -8,6 +8,7 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full',
+    canActivate: [authGuard],
   },
   {
     path: 'home',
@@ -15,14 +16,43 @@ export const routes: Routes = [
       import('./pages/about-page/about-page.component').then(
         (c) => c.AboutPageComponent,
       ),
+    canActivate: [authGuard],
   },
   {
     path: 'dportal',
     loadComponent: () =>
-      import('./pages/dportal-page/dportal-page.component').then(
-        (c) => c.DportalPageComponent,
+      import('./pages/portal-page/portal-page.component').then(
+        (c) => c.PortalPageComponent,
       ),
     canActivate: [authGuard],
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'portal',
+      },
+      {
+        path: 'portal',
+        loadComponent: () =>
+          import('./pages/dportal-page/dportal-page.component').then(
+            (c) => c.DportalPageComponent,
+          ),
+      },
+      {
+        path: 'sbeacon-query',
+        loadComponent: () =>
+          import('./pages/query-page/query-page.component').then(
+            (c) => c.QueryPageComponent,
+          ),
+      },
+      {
+        path: 'sbeacon-filter',
+        loadComponent: () =>
+          import('./pages/filters-page/filters-page.component').then(
+            (c) => c.FiltersPageComponent,
+          ),
+      },
+    ],
   },
   {
     path: 'login',
@@ -31,22 +61,6 @@ export const routes: Routes = [
         (c) => c.LoginPageComponent,
       ),
     canActivate: [unauthGuard],
-  },
-  {
-    path: 'query',
-    loadComponent: () =>
-      import('./pages/query-page/query-page.component').then(
-        (c) => c.QueryPageComponent,
-      ),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'filters',
-    loadComponent: () =>
-      import('./pages/filters-page/filters-page.component').then(
-        (c) => c.FiltersPageComponent,
-      ),
-    canActivate: [authGuard],
   },
   {
     path: 'clinic',
@@ -91,6 +105,6 @@ export const routes: Routes = [
       import('./pages/profile-page/profile-page.component').then(
         (c) => c.ProfilePageComponent,
       ),
-    canActivate: [adminGuard],
+    canActivate: [authGuard],
   },
 ];

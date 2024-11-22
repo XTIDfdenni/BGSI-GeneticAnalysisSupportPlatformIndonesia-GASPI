@@ -94,10 +94,6 @@ export class AppComponent implements OnInit {
     // route security is enabled by the authguards
     (async () => {
       await this.auth.refresh();
-      if (!this.auth.user.value) {
-        console.log('keinin');
-        this.router.navigate(['/login']);
-      }
     })();
   }
 
