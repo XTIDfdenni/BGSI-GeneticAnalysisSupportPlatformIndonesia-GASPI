@@ -80,7 +80,7 @@ export class DataSubmissionFormComponent {
     const projectDescription = entry.projectDescription;
     this.progress = 0;
     this.totalSize = this.files.reduce((acc, file) => acc + file.size, 0);
-    this.dps.adminCreateProject(projectName, projectDescription, this.files.map((file) => `projects/${projectName}/${file.name}`))
+    this.dps.adminCreateProject(projectName, projectDescription)
       .pipe(
         catchError(() => {
           console.error('Error creating project');

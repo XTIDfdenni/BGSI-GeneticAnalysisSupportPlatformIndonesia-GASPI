@@ -10,14 +10,14 @@ export class DportalService {
   constructor() {}
 
   // data portal admin project actions
-  adminCreateProject(name: string, description: string, files: string[]) {
+  adminCreateProject(name: string, description: string) {
     console.log('create project');
     return from(
       API.post(
         environment.api_endpoint_sbeacon.name,
         'dportal/admin/projects',
         {
-          body: { name, description, files },
+          body: { name, description },
         },
       ),
     );
