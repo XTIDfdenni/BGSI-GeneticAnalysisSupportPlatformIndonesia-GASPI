@@ -3,39 +3,48 @@
 
   <app-component-spinner [loading]="loading"></app-component-spinner>
   <div mat-dialog-content>
-    <section class="flex flex-col" [formGroup]="form">
-      <mat-checkbox
-        formControlName="administrators"
-        color="primary"
-        value="administrators"
-        >Admin access</mat-checkbox
-      >
-    </section>
+    <div class="flex flex-col gap-2">
+      <mat-form-field>
+        <mat-label>First name</mat-label>
+        <input matInput type="text" placeholder="John" formControlName="firstName" value="{{data.firstName}}"
+          [disabled]="true" />
+        <mat-error>Field is required</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Last name</mat-label>
+        <input matInput type="text" placeholder="Doe" formControlName="lastName" value="{{data.firstName}}"
+          [disabled]="true" />
+        <mat-error>Field is required</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Email address</mat-label>
+        <input matInput type="email" placeholder="user@domain.com" formControlName="email" value="{{data.email}}"
+          [disabled]="true" />
+        <mat-error>Valid email is required</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="flex flex-row gap-2" [formGroup]="form">
+      <label for="Role Group">Role Access: </label>
+      <div class="flex flex-1 flex-col">
+        <mat-checkbox formControlName="administrators" color="primary" value="administrators">Admin
+          access</mat-checkbox>
+        <mat-checkbox formControlName="roleAccess" color="primary" value="data-manager" aria-disabled="true"
+          [disabled]="true">Data
+          Manager
+          Access</mat-checkbox>
+        <mat-checkbox formControlName="roleAccess" color="primary" value="" aria-disabled="true" [disabled]="true"
+          [checked]="true">Basic User Access</mat-checkbox>
+      </div>
+    </div>
     <br />
-    <button
-      mat-raised-button
-      color="warn"
-      (click)="delete()"
-      [disabled]="disableDelete"
-      class="mb-[10px] w-[110px]"
-    >
+    <button mat-raised-button color="warn" (click)="delete()" [disabled]="disableDelete" class="mb-[10px] w-[110px]">
       Delete
     </button>
     <div class="flex space-x-[10px]">
-      <button
-        class="w-[110px]"
-        mat-raised-button
-        color="primary"
-        (click)="cancel()"
-      >
+      <button class="w-[110px]" mat-raised-button color="primary" (click)="cancel()">
         Cancel
       </button>
-      <button
-        class="w-[110px]"
-        mat-raised-button
-        color="primary"
-        (click)="done()"
-      >
+      <button class="w-[110px]" mat-raised-button color="primary" (click)="done()">
         Update
       </button>
     </div>

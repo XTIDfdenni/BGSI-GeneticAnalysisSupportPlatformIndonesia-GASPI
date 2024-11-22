@@ -1,0 +1,17 @@
+.cu-header {
+  display: flex;
+  flex-direction: row;
+
+  @media (max-width: 800px) {
+    flex-direction: column-reverse;
+  }
+}
+
+.cu-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (max-width: 800px) {
+    justify-content: flex-start;
+  }
+}
