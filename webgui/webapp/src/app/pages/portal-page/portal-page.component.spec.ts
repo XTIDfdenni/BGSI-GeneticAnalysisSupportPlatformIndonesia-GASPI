@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SvepResultsComponent } from './svep-results.component';
+import { PortalPageComponent } from './portal-page.component';
 
-describe('SvepResultsComponent', () => {
-  let component: SvepResultsComponent;
-  let fixture: ComponentFixture<SvepResultsComponent>;
+describe('PortalPageComponent', () => {
+  let component: PortalPageComponent;
+  let fixture: ComponentFixture<PortalPageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SvepResultsComponent],
+      imports: [PortalPageComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SvepResultsComponent);
+    fixture = TestBed.createComponent(PortalPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
