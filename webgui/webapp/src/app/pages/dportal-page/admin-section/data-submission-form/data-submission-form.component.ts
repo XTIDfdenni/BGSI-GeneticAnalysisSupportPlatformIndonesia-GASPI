@@ -80,22 +80,31 @@ export class DataSubmissionFormComponent {
     const projectDescription = entry.projectDescription;
     this.progress = 0;
     this.totalSize = this.files.reduce((acc, file) => acc + file.size, 0);
-
-    forkJoin(this.files.map((file) => this.uploadFile(projectName, file)))
+    this.dps.adminCreateProject(projectName, projectDescription, this.files.map((file) => `projects/${projectName}/${file.name}`))
       .pipe(
-        catchError(() => of(null)),
-        switchMap((files: string[] | null) => {
-          if (files) {
-            return this.dps
-              .adminCreateProject(projectName, projectDescription, files)
-              .pipe(catchError(() => of(null)));
-          }
+        catchError(() => {
+          console.error('Error creating project');
           return of(null);
         }),
+        switchMap((res: any) => {
+          if (res) {
+            console.log('Uploading files');
+            return forkJoin(this.files.map((file) => this.uploadFile(projectName, file)))
+              .pipe(catchError(() => {
+                console.error('Error uploading files');
+                return of(null);
+              }));
+          } else {
+            console.error('Aborting file upload');
+            return of(-1);
+          }
+        })
       )
       .subscribe((res: any) => {
-        if (!res) {
+        if (res === -1) {
           this.sb.open('Project creation failed', 'Okay', { duration: 60000 });
+        } else if (!res) {
+          this.sb.open('Project created, but file upload failed', 'Okay', { duration: 60000 });
         } else {
           this.sb.open('Project created', 'Okay', { duration: 60000 });
         }
