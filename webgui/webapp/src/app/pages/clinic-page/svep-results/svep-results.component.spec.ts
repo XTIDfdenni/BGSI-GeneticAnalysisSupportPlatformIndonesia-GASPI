@@ -8,10 +8,9 @@ describe('SvepResultsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SvepResultsComponent]
-    })
-    .compileComponents();
-    
+      imports: [SvepResultsComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(SvepResultsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

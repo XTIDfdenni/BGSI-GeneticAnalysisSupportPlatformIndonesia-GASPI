@@ -8,10 +8,9 @@ describe('ResultsViewerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ResultsViewerComponent]
-    })
-    .compileComponents();
-    
+      imports: [ResultsViewerComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(ResultsViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -66,9 +66,10 @@
       </tr>
       <tr>
         <td class="w-[200px]"><strong>Transcript Support Level</strong></td>
-        <td>The support level for the transcript, indicating the quality of the evidence supporting the existence of
-          the
-          transcript.</td>
+        <td>
+          The support level for the transcript, indicating the quality of the
+          evidence supporting the existence of the transcript.
+        </td>
       </tr>
     </tbody>
   </table>
@@ -85,47 +86,74 @@
     <tbody>
       <tr>
         <td class="w-[300px]"><strong>missense_variant</strong></td>
-        <td>A type of genetic mutation where one DNA base pair is changed, resulting in the replacement of one amino
-          acid
-          with another in the produced protein.</td>
+        <td>
+          A type of genetic mutation where one DNA base pair is changed,
+          resulting in the replacement of one amino acid with another in the
+          produced protein.
+        </td>
       </tr>
       <tr>
         <td class="w-[300px]"><strong>splice_region_variant</strong></td>
-        <td>A variation in the DNA sequence near or within the splicing regions of the gene which may affect the
-          accuracy
-          of splicing and thus lead to an altered gene product.</td>
+        <td>
+          A variation in the DNA sequence near or within the splicing regions of
+          the gene which may affect the accuracy of splicing and thus lead to an
+          altered gene product.
+        </td>
       </tr>
       <tr>
-        <td class="w-[300px]"><strong>non_coding_transcript_exon_variant</strong></td>
-        <td>A variation occurring within non-coding exons of a transcribed gene. Non-coding exons may contain regulatory
-          regions critical for protein synthesis.</td>
+        <td class="w-[300px]">
+          <strong>non_coding_transcript_exon_variant</strong>
+        </td>
+        <td>
+          A variation occurring within non-coding exons of a transcribed gene.
+          Non-coding exons may contain regulatory regions critical for protein
+          synthesis.
+        </td>
       </tr>
       <tr>
         <td class="w-[300px]"><strong>upstream_gene_variant</strong></td>
-        <td>A variation located upstream (5 prime direction) of the transcription start site of a gene, this could have
-          potential impacts on gene regulation and expression.</td>
+        <td>
+          A variation located upstream (5 prime direction) of the transcription
+          start site of a gene, this could have potential impacts on gene
+          regulation and expression.
+        </td>
       </tr>
       <tr>
         <td class="w-[300px]"><strong>NMD_transcript_variant</strong></td>
-        <td>A variant which is predicted to undergo nonsense-mediated mRNA decay (NMD). When such a variant occurs in a
-          coding sequence, it can prevent the production of functional proteins.</td>
+        <td>
+          A variant which is predicted to undergo nonsense-mediated mRNA decay
+          (NMD). When such a variant occurs in a coding sequence, it can prevent
+          the production of functional proteins.
+        </td>
       </tr>
     </tbody>
   </table>
 </div>
 <h2>Results Table</h2>
 <strong>Click on table headers to sort</strong>
-<div class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700">
+<div
+  class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700"
+>
   <table mat-table [dataSource]="data" matSort>
     @for (column of columns; track $index) {
-    <ng-container [matColumnDef]="column">
-      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap" mat-sort-header>{{ column }}</th>
-      <td mat-cell *matCellDef="let element" class="whitespace-nowrap"> {{element[column]}} </td>
-    </ng-container>
+      <ng-container [matColumnDef]="column">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          class="whitespace-nowrap"
+          mat-sort-header
+        >
+          {{ column }}
+        </th>
+        <td mat-cell *matCellDef="let element" class="whitespace-nowrap">
+          {{ element[column] }}
+        </td>
+      </ng-container>
     }
 
     <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
   </table>
 </div>
-<mat-paginator [pageSizeOptions]="[50, 100]" showFirstLastButtons #paginator> </mat-paginator>
+<mat-paginator [pageSizeOptions]="[50, 100]" showFirstLastButtons #paginator>
+</mat-paginator>
