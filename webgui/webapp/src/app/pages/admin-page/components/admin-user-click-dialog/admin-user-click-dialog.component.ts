@@ -19,6 +19,8 @@ import { AdminService } from 'src/app/pages/admin-page/services/admin.service';
 import { catchError, of } from 'rxjs';
 import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-admin-user-click-dialog',
@@ -31,6 +33,8 @@ import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/
     FormsModule,
     ReactiveFormsModule,
     ComponentSpinnerComponent,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   templateUrl: './admin-user-click-dialog.component.html',
   styleUrls: ['./admin-user-click-dialog.component.scss'],
@@ -57,6 +61,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(this.data);
     this.loading = true;
     this.as
       .listUsersGroups(this.data.email)

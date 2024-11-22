@@ -164,8 +164,23 @@ export class AdminPageComponent implements OnInit {
       data: {
         name: `${row['First name']} ${row['Last name']}`,
         email: row.Email,
+        firstName: `${row['First name']}`,
+        lastName: `${row['Last name']}`,
       },
     });
+    dialog.afterClosed().subscribe((data) => {
+      if (_.get(data, 'reload', false)) {
+        this.resetPagination();
+        this.listUsers();
+      }
+    });
+  }
+
+  async addNewUser() {
+    const { AdminCreateUserComponent } = await import(
+      'src/app/pages/admin-page/components/admin-create-user-dialog/admin-create-user-dialog.component'
+    );
+    const dialog = this.dg.open(AdminCreateUserComponent, {});
     dialog.afterClosed().subscribe((data) => {
       if (_.get(data, 'reload', false)) {
         this.resetPagination();
