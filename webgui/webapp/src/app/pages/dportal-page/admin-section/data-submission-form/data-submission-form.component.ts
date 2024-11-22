@@ -71,7 +71,7 @@ export class DataSubmissionFormComponent {
       console.error('Error uploading file', error);
       throw error;
     }
-    return `projects/${path}/${file.name}`;
+    return file.name;
   }
 
   async onSubmit(entry: any) {
