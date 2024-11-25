@@ -22,6 +22,7 @@ module "sbeacon" {
   beacon-ui-url               = module.webgui.cloudfront-url
   cognito-user-pool-arn       = module.cognito.cognito_user_pool_arn
   cognito-user-pool-id        = module.cognito.cognito_user_pool_id
+  cognito-admin-group-name    = module.cognito.cognito_admin_group_name
 
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
