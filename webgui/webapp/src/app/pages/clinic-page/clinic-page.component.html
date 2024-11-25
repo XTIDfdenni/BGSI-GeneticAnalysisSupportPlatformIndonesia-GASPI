@@ -1,13 +1,13 @@
 <mat-card>
   <mat-card-content>
-    <h2>Variant Effect Prediction</h2>
     <mat-tab-group
       [(selectedIndex)]="selectedIndex"
       (selectedIndexChange)="onTabChange($event)"
     >
-      <mat-tab label="VEP Executions"> </mat-tab>
-      <mat-tab label="VEP Results"> </mat-tab>
+      <mat-tab label="VEP EXECUTIONS"> </mat-tab>
+      <mat-tab label="VEP RESULTS"> </mat-tab>
     </mat-tab-group>
-    <router-outlet></router-outlet>
   </mat-card-content>
 </mat-card>
+<br />
+<router-outlet></router-outlet>

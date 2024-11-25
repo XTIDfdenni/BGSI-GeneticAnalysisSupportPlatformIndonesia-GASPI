@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { environment } from 'src/environments/environment';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-submit-page',
@@ -31,6 +32,7 @@ import { environment } from 'src/environments/environment';
     ProjectsListComponent,
     RouterLink,
     MatProgressSpinnerModule,
+    MatCardModule,
   ],
   providers: [],
   templateUrl: './svep-submit.component.html',
@@ -52,7 +54,7 @@ export class SvepSubmitComponent {
 
   filesSelected(event: FileSelectEvent) {
     console.log(event);
-    this.projectName = event.projectName
+    this.projectName = event.projectName;
     this.vcfFile = event.vcf;
     this.indexFile = event.index;
     this.valid = true;

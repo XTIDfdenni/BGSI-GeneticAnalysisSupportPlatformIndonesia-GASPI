@@ -20,6 +20,7 @@ import { BehaviorSubject, catchError, filter, of } from 'rxjs';
 import { ResultsViewerComponent } from './results-viewer/results-viewer.component';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-results-page',
@@ -33,6 +34,7 @@ import { SpinnerService } from 'src/app/services/spinner.service';
     ReactiveFormsModule,
     MatInputModule,
     ResultsViewerComponent,
+    MatCardModule,
   ],
   providers: [],
   templateUrl: './svep-results.component.html',
