@@ -1,8 +1,8 @@
 export const instanceTypes = [
-  { name: 'ml.t2.medium', note: 'cheapest', ram: 4, cpu: 2 },
-  { name: 'ml.t2.large', note: '', ram: 8, cpu: 2 },
-  { name: 'ml.t2.xlarge', note: '', ram: 16, cpu: 4 },
-  { name: 'ml.t2.2xlarge', note: '', ram: 32, cpu: 8 },
+  { name: 'ml.t3.medium', note: 'cheapest', ram: 4, cpu: 2 },
+  { name: 'ml.t3.large', note: '', ram: 8, cpu: 2 },
+  { name: 'ml.t3.xlarge', note: '', ram: 16, cpu: 4 },
+  { name: 'ml.t3.2xlarge', note: '', ram: 32, cpu: 8 },
 ];
 
 export const volumeSizes = [
