@@ -108,7 +108,7 @@ export class ProjectsListComponent {
 
   async delete(name: string) {
     const { ActionConfirmationDialogComponent } = await import(
-      '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {
@@ -136,7 +136,7 @@ export class ProjectsListComponent {
 
   async ingest(name: string) {
     const { ActionConfirmationDialogComponent } = await import(
-      '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {

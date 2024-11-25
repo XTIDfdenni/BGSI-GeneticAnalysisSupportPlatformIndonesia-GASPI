@@ -67,7 +67,7 @@ export class ProjectsUsersComponent implements OnChanges {
 
   async unAssignUser(email: string) {
     const { ActionConfirmationDialogComponent } = await import(
-      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+      '../../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {

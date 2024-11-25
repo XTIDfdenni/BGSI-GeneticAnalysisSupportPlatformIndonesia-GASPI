@@ -33,23 +33,23 @@ export const routes: Routes = [
       {
         path: 'portal',
         loadComponent: () =>
-          import('./pages/dportal-page/dportal-page.component').then(
-            (c) => c.DportalPageComponent,
-          ),
+          import(
+            './pages/portal-page/dportal-page/dportal-page.component'
+          ).then((c) => c.DportalPageComponent),
       },
       {
         path: 'sbeacon-query',
         loadComponent: () =>
-          import('./pages/query-page/query-page.component').then(
+          import('./pages/portal-page/query-page/query-page.component').then(
             (c) => c.QueryPageComponent,
           ),
       },
       {
         path: 'sbeacon-filter',
         loadComponent: () =>
-          import('./pages/filters-page/filters-page.component').then(
-            (c) => c.FiltersPageComponent,
-          ),
+          import(
+            './pages/portal-page/filters-page/filters-page.component'
+          ).then((c) => c.FiltersPageComponent),
       },
     ],
   },

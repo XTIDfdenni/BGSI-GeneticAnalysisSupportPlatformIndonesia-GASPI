@@ -8,7 +8,7 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-dportal-page',
   standalone: true,
-  imports: [MatCardModule, AsyncPipe, MatTabsModule, RouterOutlet],
+  imports: [MatCardModule, MatTabsModule, RouterOutlet],
   templateUrl: './portal-page.component.html',
   styleUrl: './portal-page.component.scss',
 })
@@ -21,7 +21,15 @@ export class PortalPageComponent {
     private route: ActivatedRoute,
   ) {
     const urlTree = this.router.parseUrl(this.router.url);
-    console.log(urlTree, 'ini');
+    const path = urlTree.root.children['primary'].segments.join('/');
+
+    if (path.startsWith('dportal/portal')) {
+      this.selectedIndex = 0;
+    } else if (path.startsWith('dportal/sbeacon-query')) {
+      this.selectedIndex = 1;
+    } else if (path.startsWith('dportal/sbeacon-filter')) {
+      this.selectedIndex = 2;
+    }
   }
 
   onTabChange(index: number) {

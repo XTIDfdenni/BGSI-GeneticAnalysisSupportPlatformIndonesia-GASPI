@@ -103,7 +103,6 @@ const allowedReturns = {
     MatCheckboxModule,
     MatTooltipModule,
     QueryResultViewerContainerComponent,
-    AsyncPipe,
     FilterEditorComponent,
     VariantEditorComponent,
   ],
@@ -413,7 +412,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async saveQuery() {
     const { SaveQueryDialogComponent } = await import(
-      'src/app/pages/query-page/components/save-query-dialog/save-query-dialog.component'
+      'src/app/pages/portal-page/query-page/components/save-query-dialog/save-query-dialog.component'
     );
     const dialog = this.dg.open(SaveQueryDialogComponent, {
       data: {},

@@ -1,0 +1,5 @@
+@if ((auth.userGroups | async)!.has("administrators")) {
+  <app-admin-section />
+  <br />
+}
+<app-user-section />

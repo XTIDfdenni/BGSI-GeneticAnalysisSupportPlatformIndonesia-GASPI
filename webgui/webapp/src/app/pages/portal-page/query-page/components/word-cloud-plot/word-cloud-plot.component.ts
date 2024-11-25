@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 import { colors as colorWheel } from 'src/app/utils/utils';
 import { MatDialog } from '@angular/material/dialog';
 import WordCloud from 'wordcloud';
-import { ComponentSpinnerComponent } from '../../../../components/component-spinner/component-spinner.component';
+import { ComponentSpinnerComponent } from '../../../../../components/component-spinner/component-spinner.component';
 
 interface CloudWord {
   size: number;

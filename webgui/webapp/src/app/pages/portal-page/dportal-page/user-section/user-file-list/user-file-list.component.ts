@@ -47,7 +47,7 @@ export class UserFileListComponent implements OnInit {
 
   async delete(file: any) {
     const { ActionConfirmationDialogComponent } = await import(
-      '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {

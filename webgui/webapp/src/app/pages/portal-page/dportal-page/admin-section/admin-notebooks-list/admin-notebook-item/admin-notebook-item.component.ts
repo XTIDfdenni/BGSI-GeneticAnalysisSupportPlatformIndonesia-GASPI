@@ -61,7 +61,7 @@ export class AdminNotebookItemComponent implements OnChanges {
 
   async stop() {
     const { ActionConfirmationDialogComponent } = await import(
-      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+      '../../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {
@@ -81,7 +81,7 @@ export class AdminNotebookItemComponent implements OnChanges {
 
   async delete() {
     const { ActionConfirmationDialogComponent } = await import(
-      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+      '../../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {

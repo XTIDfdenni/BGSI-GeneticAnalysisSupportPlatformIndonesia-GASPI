@@ -79,7 +79,7 @@ export class QueryResultViewerContainerComponent implements OnChanges {
 
   async save(content: any) {
     const { TextInputDialogComponent } = await import(
-      '../../../../components/text-input-dialog/text-input-dialog.component'
+      '../../../../../components/text-input-dialog/text-input-dialog.component'
     );
 
     const dialog = this.dg.open(TextInputDialogComponent, {
