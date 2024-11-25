@@ -22,7 +22,7 @@ import { DportalService } from 'src/app/services/dportal.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DecimalPipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { catchError, forkJoin, map, of, switchMap } from 'rxjs';
+import { catchError, defaultIfEmpty, forkJoin, map, of, switchMap } from 'rxjs';
 import { Storage } from 'aws-amplify';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
@@ -159,15 +159,12 @@ export class ProjectUpdatesComponent implements OnChanges {
         catchError(() => of(null)),
         switchMap((res: any) => {
           if (res) {
-            if (this.addedFiles.length === 0) {
-              return of(res);
-            }
-
             return forkJoin(
               this.addedFiles.map((file) =>
                 this.uploadFile(this.project.name, file),
               ),
             ).pipe(
+              defaultIfEmpty(res),
               catchError(() => of(null)),
               map(() => of(res)),
             );

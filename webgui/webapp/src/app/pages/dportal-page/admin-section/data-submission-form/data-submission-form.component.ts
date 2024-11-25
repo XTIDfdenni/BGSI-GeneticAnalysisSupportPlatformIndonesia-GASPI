@@ -10,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DportalService } from '../../../../services/dportal.service';
-import { catchError, of, switchMap, map } from 'rxjs';
+import { catchError, of, switchMap, map, defaultIfEmpty } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FileDropperComponent } from '../../file-dropper/file-dropper.component';
 import { Storage } from 'aws-amplify';
@@ -94,13 +94,10 @@ export class DataSubmissionFormComponent {
         }),
         switchMap((res: any) => {
           if (res) {
-            if (this.files.length === 0) {
-              return of(res);
-            }
-
             return forkJoin(
               this.files.map((file) => this.uploadFile(projectName, file)),
             ).pipe(
+              defaultIfEmpty(res),
               catchError(() => of(null)),
               map(() => of(res)),
             );
