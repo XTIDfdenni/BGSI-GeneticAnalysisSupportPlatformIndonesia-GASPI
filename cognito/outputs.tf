@@ -18,6 +18,11 @@ output "cognito_user_pool_arn" {
   description = "Cognito user pool ARN."
 }
 
+output "cognito_admin_group_name" {
+  value       = aws_cognito_user_group.admin_group.name
+  description = "Cognito administrator group name"
+}
+
 output "admin_login_command" {
   value       = "aws cognito-idp admin-initiate-auth --user-pool-id ${aws_cognito_user_pool.gaspi_user_pool.id} --region ${var.region} --client-id ${aws_cognito_user_pool_client.gaspi_user_pool_client.id} --auth-flow ADMIN_USER_PASSWORD_AUTH --auth-parameters USERNAME=${var.gaspi-admin-username},PASSWORD=${var.gaspi-admin-password} --output json --query AuthenticationResult.IdToken"
   description = "Command to sign in an admin"
