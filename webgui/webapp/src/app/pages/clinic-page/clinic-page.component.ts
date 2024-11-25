@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
-import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet, UrlTree } from '@angular/router';
 
 @Component({
   selector: 'app-filters-page',
@@ -18,22 +18,22 @@ export class ClinicPageComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
   ) {
+    this.setTabIndex();
+  }
+
+  setTabIndex() {
     const urlTree = this.router.parseUrl(this.router.url);
-    this.selectedIndex =
-      urlTree.root.children['primary'].segments.at(-1)?.toString() ===
-      'svep-results'
-        ? 1
-        : 0;
+    const path = urlTree.root.children['primary'].segments.join('/');
+    if (path.startsWith('clinic/svep-submit')) {
+      this.selectedIndex = 0;
+    } else if (path.startsWith('clinic/svep-results')) {
+      this.selectedIndex = 1;
+    }
   }
 
   ngOnInit() {
     this.router.events.subscribe(() => {
-      const urlTree = this.router.parseUrl(this.router.url);
-      this.selectedIndex =
-        urlTree.root.children['primary'].segments.at(-1)?.toString() ===
-        'svep-results'
-          ? 1
-          : 0;
+      this.setTabIndex();
     });
   }
 

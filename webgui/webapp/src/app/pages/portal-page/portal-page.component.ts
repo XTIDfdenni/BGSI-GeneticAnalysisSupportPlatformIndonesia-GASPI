@@ -12,7 +12,7 @@ import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
   templateUrl: './portal-page.component.html',
   styleUrl: './portal-page.component.scss',
 })
-export class PortalPageComponent {
+export class PortalPageComponent implements OnInit {
   protected selectedIndex = 0;
 
   constructor(
@@ -20,6 +20,10 @@ export class PortalPageComponent {
     private router: Router,
     private route: ActivatedRoute,
   ) {
+    this.setTabIndex();
+  }
+
+  setTabIndex() {
     const urlTree = this.router.parseUrl(this.router.url);
     const path = urlTree.root.children['primary'].segments.join('/');
 
@@ -30,6 +34,12 @@ export class PortalPageComponent {
     } else if (path.startsWith('dportal/sbeacon-filter')) {
       this.selectedIndex = 2;
     }
+  }
+
+  ngOnInit(): void {
+    this.router.events.subscribe(() => {
+      this.setTabIndex();
+    });
   }
 
   onTabChange(index: number) {

@@ -43,7 +43,6 @@ import { MatCardModule } from '@angular/material/card';
 export class SvepResultsComponent implements OnInit {
   protected requestIdFormControl: FormControl;
   protected results: any = null;
-  private url = new BehaviorSubject<string>('');
 
   constructor(
     private fb: FormBuilder,
@@ -56,7 +55,6 @@ export class SvepResultsComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      console.log(params);
       if (params['jobId']) {
         this.requestIdFormControl.setValue(params['jobId']);
         this.load();
