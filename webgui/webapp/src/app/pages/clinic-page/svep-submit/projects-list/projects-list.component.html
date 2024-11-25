@@ -19,8 +19,8 @@
       @for (file of element.files; track $index) {
         <div class="file-row">
           <mat-radio-button
-            [checked]="isFileSelected(file.filename)"
-            (change)="onFileSelect(file.filename)"
+            [checked]="isFileSelected(file.filename, element.name)"
+            (change)="onFileSelect(file.filename, element.name)"
             [value]="file.filename"
             [disabled]="file.disabled"
           >

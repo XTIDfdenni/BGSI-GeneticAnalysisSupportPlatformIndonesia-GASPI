@@ -38,6 +38,7 @@ import { environment } from 'src/environments/environment';
 })
 export class SvepSubmitComponent {
   @ViewChild('projects') private projects!: ProjectsListComponent;
+  protected projectName: string | null = null;
   protected vcfFile: string | null = null;
   protected indexFile: string | null = null;
   protected valid = false;
@@ -50,7 +51,8 @@ export class SvepSubmitComponent {
   ) {}
 
   filesSelected(event: FileSelectEvent) {
-    console.log(event.vcf);
+    console.log(event);
+    this.projectName = event.projectName
     this.vcfFile = event.vcf;
     this.indexFile = event.index;
     this.valid = true;
@@ -66,7 +68,7 @@ export class SvepSubmitComponent {
     this.submissionStarted = true;
 
     if (this.vcfFile) {
-      const s3URI = `s3://${environment.storage.dataPortalBucket}/${this.vcfFile}`;
+      const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${this.projectName}/${this.vcfFile}`;
 
       this.cs
         .submitSvepJob(s3URI)

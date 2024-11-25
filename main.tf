@@ -28,6 +28,17 @@ module "sbeacon" {
   })
 }
 
+module "svep" {
+  source                  = "./svep"
+  region                  = var.region
+  data_portal_bucket_name = module.sbeacon.data-portal-bucket
+  data_portal_bucket_arn  = module.sbeacon.data-portal-bucket-arn
+
+  common-tags = merge(var.common-tags, {
+    "NAME" = "svep-backend"
+  })
+}
+
 module "webgui" {
   source                  = "./webgui/terraform-aws"
   region                  = var.region
@@ -37,7 +48,7 @@ module "webgui" {
   user_pool_web_client_id = module.cognito.cognito_client_id
   data_portal_bucket      = module.sbeacon.data-portal-bucket
   api_endpoint_sbeacon    = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
-  api_endpoint_svep       = ""
+  api_endpoint_svep       = module.svep.api_url
 
   common-tags = merge(var.common-tags, {
     "NAME" = "portal-frontend"

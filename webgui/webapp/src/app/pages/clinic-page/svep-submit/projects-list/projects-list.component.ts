@@ -21,6 +21,7 @@ interface Project {
 }
 
 export interface FileSelectEvent {
+  projectName: string;
   vcf: string;
   index: string;
 }
@@ -50,6 +51,7 @@ export class ProjectsListComponent {
   ];
   assignTo: string | null = null;
   viewUsers: string | null = null;
+  projectName: string | null = null;
   vcfFile: string | null = null;
   indexFile: string | null = null;
 
@@ -100,12 +102,13 @@ export class ProjectsListComponent {
       });
   }
 
-  isFileSelected(fileName: string): boolean {
-    return this.vcfFile === fileName;
+  isFileSelected(fileName: string, projectName: string): boolean {
+    return this.vcfFile === fileName && this.projectName === projectName;
   }
 
-  onFileSelect(fileName: string) {
+  onFileSelect(fileName: string, projectName: string) {
     const fileEvent: FileSelectEvent = {
+      projectName: projectName,
       vcf: fileName,
       index: `${fileName}.tbi`,
     };
