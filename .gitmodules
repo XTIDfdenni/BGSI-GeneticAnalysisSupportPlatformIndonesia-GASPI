@@ -1,3 +1,7 @@
 [submodule "sbeacon"]
 	path = sbeacon
 	url = https://github.com/GSI-Xapiens-CSIRO/sBeacon-BGSi.git
+
+[submodule "svep"]
+	path = svep
+	url = https://github.com/GSI-Xapiens-CSIRO/sVEP-BGSi.git
