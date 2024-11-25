@@ -10,8 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DportalService } from '../../../../services/dportal.service';
-import { SpinnerService } from 'src/app/services/spinner.service';
-import { catchError, of, switchMap, tap } from 'rxjs';
+import { catchError, of, switchMap, map } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FileDropperComponent } from '../../file-dropper/file-dropper.component';
 import { Storage } from 'aws-amplify';
@@ -43,6 +42,7 @@ export class DataSubmissionFormComponent {
   dataSubmissionForm: FormGroup;
   totalSize = 0;
   progress = 0;
+  fileProgress = new Map<string, number>();
   files: File[] = [];
 
   constructor(
@@ -60,11 +60,16 @@ export class DataSubmissionFormComponent {
   }
 
   async uploadFile(path: string, file: File): Promise<string> {
+    this.fileProgress.set(file.name, 0);
     try {
       await Storage.put(`projects/${path}/${file.name}`, file, {
         customPrefix: { public: '' },
         progressCallback: (progress: { loaded: number; total: number }) => {
-          this.progress += progress.loaded;
+          this.fileProgress.set(file.name, progress.loaded);
+          this.progress = Array.from(this.fileProgress.values()).reduce(
+            (acc, val) => acc + val,
+            0,
+          );
         },
       });
     } catch (error) {
@@ -89,32 +94,29 @@ export class DataSubmissionFormComponent {
         }),
         switchMap((res: any) => {
           if (res) {
-            console.log('Uploading files');
+            if (this.files.length === 0) {
+              return of(res);
+            }
+
             return forkJoin(
               this.files.map((file) => this.uploadFile(projectName, file)),
             ).pipe(
-              catchError(() => {
-                console.error('Error uploading files');
-                return of(null);
-              }),
+              catchError(() => of(null)),
+              map(() => of(res)),
             );
-          } else {
-            console.error('Aborting file upload');
-            return of(-1);
           }
+          return of(null);
         }),
       )
       .subscribe((res: any) => {
-        if (res === -1) {
-          this.sb.open('Project creation failed', 'Okay', { duration: 60000 });
-        } else if (!res) {
-          this.sb.open('Project created, but file upload failed', 'Okay', {
-            duration: 60000,
-          });
-        } else {
+        console.log('sub', res);
+        if (res) {
           this.sb.open('Project created', 'Okay', { duration: 60000 });
+          this.reset();
+        } else {
+          this.sb.open('Project creation failed', 'Okay', { duration: 60000 });
         }
-        this.reset();
+        this.dataSubmissionForm.enable();
       });
   }
 

@@ -159,6 +159,10 @@ export class ProjectUpdatesComponent implements OnChanges {
         catchError(() => of(null)),
         switchMap((res: any) => {
           if (res) {
+            if (this.addedFiles.length === 0) {
+              return of(res);
+            }
+
             return forkJoin(
               this.addedFiles.map((file) =>
                 this.uploadFile(this.project.name, file),
@@ -172,7 +176,6 @@ export class ProjectUpdatesComponent implements OnChanges {
         }),
       )
       .subscribe((res: any) => {
-        console.log(res);
         if (!res) {
           this.sb.open('Project update failed', 'Okay', { duration: 60000 });
         } else {
