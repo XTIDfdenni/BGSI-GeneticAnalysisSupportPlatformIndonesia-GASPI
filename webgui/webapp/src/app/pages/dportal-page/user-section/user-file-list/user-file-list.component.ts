@@ -22,7 +22,7 @@ export class UserFileListComponent implements OnInit {
   }
 
   async list() {
-    const res = await Storage.list(`saved-queries/`, {
+    const res = await Storage.list(``, {
       pageSize: 'ALL',
       level: 'private',
     });

@@ -3,7 +3,7 @@ import { Auth } from 'aws-amplify';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import _ from 'lodash';
+import _, { identity } from 'lodash';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +32,16 @@ export class AuthService {
       console.log('error signing in', error);
       return false;
     }
+  }
+
+  async getKeys() {
+    const creds = await Auth.currentCredentials();
+    return {
+      accessKeyId: creds.accessKeyId,
+      secretAccessKey: creds.secretAccessKey,
+      sessionToken: creds.sessionToken,
+      identityId: creds.identityId,
+    };
   }
 
   async newPassword(newPassword: string) {

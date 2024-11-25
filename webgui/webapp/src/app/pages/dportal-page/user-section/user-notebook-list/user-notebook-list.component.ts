@@ -22,6 +22,7 @@ import {
   MatExpansionModule,
   MatExpansionPanel,
 } from '@angular/material/expansion';
+import { MatDialog } from '@angular/material/dialog';
 
 export type InstanceName = string;
 
@@ -62,6 +63,7 @@ export class UserNotebookListComponent implements OnInit {
     fb: FormBuilder,
     private dps: DportalService,
     private sb: MatSnackBar,
+    private dg: MatDialog,
   ) {
     this.instanceForm = fb.group({
       instanceName: fb.control('', [
@@ -111,6 +113,16 @@ export class UserNotebookListComponent implements OnInit {
         this.instanceForm.reset();
         panel.close();
       });
+  }
+
+  async keys() {
+    const { AccessKeysDialogComponent } = await import(
+      './access-keys-dialog/access-keys-dialog.component'
+    );
+
+    const dialog = this.dg.open(AccessKeysDialogComponent);
+
+    dialog.afterClosed().subscribe(() => {});
   }
 
   remove(notebook: InstanceName) {
