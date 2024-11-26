@@ -47,11 +47,7 @@
           >
             Add/Remove Users or Files
           </button>
-          <button
-            mat-raised-button
-            (click)="ingest(element.name)"
-            color="primary"
-          >
+          <button mat-raised-button (click)="ingest(element)" color="primary">
             Ingest to sBeacon
           </button>
           <button mat-raised-button (click)="delete(element.name)" color="warn">
@@ -66,7 +62,7 @@
   </table>
 }
 <br />
-<div class="flex flex-row space-x-[10px]">
+<div class="flex flex-row space-x-[10px] items-center">
   <button
     mat-raised-button
     color="primary"
