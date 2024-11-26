@@ -77,6 +77,11 @@ export class ProjectUpdatesComponent implements OnChanges {
     }
   }
 
+  unIngest(projectName: string, datasetId: string) {
+    // TODO develop the backend for this
+    alert('TODO Uningest ' + projectName + ' ' + datasetId);
+  }
+
   removeFileFromForm(index: number) {
     this.addedFiles.splice(index, 1);
   }
