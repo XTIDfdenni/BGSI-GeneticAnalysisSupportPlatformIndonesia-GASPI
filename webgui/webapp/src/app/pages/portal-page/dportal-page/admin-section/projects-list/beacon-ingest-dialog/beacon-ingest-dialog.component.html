@@ -1,0 +1,67 @@
+<h1 mat-dialog-title>Ingest "{{ data.project.name }}" to sBeacon</h1>
+<div mat-dialog-content>
+  <app-component-spinner [loading]="loading" />
+  <span class="font-semibold">Description: </span>
+  <span>{{ data.project.description }}</span>
+  <form [formGroup]="ingestionForm">
+    <br />
+    <mat-form-field class="w-full">
+      <mat-label>Dataset ID</mat-label>
+      <input matInput formControlName="datasetId" required />
+      <mat-error
+        >A 6 - 32 character dataset ID is required no spaces or /
+        allowed</mat-error
+      >
+    </mat-form-field>
+
+    <div formArrayName="vcfLocations">
+      <span class="font-semibold">VCF Files:</span>
+      @for (file of vcfLocations.controls; track file; let i = $index) {
+        <div [formGroupName]="i">
+          <mat-checkbox formControlName="checked" color="primary">{{
+            file.value.name
+          }}</mat-checkbox>
+        </div>
+      }
+      @if (vcfLocations.hasError("atLeastOneRequired")) {
+        <mat-error class="text-sm">At least one VCF must be selected</mat-error>
+      }
+    </div>
+    <div>
+      <span class="font-semibold">JSON File:</span>
+      <mat-radio-group formControlName="s3Payload">
+        @for (file of jsons; track file) {
+          <div>
+            <mat-radio-button [value]="file" color="primary">{{
+              file
+            }}</mat-radio-button>
+          </div>
+        }
+        @if (ingestionForm.controls["s3Payload"].hasError("required")) {
+          <mat-error class="text-sm"
+            >At least one JSON must be selected</mat-error
+          >
+        }
+      </mat-radio-group>
+    </div>
+  </form>
+  <br />
+  <div>
+    <button
+      mat-raised-button
+      color="primary"
+      [mat-dialog-close]="false"
+      style="margin-right: 10px"
+    >
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="ingest(ingestionForm.value)"
+      [disabled]="ingestionForm.invalid"
+    >
+      Ingest
+    </button>
+  </div>
+</div>

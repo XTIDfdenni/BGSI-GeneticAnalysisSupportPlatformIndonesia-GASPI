@@ -104,15 +104,6 @@ export class DportalService {
   }
 
   // project admin users actions
-  indexAdminData() {
-    console.log('index datasets');
-    return from(
-      API.post(environment.api_endpoint_sbeacon.name, 'index', {
-        body: { reIndexTables: true, reIndexOntologyTerms: true },
-      }),
-    );
-  }
-
   adminGetProjectUsers(project: string) {
     console.log('get project users');
     return from(
@@ -144,6 +135,33 @@ export class DportalService {
         environment.api_endpoint_sbeacon.name,
         `dportal/admin/projects/${project}/users/${email}`,
         {},
+      ),
+    );
+  }
+
+  // data portal admin sbeacon actions
+  adminIngestToBeacon(payload: any) {
+    console.log('ingest to sbeacon');
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/admin/sbeacon/submit`,
+        {
+          body: payload,
+        },
+      ),
+    );
+  }
+
+  adminIndexBeacon() {
+    console.log('ingest to sbeacon');
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/admin/sbeacon/index`,
+        {
+          body: {},
+        },
       ),
     );
   }
