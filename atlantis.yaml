@@ -1,5 +1,6 @@
 version: 3
-automerge: false
+automerge: true
+delete_source_branch_on_merge: false
 
 projects:
 # Projects deploying to Hub01 (main branch)
@@ -9,8 +10,12 @@ projects:
   branch: main
   workflow: hub01-workflow
   autoplan:
-    enabled: true
-    when_modified: ["*.json", "*.yaml", "*.js", "*.tf", "*.tfvars"]
+    when_modified:
+      - '*.json',
+      - '*.yaml',
+      - '*.js',
+      - '*.tf',
+      - '*.tfvars'
 
 - name: gxc-hub01-cognito
   dir: cognito
@@ -18,8 +23,12 @@ projects:
   branch: main
   workflow: hub01-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 - name: gxc-hub01-sbeacon
   dir: sbeacon
@@ -27,8 +36,12 @@ projects:
   branch: main
   workflow: hub01-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 - name: gxc-hub01-svep
   dir: svep
@@ -36,8 +49,12 @@ projects:
   branch: main
   workflow: hub01-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 - name: gxc-hub01-webgui
   dir: webgui/terraform-aws
@@ -45,8 +62,12 @@ projects:
   branch: main
   workflow: hub01-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 # Projects deploying to Hub02 (xapiens branch)
 - name: gxc-hub02-root
@@ -55,8 +76,12 @@ projects:
   branch: xapiens
   workflow: hub02-workflow
   autoplan:
-    enabled: true
-    when_modified: ["*.json", "*.yaml", "*.js", "*.tf", "*.tfvars"]
+    when_modified:
+      - '*.json',
+      - '*.yaml',
+      - '*.js',
+      - '*.tf',
+      - '*.tfvars'
 
 - name: gxc-hub02-cognito
   dir: cognito
@@ -64,8 +89,12 @@ projects:
   branch: xapiens
   workflow: hub02-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 - name: gxc-hub02-sbeacon
   dir: sbeacon
@@ -73,8 +102,12 @@ projects:
   branch: xapiens
   workflow: hub02-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 - name: gxc-hub02-svep
   dir: svep
@@ -82,8 +115,12 @@ projects:
   branch: xapiens
   workflow: hub02-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
 
 - name: gxc-hub02-webgui
   dir: webgui/terraform-aws
@@ -91,5 +128,9 @@ projects:
   branch: xapiens
   workflow: hub02-workflow
   autoplan:
-    enabled: true
-    when_modified: ["**/*.json", "**/*.yaml", "**/*.js", "**/*.tf", "**/*.tfvars"]
+    when_modified:
+      - '**/*.json',
+      - '**/*.yaml',
+      - '**/*.js',
+      - '**/*.tf',
+      - '**/*.tfvars'
