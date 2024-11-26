@@ -7,10 +7,10 @@ import {
 } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
 class CustomReuseStrategy implements RouteReuseStrategy {
   private handlers: { [key: string]: DetachedRouteHandle } = {};
@@ -66,6 +66,13 @@ export const appConfig: ApplicationConfig = {
     {
       provide: RouteReuseStrategy,
       useClass: CustomReuseStrategy,
+    },
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        disableClose: true,
+        minWidth: '500px',
+      },
     },
     provideHttpClient(withFetch()),
   ],
