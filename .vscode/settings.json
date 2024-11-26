@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./sbeacon/shared_resources/python-modules/python"
+    ]
+}

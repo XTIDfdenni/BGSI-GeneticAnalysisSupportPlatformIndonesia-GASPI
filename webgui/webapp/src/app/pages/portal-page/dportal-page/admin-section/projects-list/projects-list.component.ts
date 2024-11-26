@@ -93,17 +93,38 @@ export class ProjectsListComponent {
       });
   }
 
-  index() {
-    this.ss.start();
-    this.dps
-      .indexAdminData()
-      .pipe(catchError(() => of(null)))
-      .subscribe((res: any) => {
-        if (!res) {
-          this.sb.open('API request failed', 'Okay', { duration: 60000 });
-        }
-        this.ss.end();
-      });
+  async index() {
+    const { ActionConfirmationDialogComponent } = await import(
+      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Build sBeacon Index',
+        message:
+          'Do this once you have ingested as many new datasets as possible to avoid costs. Are you sure you want to re-index sBeacon?',
+      },
+    });
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.ss.start();
+        this.dps
+          .adminIndexBeacon()
+          .pipe(catchError(() => of(null)))
+          .subscribe((res: any) => {
+            if (!res) {
+              this.sb.open('API request failed', 'Okay', { duration: 60000 });
+            } else {
+              this.sb.open(
+                'Indexing is happening in the background. It might take a few minutes.',
+                'Okay',
+                { duration: 60000 },
+              );
+            }
+            this.ss.end();
+          });
+      }
+    });
   }
 
   async delete(name: string) {
@@ -134,21 +155,16 @@ export class ProjectsListComponent {
     });
   }
 
-  async ingest(name: string) {
-    const { ActionConfirmationDialogComponent } = await import(
-      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+  async ingest(project: any) {
+    const { BeaconIngestDialogComponent } = await import(
+      './beacon-ingest-dialog/beacon-ingest-dialog.component'
     );
 
-    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+    const dialog = this.dg.open(BeaconIngestDialogComponent, {
       data: {
-        title: 'Ingest Project',
-        message: 'Are you sure you want to ingest this project to sBeacon?',
+        project,
       },
     });
-    dialog.afterClosed().subscribe((result) => {
-      if (result) {
-        this.sb.open('Not implemented', 'Okay', { duration: 60000 });
-      }
-    });
+    dialog.afterClosed().subscribe((result) => {});
   }
 }
