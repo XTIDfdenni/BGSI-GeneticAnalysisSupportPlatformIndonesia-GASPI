@@ -160,6 +160,12 @@ resource "aws_cognito_user" "guest" {
     given_name     = "Guest"
     family_name    = "Guest"
   }
+
+  lifecycle {
+    ignore_changes = [
+      password
+    ]
+  }
 }
 
 resource "aws_cognito_user" "admin" {
@@ -173,6 +179,12 @@ resource "aws_cognito_user" "admin" {
     family_name    = "Admin"
     email          = var.gaspi-admin-username
     email_verified = true
+  }
+
+  lifecycle {
+    ignore_changes = [
+      password
+    ]
   }
 }
 
