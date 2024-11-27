@@ -13,6 +13,25 @@
 </div>
 <br />
 <hr />
+<h3>Ingested datasets from the project to sBeacon</h3>
+<div class="flex flex-col space-y-1">
+  @for (dataset of project.ingestedDatasets; track dataset) {
+    <div class="flex flex-row items-center space-x-2">
+      <button
+        mat-mini-fab
+        color="primary"
+        (click)="unIngest(project.name, dataset)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+      <div class="flex">{{ dataset }}</div>
+    </div>
+  } @empty {
+    <h4>No datasets ingested yet</h4>
+  }
+</div>
+<br />
+<hr />
 <h3>Change project description and add extra files</h3>
 <form [formGroup]="dataSubmissionForm">
   <br />

@@ -140,15 +140,31 @@ export class DportalService {
   }
 
   // data portal admin sbeacon actions
-  adminIngestToBeacon(payload: any) {
+  adminIngestToBeacon(
+    name: string,
+    datasetId: string,
+    s3Payload: string,
+    vcfLocations: string[],
+  ) {
     console.log('ingest to sbeacon');
     return from(
       API.post(
         environment.api_endpoint_sbeacon.name,
-        `dportal/admin/sbeacon/submit`,
+        `/dportal/admin/projects/${name}/ingest/${datasetId}`,
         {
-          body: payload,
+          body: { s3Payload, vcfLocations },
         },
+      ),
+    );
+  }
+
+  adminUnIngestFromBeacon(name: string, datasetId: string) {
+    console.log('uningest from sbeacon');
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `/dportal/admin/projects/${name}/ingest/${datasetId}`,
+        {},
       ),
     );
   }

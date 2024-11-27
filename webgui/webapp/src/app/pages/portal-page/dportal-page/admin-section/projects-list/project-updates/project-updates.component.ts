@@ -26,6 +26,7 @@ import { catchError, defaultIfEmpty, forkJoin, map, of, switchMap } from 'rxjs';
 import { Storage } from 'aws-amplify';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-project-updates',
@@ -41,6 +42,7 @@ import { MatInputModule } from '@angular/material/input';
     MatInputModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
+    MatDialogModule,
   ],
   templateUrl: './project-updates.component.html',
   styleUrl: './project-updates.component.scss',
@@ -60,6 +62,7 @@ export class ProjectUpdatesComponent implements OnChanges {
     private fb: FormBuilder,
     private dps: DportalService,
     private sb: MatSnackBar,
+    private dg: MatDialog,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -75,6 +78,42 @@ export class ProjectUpdatesComponent implements OnChanges {
     if (!this.removedFiles.includes(file)) {
       this.removedFiles.push(file);
     }
+  }
+
+  async unIngest(projectName: string, datasetId: string) {
+    const { ActionConfirmationDialogComponent } = await import(
+      'src/app/components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Un-ingest Dataset',
+        message: 'Are you sure you want to un-ingest this dataset?',
+      },
+    });
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.dps
+          .adminUnIngestFromBeacon(projectName, datasetId)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res: any) => {
+            if (!res) {
+              this.sb.open('Unable to delete project.', 'Close', {
+                duration: 60000,
+              });
+            } else {
+              this.sb.open(
+                'Dataset un-ingested. Please re-index when you have un-ingested all desired datasets.',
+                'Okay',
+                {
+                  duration: 60000,
+                },
+              );
+            }
+            this.projectUpdated.emit();
+          });
+      }
+    });
   }
 
   removeFileFromForm(index: number) {

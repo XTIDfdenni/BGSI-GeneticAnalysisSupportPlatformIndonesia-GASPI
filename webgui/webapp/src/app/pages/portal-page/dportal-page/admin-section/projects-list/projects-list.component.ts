@@ -16,7 +16,8 @@ export interface Project {
   name: string;
   description: string;
   files: string[];
-  indexed: boolean;
+  totalSamples: number;
+  ingestedDatasets: string[];
 }
 
 @Component({
@@ -80,7 +81,8 @@ export class ProjectsListComponent {
             name: project.name,
             description: project.description,
             files: project.files,
-            indexed: false,
+            totalSamples: project.total_samples,
+            ingestedDatasets: project.ingested_datasets,
           }));
           if (this.active) {
             this.active =
@@ -148,6 +150,8 @@ export class ProjectsListComponent {
               this.sb.open('Unable to delete project.', 'Close', {
                 duration: 60000,
               });
+            } else {
+              this.sb.open('Project deleted.', 'Okay', { duration: 60000 });
             }
             this.list();
           });
@@ -165,6 +169,8 @@ export class ProjectsListComponent {
         project,
       },
     });
-    dialog.afterClosed().subscribe((result) => {});
+    dialog.afterClosed().subscribe((result) => {
+      this.list();
+    });
   }
 }

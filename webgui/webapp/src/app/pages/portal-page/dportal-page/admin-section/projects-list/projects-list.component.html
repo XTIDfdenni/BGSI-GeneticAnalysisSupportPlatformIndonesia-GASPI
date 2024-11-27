@@ -19,7 +19,11 @@
     <ng-container matColumnDef="files">
       <th mat-header-cell *matHeaderCellDef>Files</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.files.length }} file(s)
+        @if (element.files.length > 0) {
+          <span class="text-cyan-900">{{ element.files.length }} file(s)</span>
+        } @else {
+          <span class="text-red-900">No</span>
+        }
       </td>
     </ng-container>
 
@@ -27,10 +31,12 @@
     <ng-container matColumnDef="indexed">
       <th mat-header-cell *matHeaderCellDef>Added to sBeacon</th>
       <td mat-cell *matCellDef="let element">
-        @if (element.indexed) {
-          <span class="text-green-500 font-bold">Yes</span>
+        @if (element.ingestedDatasets.length > 0) {
+          <span class="text-cyan-900"
+            >{{ element.ingestedDatasets.length }} dataset(s)</span
+          >
         } @else {
-          <span class="text-red-500 font-bold">No</span>
+          <span class="text-red-900">No</span>
         }
       </td>
     </ng-container>
