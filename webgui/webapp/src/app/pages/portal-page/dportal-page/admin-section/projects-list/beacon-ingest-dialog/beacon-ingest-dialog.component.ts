@@ -93,20 +93,19 @@ export class BeaconIngestDialogComponent {
 
   ingest(value: any) {
     console.log(value);
-    const request = {
-      projectName: value.projectName,
-      datasetId: value.datasetId,
-      vcfLocations: value.vcfLocations
-        .filter((v: any) => v.checked)
-        .map(
-          (v: any) =>
-            `s3://${environment.storage.dataPortalBucket}/projects/${value.projectName}/${v.name}`,
-        ),
-      s3Payload: `s3://${environment.storage.dataPortalBucket}/projects/${value.projectName}/${value.s3Payload}`,
-    };
+    const projectName = value.projectName;
+    const datasetId = value.datasetId;
+    const s3Payload = `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.s3Payload}`;
+    const vcfLocations = value.vcfLocations
+      .filter((v: any) => v.checked)
+      .map(
+        (v: any) =>
+          `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${v.name}`,
+      );
+
     this.loading = true;
     this.dps
-      .adminIngestToBeacon(request)
+      .adminIngestToBeacon(projectName, datasetId, s3Payload, vcfLocations)
       .pipe(catchError(() => of(null)))
       .subscribe((res: any) => {
         if (!res) {

@@ -150,6 +150,8 @@ export class ProjectsListComponent {
               this.sb.open('Unable to delete project.', 'Close', {
                 duration: 60000,
               });
+            } else {
+              this.sb.open('Project deleted.', 'Okay', { duration: 60000 });
             }
             this.list();
           });
