@@ -1,4 +1,8 @@
 export const environment = {
+  pricingCredentials: {
+    accessKeyId: 'XXXXX',
+    secretAccessKey: 'XXXXX',
+  },
   production: false,
   config_max_variant_search_base_range: 5000,
   auth: {
