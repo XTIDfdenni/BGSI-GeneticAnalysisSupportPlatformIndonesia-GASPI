@@ -88,11 +88,6 @@ export class AwsService {
       MaxResults: 10,
       ServiceCode: 'AmazonSageMaker',
       Filters: [
-        {
-          Type: 'TERM_MATCH',
-          Field: 'location',
-          Value: 'Asia Pacific (Jakarta)',
-        },
         { Type: 'TERM_MATCH', Field: 'regionCode', Value: 'ap-southeast-3' },
         {
           Type: 'TERM_MATCH',
@@ -125,8 +120,8 @@ export class AwsService {
         { Type: 'TERM_MATCH', Field: 'productFamily', Value: 'Storage' },
         {
           Type: 'TERM_MATCH',
-          Field: 'location',
-          Value: 'Asia Pacific (Jakarta)',
+          Field: 'regionCode',
+          Value: 'ap-southeast-3',
         },
         { Type: 'TERM_MATCH', Field: 'volumeType', Value: 'Standard' },
         { Type: 'TERM_MATCH', Field: 'storageClass', Value: 'General Purpose' },
