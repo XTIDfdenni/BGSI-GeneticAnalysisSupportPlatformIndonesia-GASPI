@@ -21,7 +21,6 @@
     "@angular/platform-browser": "^17.3.11",
     "@angular/platform-browser-dynamic": "^17.3.11",
     "@angular/router": "^17.3.11",
-    "@aws-sdk/client-pricing": "^3.699.0",
     "angular-plotly.js": "^5.2.2",
     "aws-amplify": "^5.3.25",
     "aws-sdk": "^2.1692.0",
