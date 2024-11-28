@@ -88,7 +88,7 @@
         <button
           mat-raised-button
           color="primary"
-          (click)="instanceForm.reset()"
+          (click)="resetForm()"
           type="button"
         >
           Reset
@@ -96,7 +96,7 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="instanceForm.invalid"
+          [disabled]="instanceForm.invalid || !estimatedPrice"
           (click)="create(instanceForm.value, panel)"
           type="button"
         >

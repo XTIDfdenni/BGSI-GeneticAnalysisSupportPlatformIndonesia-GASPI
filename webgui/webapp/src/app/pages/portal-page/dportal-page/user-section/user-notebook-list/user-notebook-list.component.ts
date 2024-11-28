@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChildren } from '@angular/core';
+import {
+  Component,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChildren,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -83,11 +89,16 @@ export class UserNotebookListComponent implements OnInit {
   ngOnInit(): void {
     this.list();
 
+    this.onChangesCalculatePrice();
+  }
+
+  onChangesCalculatePrice() {
     this.instanceForm.valueChanges.subscribe((values) => {
       if (values.instanceType && values.volumeSize) {
         this.aws
           .calculateTotalPricePerMonth(values.instanceType, values.volumeSize)
-          .then((price) => {
+          .pipe(catchError(() => of(null)))
+          .subscribe((price) => {
             this.estimatedPrice = price;
           });
       }
@@ -140,5 +151,10 @@ export class UserNotebookListComponent implements OnInit {
 
   remove(notebook: InstanceName) {
     this.notebooks = this.notebooks.filter((n) => n !== notebook);
+  }
+
+  resetForm() {
+    this.estimatedPrice = null;
+    this.instanceForm.reset();
   }
 }

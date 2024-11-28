@@ -1,6 +1,7 @@
 // src/app/services/aws-pricing.service.ts
 import { Injectable } from '@angular/core';
 import * as AWS from 'aws-sdk';
+import { forkJoin, from, map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -21,7 +22,7 @@ export class AwsService {
     });
   }
 
-  private getPrivateDimensions(data: AWS.Pricing.Types.GetProductsResponse) {
+  private getPriceDimensions(data: AWS.Pricing.Types.GetProductsResponse) {
     const priceList = data.PriceList;
 
     if (priceList && priceList.length > 0) {
@@ -38,7 +39,7 @@ export class AwsService {
   private parseInstancePricingData(
     data: AWS.Pricing.Types.GetProductsResponse,
   ): number | null {
-    const priceDimensions = this.getPrivateDimensions(data);
+    const priceDimensions = this.getPriceDimensions(data);
 
     if (!priceDimensions) return null;
 
@@ -52,7 +53,7 @@ export class AwsService {
     data: AWS.Pricing.Types.GetProductsResponse,
     volume: number,
   ): number | null {
-    const priceDimensions = this.getPrivateDimensions(data);
+    const priceDimensions = this.getPriceDimensions(data);
 
     if (!priceDimensions) return null;
 
@@ -80,8 +81,11 @@ export class AwsService {
   }
 
   // Fetch AmazonSageMaker instance pricing
-  private getInstancePricing(instanceType: string): Promise<number | null> {
-    const params = {
+  private async getInstancePricing(
+    instanceType: string,
+  ): Promise<number | null> {
+    const params: AWS.Pricing.GetProductsRequest = {
+      MaxResults: 10,
       ServiceCode: 'AmazonSageMaker',
       Filters: [
         {
@@ -103,21 +107,19 @@ export class AwsService {
       ],
     };
 
-    return this.pricing
-      .getProducts(params)
-      .promise()
-      .then((data) => {
-        return this.parseInstancePricingData(data);
-      })
-      .catch((error) => {
-        console.error('Error fetching EC2 pricing:', error);
-        return null;
-      });
+    try {
+      const data = await this.pricing.getProducts(params).promise();
+      return this.parseInstancePricingData(data);
+    } catch (error) {
+      console.error('Error fetching EC2 pricing:', error);
+      return null;
+    }
   }
 
-  // Fetch EBS volume pricing
-  private getVolumePricing(volumeSize: number): Promise<number | null> {
-    const params = {
+  // Fetch AmazonS3 volume pricing
+  private async getVolumePricing(volumeSize: number): Promise<number | null> {
+    const params: AWS.Pricing.GetProductsRequest = {
+      MaxResults: 10,
       ServiceCode: 'AmazonS3',
       Filters: [
         { Type: 'TERM_MATCH', Field: 'productFamily', Value: 'Storage' },
@@ -131,16 +133,13 @@ export class AwsService {
       ],
     };
 
-    return this.pricing
-      .getProducts(params)
-      .promise()
-      .then((data) => {
-        return this.parseStoragePricingData(data, volumeSize);
-      })
-      .catch((error) => {
-        console.error('Error fetching EBS volume pricing:', error);
-        return null;
-      });
+    try {
+      const data = await this.pricing.getProducts(params).promise();
+      return this.parseStoragePricingData(data, volumeSize);
+    } catch (error) {
+      console.error('Error fetching EBS volume pricing:', error);
+      return null;
+    }
   }
 
   private calculateMonthlyCost(intancePrice: number): number {
@@ -153,15 +152,23 @@ export class AwsService {
     return monthlyCost;
   }
 
-  async calculateTotalPricePerMonth(instanceType: string, volumeSize: number) {
-    const [instancePrice, volumePrice] = await Promise.all([
-      this.getInstancePricing(instanceType),
-      this.getVolumePricing(volumeSize),
-    ]);
-
-    const volumePricePerMonth = (volumePrice || 0) * volumeSize;
-    const instancePricePerMonth = this.calculateMonthlyCost(instancePrice || 0);
-
-    return parseFloat((volumePricePerMonth + instancePricePerMonth).toFixed(2));
+  calculateTotalPricePerMonth(
+    instanceType: string,
+    volumeSize: number,
+  ): Observable<number> {
+    return forkJoin({
+      instancePrice: from(this.getInstancePricing(instanceType)),
+      volumePrice: from(this.getVolumePricing(volumeSize)),
+    }).pipe(
+      map(({ instancePrice, volumePrice }) => {
+        const volumePricePerMonth = (volumePrice || 0) * volumeSize;
+        const instancePricePerMonth = this.calculateMonthlyCost(
+          instancePrice || 0,
+        );
+        return parseFloat(
+          (volumePricePerMonth + instancePricePerMonth).toFixed(2),
+        );
+      }),
+    );
   }
 }
