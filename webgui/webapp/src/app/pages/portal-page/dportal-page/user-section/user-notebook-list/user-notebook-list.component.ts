@@ -23,6 +23,7 @@ import {
   MatExpansionPanel,
 } from '@angular/material/expansion';
 import { MatDialog } from '@angular/material/dialog';
+import { AwsService } from 'src/app/services/aws.service';
 
 export type InstanceName = string;
 
@@ -58,12 +59,14 @@ export class UserNotebookListComponent implements OnInit {
   volumeSizes = volumeSizes;
   instanceForm: FormGroup;
   loading = false;
+  estimatedPrice: number | null = null;
 
   constructor(
     fb: FormBuilder,
     private dps: DportalService,
     private sb: MatSnackBar,
     private dg: MatDialog,
+    private aws: AwsService,
   ) {
     this.instanceForm = fb.group({
       instanceName: fb.control('', [
@@ -79,6 +82,16 @@ export class UserNotebookListComponent implements OnInit {
 
   ngOnInit(): void {
     this.list();
+
+    this.instanceForm.valueChanges.subscribe((values) => {
+      if (values.instanceType && values.volumeSize) {
+        this.aws
+          .calculateTotalPricePerMonth(values.instanceType, values.volumeSize)
+          .then((price) => {
+            this.estimatedPrice = price;
+          });
+      }
+    });
   }
 
   list() {
