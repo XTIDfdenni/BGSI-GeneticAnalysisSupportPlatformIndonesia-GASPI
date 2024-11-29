@@ -8,6 +8,10 @@ import json
 ENVIRONMENT = """export const environment = {{
   production: {production},
   config_max_variant_search_base_range: {base_range},
+  pricingCredentials: {{
+    accessKeyId: {pricing_access_key_id},
+    secretAccessKey: {pricing_access_secret_key_id},
+  }},
   auth: {{
     region: '{region}',
     userPoolId: '{user_pool_id}',
@@ -85,6 +89,8 @@ def setup_env(
     api_endpoint_sbeacon: str,
     api_endpoint_svep: str,
     dir: str,
+    pricing_access_key_id: str,
+    pricing_access_secret_key_id: str,
 ):
     with open(
         os.path.join(dir, "src/environments/environment.development.ts"), "w"
@@ -100,6 +106,8 @@ def setup_env(
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
                 api_endpoint_svep=api_endpoint_svep,
+                pricing_access_key_id=pricing_access_key_id,
+                pricing_access_secret_key_id=pricing_access_secret_key_id,
             )
         )
     with open(os.path.join(dir, "src/environments/environment.ts"), "w") as f:
@@ -114,6 +122,8 @@ def setup_env(
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
                 api_endpoint_svep=api_endpoint_svep,
+                pricing_access_key_id=pricing_access_key_id,
+                pricing_access_secret_key_id=pricing_access_secret_key_id,
             )
         )
 
@@ -132,6 +142,8 @@ if __name__ == "__main__":
     api_endpoint_sbeacon = args["api_endpoint_sbeacon"]
     api_endpoint_svep = args["api_endpoint_svep"]
     data_portal_bucket = args["data_portal_bucket"]
+    pricing_access_key_id = args["pricing_access_key_id"]
+    pricing_access_secret_key_id = args["pricing_access_secret_key_id"]
 
     setup_env(
         base_range,
@@ -143,6 +155,8 @@ if __name__ == "__main__":
         api_endpoint_sbeacon,
         api_endpoint_svep,
         webapp_dir,
+        pricing_access_key_id,
+        pricing_access_secret_key_id,
     )
     npm_install(install_cmd, webapp_dir)
     build(build_cmd, webapp_dir)
