@@ -41,15 +41,17 @@ module "svep" {
 }
 
 module "webgui" {
-  source                  = "./webgui/terraform-aws"
-  region                  = var.region
-  base_range              = 5000
-  user_pool_id            = module.cognito.cognito_user_pool_id
-  identity_pool_id        = module.cognito.cognito_identity_pool_id
-  user_pool_web_client_id = module.cognito.cognito_client_id
-  data_portal_bucket      = module.sbeacon.data-portal-bucket
-  api_endpoint_sbeacon    = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
-  api_endpoint_svep       = module.svep.api_url
+  source                       = "./webgui/terraform-aws"
+  region                       = var.region
+  base_range                   = 5000
+  user_pool_id                 = module.cognito.cognito_user_pool_id
+  identity_pool_id             = module.cognito.cognito_identity_pool_id
+  user_pool_web_client_id      = module.cognito.cognito_client_id
+  data_portal_bucket           = module.sbeacon.data-portal-bucket
+  api_endpoint_sbeacon         = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
+  api_endpoint_svep            = module.svep.api_url
+  pricing_access_key_id        = module.pricing_access_key_id
+  pricing_access_secret_key_id = module.pricing_access_secret_key_id
 
   common-tags = merge(var.common-tags, {
     "NAME" = "portal-frontend"

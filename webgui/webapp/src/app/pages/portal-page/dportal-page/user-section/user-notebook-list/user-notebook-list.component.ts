@@ -1,4 +1,10 @@
-import { Component, OnInit, ViewChildren } from '@angular/core';
+import {
+  Component,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChildren,
+} from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,6 +29,7 @@ import {
   MatExpansionPanel,
 } from '@angular/material/expansion';
 import { MatDialog } from '@angular/material/dialog';
+import { AwsService } from 'src/app/services/aws.service';
 
 export type InstanceName = string;
 
@@ -58,12 +65,14 @@ export class UserNotebookListComponent implements OnInit {
   volumeSizes = volumeSizes;
   instanceForm: FormGroup;
   loading = false;
+  estimatedPrice: number | null = null;
 
   constructor(
     fb: FormBuilder,
     private dps: DportalService,
     private sb: MatSnackBar,
     private dg: MatDialog,
+    private aws: AwsService,
   ) {
     this.instanceForm = fb.group({
       instanceName: fb.control('', [
@@ -79,6 +88,21 @@ export class UserNotebookListComponent implements OnInit {
 
   ngOnInit(): void {
     this.list();
+
+    this.onChangesCalculatePrice();
+  }
+
+  onChangesCalculatePrice() {
+    this.instanceForm.valueChanges.subscribe((values) => {
+      if (values.instanceType && values.volumeSize) {
+        this.aws
+          .calculateTotalPricePerMonth(values.instanceType, values.volumeSize)
+          .pipe(catchError(() => of(null)))
+          .subscribe((price) => {
+            this.estimatedPrice = price;
+          });
+      }
+    });
   }
 
   list() {
@@ -127,5 +151,10 @@ export class UserNotebookListComponent implements OnInit {
 
   remove(notebook: InstanceName) {
     this.notebooks = this.notebooks.filter((n) => n !== notebook);
+  }
+
+  resetForm() {
+    this.estimatedPrice = null;
+    this.instanceForm.reset();
   }
 }
