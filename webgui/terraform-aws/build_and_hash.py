@@ -9,8 +9,8 @@ ENVIRONMENT = """export const environment = {{
   production: {production},
   config_max_variant_search_base_range: {base_range},
   pricingCredentials: {{
-    accessKeyId: {pricing_access_key_id},
-    secretAccessKey: {pricing_access_secret_key_id},
+    accessKeyId: '{pricing_access_key_id}',
+    secretAccessKey: '{pricing_access_secret_key_id}',
   }},
   auth: {{
     region: '{region}',
