@@ -16,8 +16,8 @@ export class AwsService {
     this.pricing = new AWS.Pricing({
       region: 'us-east-1',
       credentials: {
-        accessKeyId: environment.pricingCredentials.accessKeyId,
-        secretAccessKey: environment.pricingCredentials.secretAccessKey,
+        accessKeyId: String(environment.pricingCredentials.accessKeyId),
+        secretAccessKey: String(environment.pricingCredentials.secretAccessKey),
       },
     });
   }

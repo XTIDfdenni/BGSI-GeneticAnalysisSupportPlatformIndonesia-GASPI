@@ -23,6 +23,7 @@ module "sbeacon" {
   cognito-user-pool-arn       = module.cognito.cognito_user_pool_arn
   cognito-user-pool-id        = module.cognito.cognito_user_pool_id
   cognito-admin-group-name    = module.cognito.cognito_admin_group_name
+  ses-source-email            = var.ses-source-email
 
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
@@ -50,8 +51,8 @@ module "webgui" {
   data_portal_bucket           = module.sbeacon.data-portal-bucket
   api_endpoint_sbeacon         = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
   api_endpoint_svep            = module.svep.api_url
-  pricing_access_key_id        = module.pricing_access_key_id
-  pricing_access_secret_key_id = module.pricing_access_secret_key_id
+  pricing_access_key_id        = var.pricing_access_key_id
+  pricing_access_secret_key_id = var.pricing_access_secret_key_id
 
   common-tags = merge(var.common-tags, {
     "NAME" = "portal-frontend"
