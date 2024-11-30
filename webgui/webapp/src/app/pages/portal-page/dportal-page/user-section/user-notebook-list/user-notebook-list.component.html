@@ -96,7 +96,7 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="instanceForm.invalid || !estimatedPrice"
+          [disabled]="instanceForm.invalid"
           (click)="create(instanceForm.value, panel)"
           type="button"
         >
