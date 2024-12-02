@@ -1,69 +1,100 @@
-<div class="relative min-w-[300px] md:min-w-[500px] max-w-[800px]">
+<div class="relative min-w-[300px] md:min-w-[800px] max-w-[800px]">
   <h1 mat-dialog-title>Update {{ data.name }}</h1>
 
   <app-component-spinner [loading]="loading"></app-component-spinner>
   <div mat-dialog-content>
-    <div class="flex flex-col gap-2">
-      <mat-form-field>
-        <mat-label>First name</mat-label>
-        <input
-          matInput
-          type="text"
-          placeholder="John"
-          value="{{ data.firstName }}"
-          disabled
-        />
-        <mat-error>Field is required</mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Last name</mat-label>
-        <input
-          matInput
-          type="text"
-          placeholder="Doe"
-          value="{{ data.firstName }}"
-          disabled
-        />
-        <mat-error>Field is required</mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Email address</mat-label>
-        <input
-          matInput
-          type="email"
-          placeholder="user@domain.com"
-          value="{{ data.email }}"
-          disabled
-        />
-        <mat-error>Valid email is required</mat-error>
-      </mat-form-field>
-    </div>
-    <div class="flex flex-row gap-2" [formGroup]="form">
-      <label for="Role Group">Role Access: </label>
-      <div class="flex flex-1 flex-col">
-        <mat-checkbox
-          formControlName="administrators"
-          color="primary"
-          value="administrators"
-          >Admin access</mat-checkbox
-        >
-        <mat-checkbox
-          color="primary"
-          value="data-manager"
-          aria-disabled="true"
-          [disabled]="true"
-          >Data Manager Access</mat-checkbox
-        >
-        <mat-checkbox
-          color="primary"
-          value=""
-          aria-disabled="true"
-          disabled
-          checked
-          >Basic User Access</mat-checkbox
-        >
+
+    <div class="flex gap-5">
+      <div class="flex flex-col gap-2 w-1/2">
+        <div class="font-semibold text-lg">User Info</div>
+
+        <div class="flex flex-col gap-2">
+          <mat-form-field>
+            <mat-label>First name</mat-label>
+            <input
+              matInput
+              type="text"
+              placeholder="John"
+              value="{{ data.firstName }}"
+              disabled
+            />
+            <mat-error>Field is required</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Last name</mat-label>
+            <input
+              matInput
+              type="text"
+              placeholder="Doe"
+              value="{{ data.firstName }}"
+              disabled
+            />
+            <mat-error>Field is required</mat-error>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Email address</mat-label>
+            <input
+              matInput
+              type="email"
+              placeholder="user@domain.com"
+              value="{{ data.email }}"
+              disabled
+            />
+            <mat-error>Valid email is required</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="flex flex-row gap-2" [formGroup]="form">
+          <label for="Role Group">Role Access: </label>
+          <div class="flex flex-1 flex-col">
+            <mat-checkbox
+              formControlName="administrators"
+              color="primary"
+              value="administrators"
+              >Admin access</mat-checkbox
+            >
+            <mat-checkbox
+              color="primary"
+              value="data-manager"
+              aria-disabled="true"
+              [disabled]="true"
+              >Data Manager Access</mat-checkbox
+            >
+            <mat-checkbox
+              color="primary"
+              value=""
+              aria-disabled="true"
+              disabled
+              checked
+              >Basic User Access</mat-checkbox
+            >
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 w-1/2">
+        <div class="font-semibold text-lg">Quota</div>
+        <mat-form-field>
+          <mat-label>Size of Data</mat-label>
+          <input disabled matInput type="number" [value]="data.sizeOfData" />
+          <span matTextSuffix>GB</span>
+          <mat-error>Field is required</mat-error>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Count of Queries</mat-label>
+          <input disabled matInput type="number" [value]="data.countOfQueries"  />
+          <span matTextSuffix>Count</span>
+          <mat-error>Field is required</mat-error>
+        </mat-form-field>
+
+        <div class="flex space-x-2">
+          <span>Cost : </span>
+          <span class="font font-semibold">{{ data.costEstimation }} / Month</span>
+        </div>
       </div>
     </div>
+
+
+
     <br />
     <button
       mat-raised-button
