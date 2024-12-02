@@ -82,9 +82,6 @@ const allowedReturns = {
     biosamples: true,
     g_variants: true,
   },
-  cohorts: {
-    individuals: true,
-  },
 };
 
 @Component({
@@ -251,7 +248,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       index === i ? true : false,
     );
   }
-  
+
   ngOnInit(): void {
     this.list();
   }
@@ -380,6 +377,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
   reset() {
     this.customQuery = false;
+    this.form.reset();
 
     const projectsControl = this.form.get('projects');
     if (projectsControl) {
