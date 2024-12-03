@@ -134,7 +134,7 @@ export class UserNotebookListComponent implements OnInit {
           });
         }
         this.list();
-        this.instanceForm.reset();
+        this.resetForm();
         panel.close();
       });
   }

@@ -166,6 +166,10 @@ export class AdminPageComponent implements OnInit {
         email: row.Email,
         firstName: `${row['First name']}`,
         lastName: `${row['Last name']}`,
+        // TODO: Add more user attributes
+        sizeOfData: 0,
+        countOfQueries: 0,
+        costEstimation: 0,
       },
     });
     dialog.afterClosed().subscribe((data) => {

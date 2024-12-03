@@ -50,6 +50,7 @@ export class AdminCreateUserComponent {
 
   protected loading = false;
   protected newUserForm: FormGroup;
+  protected costEstimation: number | null = 0;
 
   constructor(
     public dialogRef: MatDialogRef<AdminCreateUserComponent>,
@@ -66,6 +67,9 @@ export class AdminCreateUserComponent {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       administrators: [false],
+      // Quota
+      sizeOfData: ['', [Validators.required, Validators.min(0)]],
+      countOfQueries: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
