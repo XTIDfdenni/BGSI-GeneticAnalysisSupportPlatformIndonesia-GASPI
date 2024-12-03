@@ -3,7 +3,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
@@ -31,7 +30,7 @@ export enum Status {
   templateUrl: './admin-notebook-item.component.html',
   styleUrl: './admin-notebook-item.component.scss',
 })
-export class AdminNotebookItemComponent implements OnChanges, OnInit {
+export class AdminNotebookItemComponent implements OnChanges {
   @Input({ required: true }) notebook!: InstanceInfo;
   @Output() deleted = new EventEmitter<void>();
   Status = Status;
@@ -41,10 +40,6 @@ export class AdminNotebookItemComponent implements OnChanges, OnInit {
     private dps: DportalService,
     private dg: MatDialog,
   ) {}
-
-  ngOnInit(): void {
-    console.log(this.notebook);
-  }
 
   ngOnChanges(changes: SimpleChanges): void {
     // cache the initial status
