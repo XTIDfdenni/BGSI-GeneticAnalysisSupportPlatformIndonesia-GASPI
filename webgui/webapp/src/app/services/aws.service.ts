@@ -20,7 +20,9 @@ export class AwsService {
         region: 'us-east-1',
         credentials: {
           accessKeyId: String(environment.pricingCredentials.accessKeyId),
-          secretAccessKey: String(environment.pricingCredentials.accessKeyId),
+          secretAccessKey: String(
+            environment.pricingCredentials.secretAccessKey,
+          ),
         },
       });
     })();
