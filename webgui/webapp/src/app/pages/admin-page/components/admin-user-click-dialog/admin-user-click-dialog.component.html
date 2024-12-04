@@ -3,7 +3,6 @@
 
   <app-component-spinner [loading]="loading"></app-component-spinner>
   <div mat-dialog-content>
-
     <div class="flex gap-5">
       <div class="flex flex-col gap-2 w-1/2">
         <div class="font-semibold text-lg">User Info</div>
@@ -26,7 +25,7 @@
               matInput
               type="text"
               placeholder="Doe"
-              value="{{ data.firstName }}"
+              value="{{ data.lastName }}"
               disabled
             />
             <mat-error>Field is required</mat-error>
@@ -81,23 +80,31 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Count of Queries</mat-label>
-          <input disabled matInput type="number" [value]="data.countOfQueries"  />
+          <input
+            disabled
+            matInput
+            type="number"
+            [value]="data.countOfQueries"
+          />
           <span matTextSuffix>Count</span>
           <mat-error>Field is required</mat-error>
         </mat-form-field>
 
         <div class="flex space-x-2">
           <span>Estimated Cost* : </span>
-          <span class="font font-semibold">${{ data.costEstimation }} / Month</span>
+          <span class="font font-semibold"
+            >${{ data.costEstimation }} / Month</span
+          >
         </div>
 
         <div class="text-red-500 text-sm flex space-x-2">
-          <span>*Disclaimer : This above cost is an approximate and rounded off value</span>
+          <span
+            >*Disclaimer : This above cost is an approximate and rounded off
+            value</span
+          >
         </div>
       </div>
     </div>
-
-
 
     <br />
     <button
