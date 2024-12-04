@@ -1,136 +1,287 @@
 version: 3
 automerge: true
-delete_source_branch_on_merge: false
+autodiscover:
+  mode: auto
+delete_source_branch_on_merge: true
+parallel_plan: true
+parallel_apply: true
+abort_on_execution_order_fail: true
 
 projects:
-# Projects deploying to Hub01 (main branch)
-- name: gxc-hub01-root
+# Core Management Account Projects
+- id: /.*/
+  name: gxc-consortium-management
+  branch: /main/
+  dir: .
+  workspace: management
+  terraform_version: v1.9.4
+  delete_source_branch_on_merge: true
+  repo_locks:
+    mode: on_plan
+  autoplan:
+    when_modified:
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
+      - '*.tfvars'
+      - '*.hcl'
+    enabled: true
+  plan_requirements: [approved]
+  apply_requirements: [approved]
+  execution_order_group: 1
+  workflow: management-workflow
+
+# Audit Account Projects
+- id: /.*/
+  name: gxc-consortium-securityaudit
+  branch: /security/
+  dir: .
+  workspace: security
+  terraform_version: v1.9.4
+  autoplan:
+    when_modified:
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
+      - '*.tfvars'
+      - '*.hcl'
+  execution_order_group: 2
+  workflow: security-workflow
+
+# LogArchived Account Projects
+- id: /.*/
+  name: gxc-consortium-logarchived
+  branch: /logs/
+  dir: .
+  workspace: logs
+  terraform_version: v1.9.4
+  autoplan:
+    when_modified:
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
+      - '*.tfvars'
+      - '*.hcl'
+  execution_order_group: 3
+  workflow: logs-workflow
+
+# Billing Account Projects
+- id: /.*/
+  name: gxc-consortium-billing
+  branch: /billing/
+  dir: .
+  workspace: billing
+  terraform_version: v1.9.4
+  autoplan:
+    when_modified:
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
+      - '*.tfvars'
+      - '*.hcl'
+  execution_order_group: 4
+  workflow: billing-workflow
+
+# Hub Account Projects
+- id: /.*/
+  name: gxc-consortium-hub01
+  branch: /hub01/
   dir: .
   workspace: hub01
-  branch: main
-  workflow: hub01-workflow
+  terraform_version: v1.9.4
   autoplan:
     when_modified:
-      - '*.json',
-      - '*.yaml',
-      - '*.js',
-      - '*.tf',
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
       - '*.tfvars'
-
-- name: gxc-hub01-cognito
-  dir: cognito
-  workspace: hub01
-  branch: main
+      - '*.hcl'
+  execution_order_group: 5
   workflow: hub01-workflow
-  autoplan:
-    when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
 
-- name: gxc-hub01-sbeacon
-  dir: sbeacon
-  workspace: hub01
-  branch: main
-  workflow: hub01-workflow
-  autoplan:
-    when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
-
-- name: gxc-hub01-svep
-  dir: svep
-  workspace: hub01
-  branch: main
-  workflow: hub01-workflow
-  autoplan:
-    when_modified:
-      - - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
-
-- name: gxc-hub01-webgui
-  dir: webgui/terraform-aws
-  workspace: hub01
-  branch: main
-  workflow: hub01-workflow
-  autoplan:
-    when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
-
-# Projects deploying to Hub02 (xapiens branch)
-- name: gxc-hub02-root
+- id: /.*/
+  name: gxc-consortium-hub02
+  branch: /hub02/
   dir: .
   workspace: hub02
-  branch: xapiens
-  workflow: hub02-workflow
+  terraform_version: v1.9.4
   autoplan:
     when_modified:
-      - '*.json',
-      - '*.yaml',
-      - '*.js',
-      - '*.tf',
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
       - '*.tfvars'
-
-- name: gxc-hub02-cognito
-  dir: cognito
-  workspace: hub02
-  branch: xapiens
+      - '*.hcl'
+  execution_order_group: 6
   workflow: hub02-workflow
+
+- id: /.*/
+  name: gxc-consortium-hub03
+  branch: /hub03/
+  dir: .
+  workspace: hub03
+  terraform_version: v1.9.4
   autoplan:
     when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
+      - '../modules/**/*.tf'
+      - '.terraform.lock.hcl'
+      - '*.json'
+      - '*.yaml'
+      - '*.js'
+      - '*.tf'
+      - '*.tfvars'
+      - '*.hcl'
+  execution_order_group: 7
+  workflow: hub03-workflow
 
-- name: gxc-hub02-sbeacon
-  dir: sbeacon
-  workspace: hub02
-  branch: xapiens
-  workflow: hub02-workflow
-  autoplan:
-    when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
+workflows:
+  management-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=management.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor
+      - run: aws sts get-caller-identity
+      - apply
 
-- name: gxc-hub02-svep
-  dir: svep
-  workspace: hub02
-  branch: xapiens
-  workflow: hub02-workflow
-  autoplan:
-    when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
+  security-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Security
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=security.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Security
+      - run: aws sts get-caller-identity
+      - apply
 
-- name: gxc-hub02-webgui
-  dir: webgui/terraform-aws
-  workspace: hub02
-  branch: xapiens
-  workflow: hub02-workflow
-  autoplan:
-    when_modified:
-      - '**/*.json',
-      - '**/*.yaml',
-      - '**/*.js',
-      - '**/*.tf',
-      - '**/*.tfvars'
+  logs-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Logs
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=logs.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Logs
+      - run: aws sts get-caller-identity
+      - apply
+
+  billing-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Billing
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=billing.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Billing
+      - run: aws sts get-caller-identity
+      - apply
+
+  hub01-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Hub01
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=hub01.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Hub01
+      - run: aws sts get-caller-identity
+      - apply
+
+  hub02-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Hub02
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=hub02.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Hub02
+      - run: aws sts get-caller-identity
+      - apply
+
+  hub03-workflow:
+    plan:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Hub03
+      - run: aws sts get-caller-identity
+      - init:
+          extra_args: ["-backend-config=backend.tfvars"]
+      - plan:
+          extra_args: ["-var-file=hub03.tfvars"]
+    apply:
+      steps:
+      - env:
+          name: AWS_PROFILE
+          value: GXC-TF-User-Executor-Hub03
+      - run: aws sts get-caller-identity
+      - apply

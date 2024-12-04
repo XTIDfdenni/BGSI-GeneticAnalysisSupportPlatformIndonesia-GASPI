@@ -2,24 +2,29 @@
 import { Injectable } from '@angular/core';
 import * as AWS from 'aws-sdk';
 import { forkJoin, from, map, Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AwsService {
-  private pricing: AWS.Pricing;
+  private pricing!: AWS.Pricing;
 
-  constructor() {
+  constructor(private auth: AuthService) {
     // Initialize AWS Pricing API
     // Pricing API is only available in 'us-east-1' region
-    this.pricing = new AWS.Pricing({
-      region: 'us-east-1',
-      credentials: {
-        accessKeyId: String(environment.pricingCredentials.accessKeyId),
-        secretAccessKey: String(environment.pricingCredentials.secretAccessKey),
-      },
-    });
+    (async () => {
+      const keys = await auth.getKeys();
+
+      this.pricing = new AWS.Pricing({
+        region: 'us-east-1',
+        credentials: {
+          accessKeyId: keys.accessKeyId,
+          secretAccessKey: keys.secretAccessKey,
+          sessionToken: keys.sessionToken,
+        },
+      });
+    })();
   }
 
   private getPriceDimensions(data: AWS.Pricing.Types.GetProductsResponse) {
