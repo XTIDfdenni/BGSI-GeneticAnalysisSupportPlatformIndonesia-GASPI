@@ -107,7 +107,7 @@ export class BeaconIngestDialogComponent {
     this.dps
       .adminIngestToBeacon(projectName, datasetId, s3Payload, vcfLocations)
       .pipe(catchError(() => of(null)))
-      .subscribe((res: any) => {
+      .subscribe((res: null | { success: boolean; message: string }) => {
         if (!res) {
           this.sb.open(
             'Operation failed, please check files and try again',

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';
-import { from } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -145,7 +145,7 @@ export class DportalService {
     datasetId: string,
     s3Payload: string,
     vcfLocations: string[],
-  ) {
+  ): Observable<{ success: boolean; message: string }> {
     console.log('ingest to sbeacon');
     return from(
       API.post(
@@ -158,7 +158,10 @@ export class DportalService {
     );
   }
 
-  adminUnIngestFromBeacon(name: string, datasetId: string) {
+  adminUnIngestFromBeacon(
+    name: string,
+    datasetId: string,
+  ): Observable<{ success: boolean; message: string }> {
     console.log('uningest from sbeacon');
     return from(
       API.del(
@@ -169,7 +172,7 @@ export class DportalService {
     );
   }
 
-  adminIndexBeacon() {
+  adminIndexBeacon(): Observable<{ success: boolean; message: string }> {
     console.log('ingest to sbeacon');
     return from(
       API.post(
