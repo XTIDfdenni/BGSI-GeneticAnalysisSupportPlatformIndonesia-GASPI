@@ -1,4 +1,10 @@
-import { Component, Inject } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -17,13 +23,14 @@ import {
   Validators,
 } from '@angular/forms';
 import { AdminService } from 'src/app/pages/admin-page/services/admin.service';
-import { catchError, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, of } from 'rxjs';
 import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AwsService } from 'src/app/services/aws.service';
 
 @Component({
   selector: 'app-admin-create-user-dialog',
@@ -43,13 +50,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./admin-create-user-dialog.component.scss'],
   providers: [AdminService],
 })
-export class AdminCreateUserComponent {
+export class AdminCreateUserComponent implements OnInit {
   protected initialGroups: any = {
     administrators: false,
   };
 
   protected loading = false;
   protected newUserForm: FormGroup;
+  protected costEstimation: number | null = 0;
 
   constructor(
     public dialogRef: MatDialogRef<AdminCreateUserComponent>,
@@ -60,16 +68,40 @@ export class AdminCreateUserComponent {
     private ss: SpinnerService,
     private adminServ: AdminService,
     private sb: MatSnackBar,
+    private aws: AwsService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       administrators: [false],
+      // Quota
+      sizeOfData: ['', [Validators.required, Validators.min(0)]],
+      countOfQueries: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
-  // ngOnInit(): void {}
+  ngOnInit(): void {
+    this.onChangeCalculateCost();
+  }
+
+  onChangeCalculateCost() {
+    this.newUserForm.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((values) => {
+        if (values.countOfQueries && values.sizeOfData) {
+          this.aws
+            .calculateQuotaEstimationPerMonth(
+              values.countOfQueries,
+              values.sizeOfData,
+            )
+
+            .subscribe((res) => {
+              this.costEstimation = res;
+            });
+        }
+      });
+  }
 
   cancel(): void {
     this.dialogRef.close();

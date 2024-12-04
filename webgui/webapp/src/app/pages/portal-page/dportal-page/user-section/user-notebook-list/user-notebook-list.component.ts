@@ -21,7 +21,7 @@ import {
 } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { DportalService } from 'src/app/services/dportal.service';
-import { catchError, of } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, of } from 'rxjs';
 import { NotebookItemComponent } from './notebook-item/notebook-item.component';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
@@ -93,16 +93,18 @@ export class UserNotebookListComponent implements OnInit {
   }
 
   onChangesCalculatePrice() {
-    this.instanceForm.valueChanges.subscribe((values) => {
-      if (values.instanceType && values.volumeSize) {
-        this.aws
-          .calculateTotalPricePerMonth(values.instanceType, values.volumeSize)
-          .pipe(catchError(() => of(null)))
-          .subscribe((price) => {
-            this.estimatedPrice = price;
-          });
-      }
-    });
+    this.instanceForm.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((values) => {
+        if (values.instanceType && values.volumeSize) {
+          this.aws
+            .calculateTotalPricePerMonth(values.instanceType, values.volumeSize)
+            .pipe(catchError(() => of(null)))
+            .subscribe((price) => {
+              this.estimatedPrice = price;
+            });
+        }
+      });
   }
 
   list() {
@@ -134,7 +136,7 @@ export class UserNotebookListComponent implements OnInit {
           });
         }
         this.list();
-        this.instanceForm.reset();
+        this.resetForm();
         panel.close();
       });
   }

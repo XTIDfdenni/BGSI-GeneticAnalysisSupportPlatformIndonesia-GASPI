@@ -5,6 +5,7 @@ import { DportalService } from 'src/app/services/dportal.service';
 import { InstanceName } from '../user-notebook-list.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { catchError, of } from 'rxjs';
+import { AwsService } from 'src/app/services/aws.service';
 
 export enum Status {
   PENDING = 'Pending',
@@ -37,11 +38,13 @@ export class NotebookItemComponent implements OnInit {
   @Input({ required: true }) notebook!: InstanceName;
   @Output() deleted = new EventEmitter<void>();
   status: InstanceDetails | null = null;
+  costEstimation: number | null = null;
   Status = Status;
 
   constructor(
     private dps: DportalService,
     private dg: MatDialog,
+    private aws: AwsService,
   ) {}
 
   ngOnInit(): void {
@@ -51,7 +54,21 @@ export class NotebookItemComponent implements OnInit {
   public getStatus() {
     this.dps.getMyNotebookStatus(this.notebook).subscribe((res) => {
       this.status = res;
+      this.constructListWithCostEstimation();
     });
+  }
+
+  constructListWithCostEstimation() {
+    if (!this.status) return;
+
+    this.aws
+      .calculateTotalPricePerMonth(
+        this.status.instanceType,
+        this.status.volumeSize,
+      )
+      .subscribe((costEstimation) => {
+        this.costEstimation = costEstimation;
+      });
   }
 
   async stop() {
