@@ -6,10 +6,67 @@ REPO_NAME = BGSI-GeneticAnalysisSupportPlatformIndonesia-GASPI
 REPO_URL = git@github.com:GSI-Xapiens-CSIRO/$(REPO_NAME).git
 PYTHON_ENV = ~/py312/bin/activate
 AWS_REGION = ap-southeast-3
+NODE_VERSION = 20
+SHELL := /bin/bash
 
 # Default target
 .PHONY: all
-all: clone init-sbeacon deploy-hub01
+all: install-deps clone init-sbeacon deploy-hub01
+
+# Install all dependencies
+.PHONY: install-deps
+install-deps: install-nvm install-node install-pnpm install-docker
+
+# Install NVM
+.PHONY: install-nvm
+install-nvm:
+	@echo "Installing NVM..."
+	@if [ ! -d "$$HOME/.nvm" ]; then \
+		curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash; \
+		source ~/.bashrc; \
+	else \
+		echo "NVM is already installed"; \
+	fi
+
+# Install Node.js using NVM
+.PHONY: install-node
+install-node:
+	@echo "Installing Node.js $(NODE_VERSION)..."
+	@. ~/.nvm/nvm.sh && nvm install $(NODE_VERSION) && nvm use $(NODE_VERSION)
+	@node --version
+
+# Install pnpm
+.PHONY: install-pnpm
+install-pnpm:
+	@echo "Installing pnpm..."
+	@if ! command -v pnpm &> /dev/null; then \
+		curl -fsSL https://get.pnpm.io/install.sh | sh -; \
+		source ~/.bashrc; \
+	else \
+		echo "pnpm is already installed"; \
+	fi
+
+# Install Docker and Docker Compose
+.PHONY: install-docker
+install-docker:
+	@echo "Installing Docker and Docker Compose..."
+	@if ! command -v docker &> /dev/null; then \
+		echo "Installing Docker..."; \
+		sudo dnf update -y; \
+		sudo dnf install -y docker docker-compose-plugin; \
+		sudo systemctl start docker; \
+		sudo systemctl enable docker; \
+		sudo usermod -aG docker $$USER; \
+		echo "Please log out and log back in to apply Docker group changes."; \
+	else \
+		echo "Docker is already installed"; \
+	fi
+	@if ! command -v docker compose &> /dev/null; then \
+		echo "Installing Docker Compose..."; \
+		sudo dnf install -y docker-compose-plugin; \
+	else \
+		echo "Docker Compose is already installed"; \
+	fi
 
 # Clone repository
 .PHONY: clone
@@ -78,6 +135,7 @@ apply-terraform:
 	@echo "Applying Terraform changes..."
 	terraform apply
 
+.PHONY: apply-terraform-autoapprove
 apply-terraform-autoapprove:
 	@echo "Applying Terraform (Auto-Approve) changes..."
 	terraform apply -auto-approve
@@ -94,16 +152,37 @@ clean:
 	@echo "Cleaning up..."
 	rm -rf $(REPO_NAME)
 
+# Version check of installed tools
+.PHONY: version-check
+version-check:
+	@echo "Checking installed versions..."
+	@echo "Node.js version: $$(node --version)"
+	@echo "pnpm version: $$(pnpm --version)"
+	@echo "Docker version: $$(docker --version)"
+	@echo "Docker Compose version: $$(docker compose version)"
+	@echo "Terraform version: $$(terraform version)"
+	@echo "Python version: $$(python3 --version)"
+	@echo "AWS CLI version: $$(aws --version)"
+
 # Help target
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  all              - Clone repository and deploy to Hub01 (default)"
+	@echo "  all              - Install dependencies, clone repository and deploy to Hub01 (default)"
+	@echo "  install-deps     - Install all dependencies (nvm, Node.js, pnpm, Docker)"
+	@echo "  install-nvm      - Install NVM (Node Version Manager)"
+	@echo "  install-node     - Install Node.js using NVM"
+	@echo "  install-pnpm     - Install pnpm package manager"
+	@echo "  install-docker   - Install Docker and Docker Compose"
 	@echo "  clone            - Clone the repository and init submodules"
+	@echo "  init-submodule   - Initialize submodules (sbeacon & svep)"
 	@echo "  init-sbeacon     - Initialize sBeacon"
 	@echo "  deploy-hub01     - Deploy to Hub01"
 	@echo "  deploy-hub02     - Deploy to Hub02"
 	@echo "  plan             - Run terraform plan"
+	@echo "  apply-terraform  - Apply terraform changes (with confirmation)"
+	@echo "  apply-terraform-autoapprove - Apply terraform changes (auto-approve)"
 	@echo "  output           - Show terraform output"
+	@echo "  version-check    - Check versions of installed tools"
 	@echo "  clean            - Clean up repository"
 	@echo "  help             - Show this help message"

@@ -6,14 +6,21 @@ This repository contains a Makefile to automate the deployment of the BGSI-Genet
 
 ## Prerequisites
 
-Before using this Makefile, ensure you have the following prerequisites installed and configured:
+Before using this Makefile, ensure you have the following prerequisites:
 
+### System Requirements:
 - Git
 - Python 3.12
 - AWS CLI v2
 - Terraform v1.9.4 or newer
 - Valid AWS credentials for both Hub01 and Hub02 environments
 - SSH access configured for GitHub
+- Sudo privileges (for Docker installation)
+
+The Makefile includes automated installation for:
+- Node.js v20 (via nvm)
+- pnpm package manager
+- Docker and Docker Compose
 
 ## Environment Setup
 
@@ -46,31 +53,51 @@ Before using this Makefile, ensure you have the following prerequisites installe
    make
    ```
    This command will:
+   - Install all dependencies (Node.js, pnpm, Docker)
    - Clone the repository
    - Initialize submodules
    - Initialize sBeacon
    - Deploy to Hub01
 
-2. **Deploy to Hub02**:
+2. **Install Dependencies Only**:
    ```bash
-   make deploy-hub02
+   make install-deps
+   ```
+   This will install:
+   - NVM (Node Version Manager)
+   - Node.js v20
+   - pnpm package manager
+   - Docker and Docker Compose
+
+3. **Individual Dependency Installation**:
+   ```bash
+   make install-nvm     # Install NVM
+   make install-node    # Install Node.js v20
+   make install-pnpm    # Install pnpm
+   make install-docker  # Install Docker and Docker Compose
    ```
 
-3. **View Available Commands**:
+4. **Check Tool Versions**:
    ```bash
-   make help
+   make version-check
    ```
+   This will display versions of:
+   - Node.js
+   - pnpm
+   - Docker
+   - Docker Compose
+   - Terraform
+   - Python
+   - AWS CLI
 
-### Individual Steps
-
-You can also run individual steps of the deployment process:
+### Deployment Steps
 
 1. **Clone Repository**:
    ```bash
    make clone
    ```
 
-2. **Init Submodule `sbeacon` & `svep` **:
+2. **Init Submodule `sbeacon` & `svep`**:
    ```bash
    make init-submodule
    ```
@@ -87,9 +114,9 @@ You can also run individual steps of the deployment process:
 
 5. **Apply Terraform Changes**:
    ```bash
-   make apply-terraform
-   - or -
-   make apply-terraform-autoapprove
+   make apply-terraform            # With confirmation prompt
+   # or
+   make apply-terraform-autoapprove  # Without confirmation
    ```
 
 6. **View Terraform Output**:
@@ -122,6 +149,7 @@ After cloning, your repository structure should look like this:
 BGSI-GeneticAnalysisSupportPlatformIndonesia-GASPI/
 ├── sbeacon/
 │   └── init.sh
+├── svep/
 ├── backend.tf
 ├── terraform.tfvars
 └── Makefile
@@ -140,15 +168,6 @@ BGSI-GeneticAnalysisSupportPlatformIndonesia-GASPI/
        region         = "ap-southeast-3"
        dynamodb_table = "terraform-states-hub1-gaspi"
      }
-   }
-   ```
-
-2. **terraform.tfvars**:
-   ```hcl
-   region = "ap-southeast-3"
-   common-tags = {
-     "Owner"       = "gaspi"
-     "Environment" = "dev"
    }
    ```
 
@@ -173,6 +192,7 @@ BGSI-GeneticAnalysisSupportPlatformIndonesia-GASPI/
    - Ensure AWS credentials are properly configured
    - Verify the correct AWS profile is being used
    - Check AWS CLI configuration using `aws configure list`
+   - Check AWS CLI access token `aws sts get-caller-identity --profile $AWS_PROFILE`
 
 2. **Python Environment Issues**:
    - Verify Python 3.12 is installed: `python3.12 --version`
@@ -183,6 +203,16 @@ BGSI-GeneticAnalysisSupportPlatformIndonesia-GASPI/
    - Verify S3 bucket exists and is accessible
    - Check DynamoDB table permissions
    - Ensure backend configuration is correct
+
+4. **Docker Installation Issues**:
+   - Ensure user is in docker group
+   - Verify docker service is running: `sudo systemctl status docker`
+   - Check docker compose installation: `docker compose version`
+
+5. **Node.js/pnpm Issues**:
+   - Verify NVM installation: `nvm --version`
+   - Check Node.js version: `node --version`
+   - Verify pnpm installation: `pnpm --version`
 
 ## Support
 
