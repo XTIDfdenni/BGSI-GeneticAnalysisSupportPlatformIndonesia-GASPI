@@ -18,6 +18,12 @@ clone:
 	git clone $(REPO_URL)
 	cd $(REPO_NAME) && git submodule update --init --recursive
 
+# Initialize submodules
+.PHONY: init-submodule
+init-submodule:
+	@echo "Initializing submodule sbeacon & svep ..."
+	git submodule update --init --recursive
+
 # Initialize sBeacon
 .PHONY: init-sbeacon
 init-sbeacon:
@@ -26,11 +32,11 @@ init-sbeacon:
 
 # Deploy to Hub01
 .PHONY: deploy-hub01
-deploy-hub01: set-hub01-env init-terraform apply-terraform
+deploy-hub01: set-hub01-env init-submodule init-terraform apply-terraform
 
 # Deploy to Hub02
 .PHONY: deploy-hub02
-deploy-hub02: set-hub02-env init-terraform apply-terraform
+deploy-hub02: set-hub02-env init-submodule init-terraform apply-terraform
 
 # Set Hub01 environment
 .PHONY: set-hub01-env
@@ -69,7 +75,7 @@ plan:
 # Apply Terraform changes
 .PHONY: apply-terraform
 apply-terraform:
-	@echo "Applying Terraform (Auto-Approve) changes..."
+	@echo "Applying Terraform changes..."
 	terraform apply
 
 apply-terraform-autoapprove:
