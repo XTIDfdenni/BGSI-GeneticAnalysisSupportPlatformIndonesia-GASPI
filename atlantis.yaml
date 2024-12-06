@@ -36,18 +36,10 @@ projects:
     branch: /xapiens/
     dir: .
     workspace: xapiens
-    terraform_version: &tf_version v1.9.4
+    terraform_version: *tf_version
     execution_order_group: 1
     autoplan:
-      when_modified: &tf_files
-        - "../modules/**/*.tf"
-        - ".terraform.lock.hcl"
-        - "*.json"
-        - "*.yaml"
-        - "*.js"
-        - "*.tf"
-        - "*.tfvars"
-        - "*.hcl"
+      when_modified: *tf_files
       enabled: true
     plan_requirements: [approved]
     apply_requirements: [approved]
