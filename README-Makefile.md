@@ -141,6 +141,16 @@ The Makefile includes automated installation for:
   make set-hub02-env
   ```
 
+- **Deploy Hub01**:
+  ```bash
+  make deploy-hub01
+  ```
+
+- **Deploy Hub02**:
+  ```bash
+  make deploy-hub02
+  ```
+
 ## Directory Structure
 
 After cloning, your repository structure should look like this:
