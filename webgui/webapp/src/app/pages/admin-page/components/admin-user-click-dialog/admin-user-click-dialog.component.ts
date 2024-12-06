@@ -61,7 +61,6 @@ export class AdminUserClickDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.data);
     this.loading = true;
     this.as
       .listUsersGroups(this.data.email)

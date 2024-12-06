@@ -4,6 +4,10 @@
     <span> <strong>Status:</strong> {{ status.status }} </span>
     <span> <strong>Volume (GB):</strong> {{ status.volumeSize }} </span>
     <span> <strong>Type (GB):</strong> {{ status.instanceType }} </span>
+    <span class="text-red-500">
+      <strong>Cost Estimation:</strong> ${{ costEstimation }} / Month</span
+    >
+
     <span class="text-sm text-gray-500 italic"
       >Instance must be stopped before deleting or changing. Changes in notebook
       instances can take few minutes to come in to effect.</span

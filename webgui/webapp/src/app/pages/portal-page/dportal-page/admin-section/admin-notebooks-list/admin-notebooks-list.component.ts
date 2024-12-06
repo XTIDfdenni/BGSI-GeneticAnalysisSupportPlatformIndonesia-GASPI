@@ -5,8 +5,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { DportalService } from 'src/app/services/dportal.service';
-import { catchError, of } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { AdminNotebookItemComponent } from './admin-notebook-item/admin-notebook-item.component';
+import { AwsService } from 'src/app/services/aws.service';
 
 export interface InstanceInfo {
   instanceName: string;
@@ -16,6 +17,7 @@ export interface InstanceInfo {
   status: string;
   volumeSize: number;
   instanceType: string;
+  costEstimation: number;
 }
 
 @Component({
@@ -37,7 +39,10 @@ export class NotebooksComponent {
   notebooks: InstanceInfo[] = [];
   loading = false;
 
-  constructor(private dps: DportalService) {}
+  constructor(
+    private dps: DportalService,
+    private aws: AwsService,
+  ) {}
 
   ngOnInit(): void {
     this.list();
@@ -52,9 +57,25 @@ export class NotebooksComponent {
       .subscribe((notebooks: InstanceInfo[]) => {
         if (notebooks) {
           this.notebooks = notebooks;
+          this.constructListWithCostEstimation();
         }
         this.loading = false;
       });
+  }
+
+  constructListWithCostEstimation() {
+    if (!this.notebooks) return;
+
+    const costEstimations$ = this.notebooks.map((n) =>
+      this.aws.calculateTotalPricePerMonth(n.instanceType, n.volumeSize),
+    );
+
+    forkJoin(costEstimations$).subscribe((costEstimations) => {
+      this.notebooks = this.notebooks.map((n, index) => ({
+        ...n,
+        costEstimation: costEstimations[index], // Add the calculated cost
+      }));
+    });
   }
 
   remove(notebook: string) {
