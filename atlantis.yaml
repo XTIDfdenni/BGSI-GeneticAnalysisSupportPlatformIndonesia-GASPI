@@ -9,11 +9,11 @@ abort_on_execution_order_fail: true
 
 # Common project configurations
 projects:
-  # Core Management Account Projects
-  - name: gxc-consortium-management
+  # Main Branch
+  - name: gxc-main
     branch: /main/
     dir: .
-    workspace: management
+    workspace: main
     terraform_version: &tf_version v1.9.4
     execution_order_group: 1
     autoplan:
@@ -29,40 +29,29 @@ projects:
       enabled: true
     plan_requirements: [approved]
     apply_requirements: [approved]
-    workflow: management-workflow
+    workflow: hub01-workflow
 
-  # Security Account Projects
-  - name: gxc-consortium-securityaudit
-    branch: /security/
+  # Xapiens Branch
+  - name: gxc-xapiens
+    branch: /xapiens/
     dir: .
-    workspace: security
-    terraform_version: *tf_version
-    execution_order_group: 2
+    workspace: xapiens
+    terraform_version: &tf_version v1.9.4
+    execution_order_group: 1
     autoplan:
-      when_modified: *tf_files
-    workflow: security-workflow
-
-  # LogArchived Account Projects
-  - name: gxc-consortium-logarchived
-    branch: /logs/
-    dir: .
-    workspace: logs
-    terraform_version: *tf_version
-    execution_order_group: 3
-    autoplan:
-      when_modified: *tf_files
-    workflow: logs-workflow
-
-  # Billing Account Projects
-  - name: gxc-consortium-billing
-    branch: /billing/
-    dir: .
-    workspace: billing
-    terraform_version: *tf_version
-    execution_order_group: 4
-    autoplan:
-      when_modified: *tf_files
-    workflow: billing-workflow
+      when_modified: &tf_files
+        - "../modules/**/*.tf"
+        - ".terraform.lock.hcl"
+        - "*.json"
+        - "*.yaml"
+        - "*.js"
+        - "*.tf"
+        - "*.tfvars"
+        - "*.hcl"
+      enabled: true
+    plan_requirements: [approved]
+    apply_requirements: [approved]
+    workflow: hub02-workflow
 
   # Hub Account Projects
   - name: gxc-consortium-hub01
@@ -84,13 +73,3 @@ projects:
     autoplan:
       when_modified: *tf_files
     workflow: hub02-workflow
-
-  - name: gxc-consortium-hub03
-    branch: /hub03/
-    dir: .
-    workspace: hub03
-    terraform_version: *tf_version
-    execution_order_group: 7
-    autoplan:
-      when_modified: *tf_files
-    workflow: hub03-workflow
