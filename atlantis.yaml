@@ -7,22 +7,10 @@ parallel_plan: true
 parallel_apply: true
 abort_on_execution_order_fail: true
 
-# Configuration for different environments/accounts
-repos:
-  - id: github.com/GSI-Xapiens-CSIRO/*
-    applies_to:
-      branches: [main, security, logs, billing, hub01, hub02, hub03]
-    workflow: default
-    allowed_overrides: [workflow]
-    allow_custom_workflows: true
-    pre_workflow_hooks:
-      - run: aws sts get-caller-identity
-
 # Common project configurations
 projects:
   # Core Management Account Projects
-  - id: /.*/
-    name: gxc-consortium-management
+  - name: gxc-consortium-management
     branch: /main/
     dir: .
     workspace: management
@@ -44,8 +32,7 @@ projects:
     workflow: management-workflow
 
   # Security Account Projects
-  - id: /.*/
-    name: gxc-consortium-securityaudit
+  - name: gxc-consortium-securityaudit
     branch: /security/
     dir: .
     workspace: security
@@ -56,8 +43,7 @@ projects:
     workflow: security-workflow
 
   # LogArchived Account Projects
-  - id: /.*/
-    name: gxc-consortium-logarchived
+  - name: gxc-consortium-logarchived
     branch: /logs/
     dir: .
     workspace: logs
@@ -68,8 +54,7 @@ projects:
     workflow: logs-workflow
 
   # Billing Account Projects
-  - id: /.*/
-    name: gxc-consortium-billing
+  - name: gxc-consortium-billing
     branch: /billing/
     dir: .
     workspace: billing
@@ -80,8 +65,7 @@ projects:
     workflow: billing-workflow
 
   # Hub Account Projects
-  - id: /.*/
-    name: gxc-consortium-hub01
+  - name: gxc-consortium-hub01
     branch: /hub01/
     dir: .
     workspace: hub01
@@ -91,8 +75,7 @@ projects:
       when_modified: *tf_files
     workflow: hub01-workflow
 
-  - id: /.*/
-    name: gxc-consortium-hub02
+  - name: gxc-consortium-hub02
     branch: /hub02/
     dir: .
     workspace: hub02
@@ -102,8 +85,7 @@ projects:
       when_modified: *tf_files
     workflow: hub02-workflow
 
-  - id: /.*/
-    name: gxc-consortium-hub03
+  - name: gxc-consortium-hub03
     branch: /hub03/
     dir: .
     workspace: hub03
@@ -112,176 +94,3 @@ projects:
     autoplan:
       when_modified: *tf_files
     workflow: hub03-workflow
-
-workflows:
-  # Base Workflow Template
-  default-workflow: &workflow_template
-    plan: &plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=management.tfvars"]
-    apply: &apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor
-        - run: aws sts get-caller-identity
-        - apply
-
-  # Management Account Workflow
-  management-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=management.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor
-        - run: aws sts get-caller-identity
-        - apply
-
-  # Security Audit Account Workflow
-  security-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Security
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=security.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Security
-        - run: aws sts get-caller-identity
-        - apply
-
-  # Logs Account Workflow
-  logs-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Logs
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=logs.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Logs
-        - run: aws sts get-caller-identity
-        - apply
-
-  # Billing Account Workflow
-  billing-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Billing
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=billing.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Billing
-        - run: aws sts get-caller-identity
-        - apply
-
-  # Hub Account Workflows
-  hub01-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Hub01
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=hub01.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Hub01
-        - run: aws sts get-caller-identity
-        - apply
-
-  hub02-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Hub02
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=hub02.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Hub02
-        - run: aws sts get-caller-identity
-        - apply
-
-  hub03-workflow:
-    plan:
-      <<: *plan_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Hub03
-        - run: aws sts get-caller-identity
-        - init:
-            extra_args: ["-backend-config=backend.tfvars"]
-        - plan:
-            extra_args: ["-var-file=hub03.tfvars"]
-    apply:
-      <<: *apply_template
-      steps:
-        - env:
-            name: AWS_PROFILE
-            value: GXC-TF-User-Executor-Hub03
-        - run: aws sts get-caller-identity
-        - apply

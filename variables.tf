@@ -56,13 +56,3 @@ variable "ses-source-email" {
   type        = string
   description = "Address from which to send SES emails"
 }
-
-variable "pricing_access_key_id" {
-  type        = string
-  description = "Access key for AWS sdk Pricing plan."
-}
-
-variable "pricing_access_secret_key_id" {
-  type        = string
-  description = "Secret key for AWS sdk Pricing plan."
-}
