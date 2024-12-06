@@ -1,75 +1,59 @@
 version: 3
 automerge: true
-autodiscover:
-  mode: auto
-delete_source_branch_on_merge: true
 parallel_plan: true
 parallel_apply: true
-abort_on_execution_order_fail: true
+delete_source_branch_on_merge: true
 
-# Common project configurations
 projects:
-  # Main Branch
-  - name: gxc-main
-    branch: /main/
-    dir: .
-    workspace: main
-    terraform_version: &tf_version v1.9.4
-    execution_order_group: 1
-    autoplan:
-      when_modified: &tf_files
-        - "../modules/**/*.tf"
-        - ".terraform.lock.hcl"
-        - "*.json"
-        - "*.yaml"
-        - "*.js"
-        - "*.tf"
-        - "*.tfvars"
-        - "*.hcl"
-      enabled: true
-    plan_requirements: [approved]
-    apply_requirements: [approved]
-    workflow: hub01-workflow
+# Main Branch
+- name: gxc-main
+  branch: /main/
+  dir: .
+  workspace: main
+  terraform_version: v1.9.4
+  execution_order_group: 1
+  autoplan:
+    when_modified: &tf_files
+      - "../modules/**/*.tf"
+      - ".terraform.lock.hcl"
+      - "*.json"
+      - "*.yaml"
+      - "*.js"
+      - "*.tf"
+      - "*.tfvars"
+      - "*.hcl"
+    enabled: true
+  plan_requirements: [approved]
+  apply_requirements: [approved]
 
-  # Xapiens Branch
-  - name: gxc-xapiens
-    branch: /xapiens/
-    dir: .
-    workspace: xapiens
-    terraform_version: &tf_version v1.9.4
-    execution_order_group: 1
-    autoplan:
-      when_modified: &tf_files
-        - "../modules/**/*.tf"
-        - ".terraform.lock.hcl"
-        - "*.json"
-        - "*.yaml"
-        - "*.js"
-        - "*.tf"
-        - "*.tfvars"
-        - "*.hcl"
-      enabled: true
-    plan_requirements: [approved]
-    apply_requirements: [approved]
-    workflow: hub02-workflow
+# Xapiens Branch
+- name: gxc-xapiens
+  branch: /xapiens/
+  dir: .
+  workspace: xapiens
+  terraform_version: v1.9.4
+  execution_order_group: 1
+  autoplan:
+    when_modified: *tf_files
+    enabled: true
+  plan_requirements: [approved]
+  apply_requirements: [approved]
 
-  # Hub Account Projects
-  - name: gxc-consortium-hub01
-    branch: /hub01/
-    dir: .
-    workspace: hub01
-    terraform_version: *tf_version
-    execution_order_group: 5
-    autoplan:
-      when_modified: *tf_files
-    workflow: hub01-workflow
+# Hub Account Projects
+- name: gxc-consortium-hub01
+  branch: /hub01/
+  dir: .
+  workspace: hub01
+  terraform_version: v1.9.4
+  execution_order_group: 5
+  autoplan:
+    when_modified: *tf_files
 
-  - name: gxc-consortium-hub02
-    branch: /hub02/
-    dir: .
-    workspace: hub02
-    terraform_version: *tf_version
-    execution_order_group: 6
-    autoplan:
-      when_modified: *tf_files
-    workflow: hub02-workflow
+- name: gxc-consortium-hub02
+  branch: /hub02/
+  dir: .
+  workspace: hub02
+  terraform_version: v1.9.4
+  execution_order_group: 6
+  autoplan:
+    when_modified: *tf_files
