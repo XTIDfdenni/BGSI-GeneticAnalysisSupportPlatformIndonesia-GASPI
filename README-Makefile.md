@@ -70,29 +70,34 @@ You can also run individual steps of the deployment process:
    make clone
    ```
 
-2. **Initialize sBeacon**:
+2. **Init Submodule `sbeacon` & `svep` **:
+   ```bash
+   make init-submodule
+   ```
+
+3. **Initialize sBeacon**:
    ```bash
    make init-sbeacon
    ```
 
-3. **Plan Terraform Changes**:
+4. **Plan Terraform Changes**:
    ```bash
    make plan
    ```
 
-4. **Apply Terraform Changes**:
+5. **Apply Terraform Changes**:
    ```bash
    make apply-terraform
    - or -
    make apply-terraform-autoapprove
    ```
 
-5. **View Terraform Output**:
+6. **View Terraform Output**:
    ```bash
    make output
    ```
 
-6. **Clean Up**:
+7. **Clean Up**:
    ```bash
    make clean
    ```
