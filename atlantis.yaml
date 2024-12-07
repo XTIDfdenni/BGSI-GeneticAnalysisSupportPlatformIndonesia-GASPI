@@ -13,7 +13,7 @@ projects:
   - name: gxc-main
     branch: /main/
     dir: .
-    workspace: main
+    workspace: default
     terraform_version: &tf_version v1.9.4
     execution_order_group: 1
     autoplan:
@@ -35,9 +35,9 @@ projects:
   - name: gxc-xapiens
     branch: /xapiens/
     dir: .
-    workspace: xapiens
+    workspace: default
     terraform_version: *tf_version
-    execution_order_group: 1
+    execution_order_group: 2
     autoplan:
       when_modified: *tf_files
       enabled: true
@@ -46,22 +46,22 @@ projects:
     workflow: hub02-workflow
 
   # Hub Account Projects
-  - name: gxc-consortium-hub01
+  - name: gxc-hub01
     branch: /hub01/
     dir: .
-    workspace: hub01
+    workspace: default
     terraform_version: *tf_version
-    execution_order_group: 5
+    execution_order_group: 3
     autoplan:
       when_modified: *tf_files
     workflow: hub01-workflow
 
-  - name: gxc-consortium-hub02
+  - name: gxc-hub02
     branch: /hub02/
     dir: .
-    workspace: hub02
+    workspace: default
     terraform_version: *tf_version
-    execution_order_group: 6
+    execution_order_group: 4
     autoplan:
       when_modified: *tf_files
     workflow: hub02-workflow
