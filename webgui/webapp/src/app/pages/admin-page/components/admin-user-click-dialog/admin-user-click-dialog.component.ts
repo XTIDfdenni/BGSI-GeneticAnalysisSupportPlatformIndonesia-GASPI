@@ -57,6 +57,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       administrators: [false],
+      managers: [false],
     });
   }
 
