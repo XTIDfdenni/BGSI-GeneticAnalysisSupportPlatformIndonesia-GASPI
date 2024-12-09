@@ -31,12 +31,16 @@ import { DportalService } from 'src/app/services/dportal.service';
 })
 export class ProjectAssignmentsComponent {
   @Input({ required: true }) project!: string;
-  email = new FormControl('', [Validators.required, Validators.email]);
+  emailForm: FormGroup;
 
   constructor(
     private dps: DportalService,
     private sb: MatSnackBar,
-  ) {}
+  ) {
+    this.emailForm = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email]),
+    });
+  }
 
   submit(email: string) {
     console.log(this.project, email);
@@ -52,7 +56,7 @@ export class ProjectAssignmentsComponent {
           this.sb.open('User added successfully.', 'Close', {
             duration: 60000,
           });
-          this.email.reset();
+          this.emailForm.reset();
         }
       });
   }

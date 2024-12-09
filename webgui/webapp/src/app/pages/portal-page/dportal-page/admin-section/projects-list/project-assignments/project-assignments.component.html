@@ -1,11 +1,11 @@
 <h3>Add new user</h3>
 <br />
-<form>
+<form [formGroup]="emailForm">
   <mat-form-field class="w-full">
     <mat-label>Email</mat-label>
     <input
       matInput
-      [formControl]="email"
+      formControlName="email"
       type="email"
       required
       autocomplete="off"
@@ -16,7 +16,7 @@
     <button
       mat-raised-button
       type="button"
-      (click)="email.reset()"
+      (click)="emailForm.reset()"
       color="primary"
       class="w-[110px]"
     >
@@ -25,11 +25,11 @@
     <button
       mat-raised-button
       type="button"
-      [disabled]="email.invalid"
+      [disabled]="emailForm.invalid"
       autocomplete="off"
       color="primary"
       class="w-[110px]"
-      (click)="submit(email.value!)"
+      (click)="submit(emailForm.value.email)"
     >
       Submit
     </button>
