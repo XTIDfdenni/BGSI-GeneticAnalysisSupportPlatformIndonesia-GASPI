@@ -1,6 +1,5 @@
-@if (loading) {
-  <app-component-spinner [loading]="true" class="min-h-[400px] block" />
-} @else {
+<app-component-spinner [loading]="loading" />
+@if (dataSource.data.length > 0) {
   <br />
   <table mat-table [dataSource]="dataSource">
     <!-- Name Column -->
@@ -66,6 +65,8 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
+} @else {
+  <h3>No projects found</h3>
 }
 <br />
 <div class="flex flex-row space-x-[10px] items-center">
