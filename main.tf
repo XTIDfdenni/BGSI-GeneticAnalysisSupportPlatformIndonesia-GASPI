@@ -23,6 +23,7 @@ module "sbeacon" {
   cognito-user-pool-arn       = module.cognito.cognito_user_pool_arn
   cognito-user-pool-id        = module.cognito.cognito_user_pool_id
   cognito-admin-group-name    = module.cognito.cognito_admin_group_name
+  cognito-manager-group-name  = module.cognito.cognito_manager_group_name
   ses-source-email            = var.ses-source-email
 
   common-tags = merge(var.common-tags, {
