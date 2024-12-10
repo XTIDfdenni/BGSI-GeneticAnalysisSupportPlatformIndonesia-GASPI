@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Auth } from 'aws-amplify';
+import { Auth, Hub } from 'aws-amplify';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
 import _, { identity } from 'lodash';
+import { CustomReuseStrategy } from '../app.config';
 
 @Injectable({
   providedIn: 'root',
@@ -13,8 +14,20 @@ export class AuthService {
   public userGroups = new BehaviorSubject<Set<string>>(new Set([]));
   private tempUser: any = null;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private routerReuseStrategy: CustomReuseStrategy,
+  ) {
     this.refresh();
+    Hub.listen('auth', async ({ payload: { event, data } }) => {
+      switch (event) {
+        case 'signOut':
+          this.routerReuseStrategy.resetHandlers();
+          this.refresh();
+          this.router.navigate(['/login']);
+          break;
+      }
+    });
   }
 
   async signIn(username: string, password: string) {
@@ -51,6 +64,7 @@ export class AuthService {
   }
 
   async signOut() {
+    this.routerReuseStrategy.resetHandlers();
     await Auth.signOut();
     this.refresh();
     this.router.navigate(['/login']);
