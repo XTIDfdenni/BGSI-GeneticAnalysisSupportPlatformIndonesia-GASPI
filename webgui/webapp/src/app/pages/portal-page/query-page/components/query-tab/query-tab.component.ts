@@ -382,10 +382,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customQuery = false;
     this.form.reset();
 
-    const projectsControl = this.form.get('projects');
-    if (projectsControl) {
-      projectsControl.setValue([]);
-    }
+    this.form.get('projects')!.setValue([]);
     (this.form.get('filters') as FormArray).clear();
 
     this.form.patchValue({
