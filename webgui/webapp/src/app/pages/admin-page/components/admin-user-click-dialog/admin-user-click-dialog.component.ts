@@ -14,13 +14,22 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
 import { AdminService } from 'src/app/pages/admin-page/services/admin.service';
-import { catchError, of } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  of,
+} from 'rxjs';
 import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { DportalService } from 'src/app/services/dportal.service';
+import { AwsService } from 'src/app/services/aws.service';
 
 @Component({
   selector: 'app-admin-user-click-dialog',
@@ -47,20 +56,54 @@ export class AdminUserClickDialogComponent implements OnInit {
   protected form: FormGroup;
   protected loading = false;
   protected disableDelete = false;
+  protected costEstimation: number | null = 0;
 
   constructor(
     public dialogRef: MatDialogRef<AdminUserClickDialogComponent>,
     private fb: FormBuilder,
     private as: AdminService,
+    private dp: DportalService,
+    private aws: AwsService,
     private dg: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.form = this.fb.group({
       administrators: [false],
+      sizeOfData: ['', [Validators.required, Validators.min(0)]],
+      countOfQueries: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
   ngOnInit(): void {
+    this.costEstimation = this.data.costEstimation;
+    this.form.patchValue({
+      sizeOfData: this.data.sizeOfData,
+      countOfQueries: this.data.countOfQueries,
+    });
+
+    this.getUserGroups();
+    this.onChangeCalculateCost();
+  }
+
+  onChangeCalculateCost() {
+    this.form.valueChanges
+      .pipe(debounceTime(400), distinctUntilChanged())
+      .subscribe((values) => {
+        if (values.countOfQueries && values.sizeOfData) {
+          this.aws
+            .calculateQuotaEstimationPerMonth(
+              values.countOfQueries,
+              values.sizeOfData,
+            )
+
+            .subscribe((res) => {
+              this.costEstimation = res;
+            });
+        }
+      });
+  }
+
+  getUserGroups() {
     this.loading = true;
     this.as
       .listUsersGroups(this.data.email)
@@ -116,19 +159,34 @@ export class AdminUserClickDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  done(): void {
-    if (_.isEqual(this.initialGroups, this.form.value)) {
-      this.dialogRef.close();
-      return;
-    }
+  updateQuota() {
+    return this.dp
+      .upsertUserQuota(this.data.sub, this.costEstimation, {
+        quotaSize: this.form.value.sizeOfData,
+        quotaQueryCount: this.form.value.countOfQueries,
+        usageSize: this.data.usageSize,
+        usageCount: this.data.usageCount,
+      })
+      .pipe(catchError(() => of(null)));
+  }
 
+  updateUser() {
+    const groups = _.pick(this.form.value, ['administrators']);
+    debugger;
+    return this.as
+      .updateUsersGroups(this.data.email, groups)
+      .pipe(catchError(() => of(null)));
+  }
+
+  done(): void {
     this.loading = true;
-    this.as
-      .updateUsersGroups(this.data.email, this.form.value)
-      .pipe(catchError(() => of(null)))
-      .subscribe(() => {
-        this.loading = false;
-        this.dialogRef.close();
-      });
+
+    const updateQuota$ = this.updateQuota();
+    const updateUser$ = this.updateUser();
+
+    forkJoin([updateQuota$, updateUser$]).subscribe(() => {
+      this.loading = false;
+      this.dialogRef.close();
+    });
   }
 }

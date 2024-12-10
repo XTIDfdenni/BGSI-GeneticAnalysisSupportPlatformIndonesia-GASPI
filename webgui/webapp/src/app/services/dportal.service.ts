@@ -301,4 +301,24 @@ export class DportalService {
       ),
     );
   }
+
+  getUserQuota(id: string) {
+    console.log('get user quota');
+    return from(
+      API.get(environment.api_endpoint_sbeacon.name, `dportal/quota/${id}`, {}),
+    );
+  }
+
+  upsertUserQuota(id: string, costEstimation: number | null, usage: any) {
+    console.log('upsert user quota');
+    return from(
+      API.post(environment.api_endpoint_sbeacon.name, 'dportal/quota', {
+        body: {
+          IdentityUser: id,
+          CostEstimation: costEstimation,
+          Usage: usage,
+        },
+      }),
+    );
+  }
 }

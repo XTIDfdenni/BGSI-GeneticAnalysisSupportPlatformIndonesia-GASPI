@@ -32,6 +32,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import { DportalService } from 'src/app/services/dportal.service';
 // import { testUsers } from './test_responses/test_users';
 
 // Docs: https://material.angular.io/components/paginator/examples
@@ -104,6 +105,7 @@ export class AdminPageComponent implements OnInit {
     private dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
+    private dp: DportalService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -156,27 +158,52 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
-  async userClick(row: any) {
+  async openDialog(row: any, res: any) {
     const { AdminUserClickDialogComponent } = await import(
       'src/app/pages/admin-page/components/admin-user-click-dialog/admin-user-click-dialog.component'
     );
+
     const dialog = this.dg.open(AdminUserClickDialogComponent, {
       data: {
+        sub: row.Sub,
         name: `${row['First name']} ${row['Last name']}`,
         email: row.Email,
         firstName: `${row['First name']}`,
         lastName: `${row['Last name']}`,
-        // TODO: Add more user attributes
-        sizeOfData: 0,
-        countOfQueries: 0,
-        costEstimation: 0,
+        sizeOfData: res.Usage.quotaSize,
+        countOfQueries: res.Usage.quotaQueryCount,
+        usageCount: res.Usage.usageCount,
+        usageSize: res.Usage.usageSize,
+        costEstimation: res.CostEstimation,
       },
     });
+
     dialog.afterClosed().subscribe((data) => {
       if (_.get(data, 'reload', false)) {
         this.resetPagination();
         this.listUsers();
       }
+    });
+  }
+
+  async userClick(row: any) {
+    this.dp.getUserQuota(row.Sub).subscribe({
+      next: (res) => {
+        this.openDialog(row, res); // Handle success case
+      },
+      error: (err) => {
+        // fallback data for error cases
+        const fallbackData = {
+          Usage: {
+            quotaSize: 0,
+            quotaQueryCount: 0,
+            usageCount: 0,
+            usageSize: 0,
+          },
+          CostEstimation: 0,
+        };
+        this.openDialog(row, fallbackData);
+      },
     });
   }
 
@@ -256,6 +283,7 @@ export class AdminPageComponent implements OnInit {
           this.usersTableDataSource = _.map(
             _.get(response, 'users', []),
             (user: any) => ({
+              Sub: _.get(_.find(user.Attributes, { Name: 'sub' }), 'Value', ''),
               Email: _.get(
                 _.find(user.Attributes, { Name: 'email' }),
                 'Value',
