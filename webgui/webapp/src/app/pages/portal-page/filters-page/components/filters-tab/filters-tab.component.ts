@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, of } from 'rxjs';
 import { FilterService } from 'src/app/services/filter.service';
+import { DportalService } from 'src/app/services/dportal.service';
 import { ScopeTypes } from 'src/app/utils/interfaces';
 import { environment } from 'src/environments/environment';
 import * as _ from 'lodash';
@@ -25,7 +26,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import { format } from 'echarts';
 // import { result, testTerms } from './test_responses/filters';
+
+interface Project {
+  name: string;
+  ingested_datasets: string[];
+}
 
 @Component({
   selector: 'app-filters-tab',
@@ -44,13 +51,14 @@ import { SpinnerService } from 'src/app/services/spinner.service';
     TermFreqViewerComponent,
     FiltersResultViewerComponent,
   ],
-  providers: [FilterService],
+  providers: [FilterService, DportalService],
   templateUrl: './filters-tab.component.html',
   styleUrl: './filters-tab.component.scss',
 })
 export class FiltersTabComponent {
   protected _ = _;
   protected form: FormGroup;
+  protected myProjects: Project[] = [];
   protected query: any = null;
   protected endpoint: any = null;
   protected results: any = null;
@@ -61,11 +69,13 @@ export class FiltersTabComponent {
   constructor(
     private fb: FormBuilder,
     private fs: FilterService,
+    private dps: DportalService,
     private dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
   ) {
     this.form = fb.group({
+      projects: [[], Validators.required],
       scope: this.fb.control(ScopeTypes.INDIVIDUALS, [Validators.required]),
       id: this.fb.control({ value: '', disabled: true }, [Validators.required]),
       skip: this.fb.control(0, [Validators.required, Validators.min(0)]),
@@ -90,12 +100,36 @@ export class FiltersTabComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.list();
+  }
+
+  list() {
+    this.dps
+      .getMyProjects()
+      .pipe(catchError(() => of(null)))
+      .subscribe((projects: any) => {
+        if (!projects || !Array.isArray(projects)) {
+          this.sb.open('Unable to get projects.', 'Close', { duration: 60000 });
+        } else {
+          this.myProjects = projects
+            .filter((p: Project) => p.ingested_datasets.length > 0)
+            .map((p: Project) => ({
+              ...p,
+              expanded: false,
+            }));
+        }
+      });
+  }
+
   run() {
     this.ss.start();
     const form = this.form.value;
+    const projects = form.projects.join(',');
     const query = {
       skip: form.skip,
       limit: form.limit,
+      projects: projects
     };
     let result$;
     let endpoint: any;
@@ -131,6 +165,7 @@ export class FiltersTabComponent {
   }
 
   reset() {
+    this.form.get('projects')!.setValue([]);
     this.results = null;
     this.query = null;
     this.endpoint = null;

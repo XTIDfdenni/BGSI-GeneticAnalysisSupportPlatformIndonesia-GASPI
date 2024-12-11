@@ -49,6 +49,8 @@ resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {
 # 
 # groups
 # 
+
+# admin group
 resource "aws_cognito_user_group" "admin_group" {
   name         = "administrators"
   user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
@@ -154,6 +156,114 @@ resource "aws_iam_policy" "admin_group_role_policy" {
 resource "aws_iam_role_policy_attachment" "admin_group_role_policy_attachment" {
   role       = aws_iam_role.admin_group_role.name
   policy_arn = aws_iam_policy.admin_group_role_policy.arn
+}
+
+# manager group
+resource "aws_cognito_user_group" "manager_group" {
+  name         = "managers"
+  user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
+  description  = "Group of users who can has management privileges"
+  role_arn     = aws_iam_role.manager_group_role.arn
+}
+
+data "aws_iam_policy_document" "manager_group_assume_role_policy" {
+  statement {
+    principals {
+      type        = "Federated"
+      identifiers = ["cognito-identity.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "cognito-identity.amazonaws.com:aud"
+      values   = [aws_cognito_identity_pool.gaspi_identity_pool.id]
+    }
+
+    condition {
+      test     = "ForAnyValue:StringLike"
+      variable = "cognito-identity.amazonaws.com:amr"
+      values   = ["authenticated"]
+    }
+  }
+}
+
+resource "aws_iam_role" "manager_group_role" {
+  name               = "gaspi-manager-group-role"
+  assume_role_policy = data.aws_iam_policy_document.manager_group_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "manager_group_role_policy" {
+  # project access
+  statement {
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/projects/*",
+    ]
+  }
+
+  # private access
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:ListBucket",
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*",
+    ]
+
+    condition {
+      test     = "StringLike"
+      variable = "s3:prefix"
+      values = [
+        "private/$${cognito-identity.amazonaws.com:sub}/",
+        "private/$${cognito-identity.amazonaws.com:sub}/*",
+      ]
+    }
+  }
+
+  # private access
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+
+    resources = [
+      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/private/$${cognito-identity.amazonaws.com:sub}/*",
+    ]
+  }
+
+  # Allow access to AWS Pricing API
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "pricing:*",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "manager_group_role_policy" {
+  name        = "gaspi-manager-group-role-policy"
+  description = "manager group permissions"
+  policy      = data.aws_iam_policy_document.manager_group_role_policy.json
+
+}
+
+resource "aws_iam_role_policy_attachment" "manager_group_role_policy_attachment" {
+  role       = aws_iam_role.manager_group_role.name
+  policy_arn = aws_iam_policy.manager_group_role_policy.arn
 }
 
 # 

@@ -2,11 +2,11 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
 import { DportalService } from 'src/app/services/dportal.service';
+import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 
 interface ProjectFile {
   filename: string;
@@ -33,8 +33,8 @@ export interface FileSelectEvent {
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatDialogModule,
     MatRadioModule,
+    ComponentSpinnerComponent,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
@@ -58,12 +58,12 @@ export class ProjectsListComponent {
   constructor(
     private dps: DportalService,
     private sb: MatSnackBar,
-    private dg: MatDialog,
   ) {
     this.list();
   }
 
   list() {
+    this.loading = true;
     this.dps
       .getMyProjects()
       .pipe(

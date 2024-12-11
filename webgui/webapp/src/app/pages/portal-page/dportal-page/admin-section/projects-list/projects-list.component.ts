@@ -69,6 +69,8 @@ export class ProjectsListComponent {
   }
 
   list() {
+    this.loading = true;
+    this.dataSource.data = [];
     this.dps
       .getAdminProjects()
       .pipe(catchError(() => of(null)))

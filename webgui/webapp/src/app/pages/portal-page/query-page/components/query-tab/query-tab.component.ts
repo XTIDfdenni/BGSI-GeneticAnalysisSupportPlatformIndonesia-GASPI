@@ -54,6 +54,7 @@ import { customQueries } from './custom-queries';
 
 interface Project {
   name: string;
+  ingested_datasets: string[];
 }
 
 const allowedReturns = {
@@ -261,10 +262,12 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
         if (!projects || !Array.isArray(projects)) {
           this.sb.open('Unable to get projects.', 'Close', { duration: 60000 });
         } else {
-          this.myProjects = projects.map((p: Project) => ({
-            ...p,
-            expanded: false,
-          }));
+          this.myProjects = projects
+            .filter((p: Project) => p.ingested_datasets.length > 0)
+            .map((p: Project) => ({
+              ...p,
+              expanded: false,
+            }));
         }
       });
   }
@@ -379,10 +382,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     this.customQuery = false;
     this.form.reset();
 
-    const projectsControl = this.form.get('projects');
-    if (projectsControl) {
-      projectsControl.setValue([]);
-    }
+    this.form.get('projects')!.setValue([]);
     (this.form.get('filters') as FormArray).clear();
 
     this.form.patchValue({
