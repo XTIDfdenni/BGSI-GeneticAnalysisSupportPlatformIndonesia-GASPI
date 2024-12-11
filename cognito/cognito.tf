@@ -47,13 +47,13 @@ resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {
 
   access_token_validity  = 5
   auth_session_validity  = 3
-  refresh_token_validity = 60
+  refresh_token_validity = 2
   id_token_validity      = 5
 
   token_validity_units {
     access_token  = "minutes"
     id_token      = "minutes"
-    refresh_token = "minutes"
+    refresh_token = "hours"
   }
 }
 
