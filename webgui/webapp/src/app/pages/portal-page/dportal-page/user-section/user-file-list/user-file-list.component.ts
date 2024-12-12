@@ -26,6 +26,10 @@ export class UserFileListComponent implements OnInit {
       pageSize: 'ALL',
       level: 'private',
     });
+
+    console.log('res storage list (res)', res);
+    console.log('res storage results (res.results)', res.results);
+
     this.myFiles = res.results;
   }
 
