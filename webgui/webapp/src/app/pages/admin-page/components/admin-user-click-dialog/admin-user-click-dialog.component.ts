@@ -56,7 +56,11 @@ export class AdminUserClickDialogComponent implements OnInit {
   protected form: FormGroup;
   protected loading = false;
   protected disableDelete = false;
+
+  // quota
   protected costEstimation: number | null = 0;
+  protected usageSize = 0;
+  protected usageCount = 0;
 
   constructor(
     public dialogRef: MatDialogRef<AdminUserClickDialogComponent>,
@@ -75,12 +79,6 @@ export class AdminUserClickDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.costEstimation = this.data.costEstimation;
-    this.form.patchValue({
-      sizeOfData: this.data.sizeOfData,
-      countOfQueries: this.data.countOfQueries,
-    });
-
     this.getUserGroups();
     this.onChangeCalculateCost();
   }
@@ -105,29 +103,60 @@ export class AdminUserClickDialogComponent implements OnInit {
 
   getUserGroups() {
     this.loading = true;
-    this.as
+
+    // Define both observables
+    const userQuota$ = this.dp
+      .getUserQuota(this.data.sub)
+      .pipe(catchError(() => of(null)));
+
+    const userGroups$ = this.as
       .listUsersGroups(this.data.email)
-      .pipe(catchError(() => of(null)))
-      .subscribe((response: any) => {
-        const groups = _.get(response, 'groups', []);
-        const user = _.get(response, 'user', null);
-        const authorizer = _.get(response, 'authorizer', null);
-        const groupNames = _.map(
-          groups,
-          (group) => _.split(group.GroupName, '-')[0],
-        );
-        const userGroups: { [key: string]: boolean } = {};
-        _.each(groupNames, (gn: string) => {
-          userGroups[gn] = true;
-        });
-        _.merge(this.initialGroups, userGroups);
-        this.form.patchValue(userGroups);
-        if (user === authorizer) {
-          this.form.get('administrators')?.disable();
-          this.disableDelete = true;
+      .pipe(catchError(() => of(null)));
+
+    // Use forkJoin to run them in parallel
+    forkJoin({ userQuota: userQuota$, userGroups: userGroups$ }).subscribe(
+      ({ userQuota, userGroups }) => {
+        // Process user quota response
+        if (userQuota) {
+          this.costEstimation = userQuota.CostEstimation;
+          this.usageSize = userQuota.Usage.usageSize;
+          this.usageCount = userQuota.Usage.usageCount;
+
+          this.form.patchValue({
+            sizeOfData: userQuota.Usage.quotaSize,
+            countOfQueries: userQuota.Usage.quotaQueryCount,
+          });
         }
+
+        // Process user groups response
+        if (userGroups) {
+          const groups = _.get(userGroups, 'groups', []);
+          const user = _.get(userGroups, 'user', null);
+          const authorizer = _.get(userGroups, 'authorizer', null);
+          const groupNames = _.map(
+            groups,
+            (group) => _.split(group.GroupName, '-')[0],
+          );
+          const userGroupsObj: { [key: string]: boolean } = {};
+          _.each(groupNames, (gn: string) => {
+            userGroupsObj[gn] = true;
+          });
+          _.merge(this.initialGroups, userGroupsObj);
+          this.form.patchValue(userGroupsObj);
+
+          if (user === authorizer) {
+            this.form.get('administrators')?.disable();
+            this.disableDelete = true;
+          }
+        }
+
         this.loading = false;
-      });
+      },
+      (error) => {
+        console.error('Error loading user data:', error);
+        this.loading = false;
+      },
+    );
   }
 
   async delete() {
@@ -164,15 +193,14 @@ export class AdminUserClickDialogComponent implements OnInit {
       .upsertUserQuota(this.data.sub, this.costEstimation, {
         quotaSize: this.form.value.sizeOfData,
         quotaQueryCount: this.form.value.countOfQueries,
-        usageSize: this.data.usageSize,
-        usageCount: this.data.usageCount,
+        usageSize: this.usageSize,
+        usageCount: this.usageCount,
       })
       .pipe(catchError(() => of(null)));
   }
 
   updateUser() {
     const groups = _.pick(this.form.value, ['administrators']);
-    debugger;
     return this.as
       .updateUsersGroups(this.data.email, groups)
       .pipe(catchError(() => of(null)));

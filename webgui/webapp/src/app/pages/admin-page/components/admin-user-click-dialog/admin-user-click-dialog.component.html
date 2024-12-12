@@ -124,6 +124,7 @@
         mat-raised-button
         color="primary"
         (click)="done()"
+        [disabled]="form.invalid"
       >
         Update
       </button>
