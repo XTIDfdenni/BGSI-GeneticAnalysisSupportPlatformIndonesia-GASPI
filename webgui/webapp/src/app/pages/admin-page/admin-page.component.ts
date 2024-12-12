@@ -158,7 +158,9 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
-  async openDialog(row: any, res: any) {
+  async openDialog(row: any, res: any) {}
+
+  async userClick(row: any) {
     const { AdminUserClickDialogComponent } = await import(
       'src/app/pages/admin-page/components/admin-user-click-dialog/admin-user-click-dialog.component'
     );
@@ -170,11 +172,11 @@ export class AdminPageComponent implements OnInit {
         email: row.Email,
         firstName: `${row['First name']}`,
         lastName: `${row['Last name']}`,
-        sizeOfData: res.Usage.quotaSize,
-        countOfQueries: res.Usage.quotaQueryCount,
-        usageCount: res.Usage.usageCount,
-        usageSize: res.Usage.usageSize,
-        costEstimation: res.CostEstimation,
+        // sizeOfData: res.Usage.quotaSize,
+        // countOfQueries: res.Usage.quotaQueryCount,
+        // usageCount: res.Usage.usageCount,
+        // usageSize: res.Usage.usageSize,
+        // costEstimation: res.CostEstimation,
       },
     });
 
@@ -183,27 +185,6 @@ export class AdminPageComponent implements OnInit {
         this.resetPagination();
         this.listUsers();
       }
-    });
-  }
-
-  async userClick(row: any) {
-    this.dp.getUserQuota(row.Sub).subscribe({
-      next: (res) => {
-        this.openDialog(row, res); // Handle success case
-      },
-      error: (err) => {
-        // fallback data for error cases
-        const fallbackData = {
-          Usage: {
-            quotaSize: 0,
-            quotaQueryCount: 0,
-            usageCount: 0,
-            usageSize: 0,
-          },
-          CostEstimation: 0,
-        };
-        this.openDialog(row, fallbackData);
-      },
     });
   }
 

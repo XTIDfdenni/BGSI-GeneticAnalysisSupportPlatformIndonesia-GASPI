@@ -148,7 +148,6 @@ export class AdminCreateUserComponent implements OnInit {
       )
       .subscribe((response) => {
         //api response always null
-        debugger;
         this.ss.end();
 
         if (response) {
