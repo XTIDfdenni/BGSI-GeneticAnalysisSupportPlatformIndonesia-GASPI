@@ -31,6 +31,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AwsService } from 'src/app/services/aws.service';
+import { DportalService } from 'src/app/services/dportal.service';
 
 @Component({
   selector: 'app-admin-create-user-dialog',
@@ -69,6 +70,7 @@ export class AdminCreateUserComponent implements OnInit {
     private adminServ: AdminService,
     private sb: MatSnackBar,
     private aws: AwsService,
+    private dp: DportalService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -149,8 +151,9 @@ export class AdminCreateUserComponent implements OnInit {
       .subscribe((response) => {
         //api response always null
         this.ss.end();
-
         if (response) {
+          this.addUserQuota(response.uid);
+
           this.newUserForm.reset();
           this.sb.open('User created successfully!', 'Okay', {
             duration: 60000,
@@ -160,7 +163,16 @@ export class AdminCreateUserComponent implements OnInit {
       });
   }
 
-  addUserQuota(): void {}
+  addUserQuota(sub: string): void {
+    this.dp
+      .upsertUserQuota(sub, this.costEstimation, {
+        quotaSize: this.newUserForm.value.sizeOfData,
+        quotaQueryCount: this.newUserForm.value.countOfQueries,
+        usageSize: 0,
+        usageCount: 0,
+      })
+      .pipe(catchError(() => of(null)));
+  }
 
   updateUserRole(email: string, isAdmin: boolean): void {
     this.as

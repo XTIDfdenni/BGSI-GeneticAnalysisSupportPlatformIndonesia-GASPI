@@ -118,13 +118,13 @@ export class AdminUserClickDialogComponent implements OnInit {
       ({ userQuota, userGroups }) => {
         // Process user quota response
         if (userQuota) {
-          this.costEstimation = userQuota.costEstimation;
-          this.usageSize = userQuota.usageSize;
-          this.usageCount = userQuota.usageCount;
+          this.costEstimation = userQuota.CostEstimation;
+          this.usageSize = userQuota.Usage.usageSize;
+          this.usageCount = userQuota.Usage.usageCount;
 
           this.form.patchValue({
-            sizeOfData: userQuota.sizeOfData,
-            countOfQueries: userQuota.countOfQueries,
+            sizeOfData: userQuota.Usage.quotaSize,
+            countOfQueries: userQuota.Usage.quotaQueryCount,
           });
         }
 
