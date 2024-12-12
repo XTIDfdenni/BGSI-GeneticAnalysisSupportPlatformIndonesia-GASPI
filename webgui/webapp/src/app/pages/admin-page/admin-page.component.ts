@@ -172,11 +172,6 @@ export class AdminPageComponent implements OnInit {
         email: row.Email,
         firstName: `${row['First name']}`,
         lastName: `${row['Last name']}`,
-        // sizeOfData: res.Usage.quotaSize,
-        // countOfQueries: res.Usage.quotaQueryCount,
-        // usageCount: res.Usage.usageCount,
-        // usageSize: res.Usage.usageSize,
-        // costEstimation: res.CostEstimation,
       },
     });
 
