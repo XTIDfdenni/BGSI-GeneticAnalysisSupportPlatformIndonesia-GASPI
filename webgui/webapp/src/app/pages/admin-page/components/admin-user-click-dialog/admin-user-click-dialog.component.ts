@@ -79,7 +79,10 @@ export class AdminUserClickDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getUserGroups();
+    this.dialogRef.afterOpened().subscribe(() => {
+      this.getUserGroups();
+    });
+
     this.onChangeCalculateCost();
   }
 
@@ -103,7 +106,6 @@ export class AdminUserClickDialogComponent implements OnInit {
 
   getUserGroups() {
     this.loading = true;
-
     // Define both observables
     const userQuota$ = this.dp
       .getUserQuota(this.data.sub)

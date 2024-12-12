@@ -27,6 +27,7 @@ export class ComponentSpinnerComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['loading']) {
+      console.log('loading changed to', this.loading);
       this.loadingSubject.next(this.loading);
     }
   }

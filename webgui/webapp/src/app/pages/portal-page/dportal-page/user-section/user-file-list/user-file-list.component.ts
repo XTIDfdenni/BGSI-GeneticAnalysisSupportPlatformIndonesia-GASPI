@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Storage } from 'aws-amplify';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { DUMMY_DATA_STORAGE } from 'src/app/utils/data';
 
 @Component({
   selector: 'app-user-file-list',
@@ -29,8 +30,10 @@ export class UserFileListComponent implements OnInit {
 
     console.log('res storage list (res)', res);
     console.log('res storage results (res.results)', res.results);
+    // TODO: Update this.myFiles with the results from the Storage.list call
+    // this.myFiles = res.results;
 
-    this.myFiles = res.results;
+    this.myFiles = DUMMY_DATA_STORAGE.results;
   }
 
   async copy(file: any) {
