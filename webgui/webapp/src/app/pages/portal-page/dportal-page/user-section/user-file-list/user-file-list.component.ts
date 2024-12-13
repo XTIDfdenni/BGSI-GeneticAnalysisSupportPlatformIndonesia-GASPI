@@ -7,9 +7,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DUMMY_DATA_STORAGE } from 'src/app/utils/data';
 import { AuthService } from 'src/app/services/auth.service';
-import { catchError, filter, of } from 'rxjs';
+import { catchError, filter, firstValueFrom, of } from 'rxjs';
 import { DportalService } from 'src/app/services/dportal.service';
 import { formatBytes, getTotalSize } from 'src/app/utils/file';
+import { UserQuotaService } from 'src/app/services/userquota.service';
 
 @Component({
   selector: 'app-user-file-list',
@@ -29,17 +30,15 @@ export class UserFileListComponent implements OnInit {
 
   quotaSize: number = 0;
   quotaSizeFormatted: string = '';
-
   costEstimation: number = 0;
-  loadingUsage: boolean = false;
-
   totalSize: number = 0;
   totalSizeFormatted: string = '';
 
+  loadingUsage: boolean = false;
+
   constructor(
     private dg: MatDialog,
-    private auth: AuthService,
-    private dp: DportalService,
+    private uq: UserQuotaService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -48,7 +47,7 @@ export class UserFileListComponent implements OnInit {
 
   loadList() {
     this.list();
-    this.getCurrentUsage();
+    this.currentUsage();
   }
 
   generateTotalSize(files: any[]) {
@@ -78,22 +77,16 @@ export class UserFileListComponent implements OnInit {
     this.generateTotalSize(this.myFiles);
   }
 
-  getCurrentUsage() {
+  async currentUsage() {
     this.loadingUsage = true;
-    this.auth.user.pipe(filter((u) => !!u)).subscribe((u: any) => {
-      const userSub = u.attributes.sub;
+    const { quotaSize, costEstimation } = await firstValueFrom(
+      this.uq.getCurrentUsage(),
+    );
 
-      this.dp
-        .getUserQuota(userSub)
-        .pipe(catchError(() => of(null)))
-        .subscribe((res) => {
-          this.quotaSize = res?.Usage.quotaSize || 0;
-          this.quotaSizeFormatted = formatBytes(this.quotaSize);
-          this.costEstimation = res?.CostEstimation || 0;
-        });
-
-      this.loadingUsage = false;
-    });
+    this.quotaSize = quotaSize;
+    this.quotaSizeFormatted = formatBytes(this.quotaSize);
+    this.costEstimation = costEstimation;
+    this.loadingUsage = false;
   }
 
   async copy(file: any) {

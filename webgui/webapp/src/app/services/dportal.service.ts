@@ -321,4 +321,16 @@ export class DportalService {
       }),
     );
   }
+
+  incrementUsageCount(id: string) {
+    debugger;
+    console.log('incrementUsageCount');
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/quota/${id}/increment_usagecount`,
+        {},
+      ),
+    );
+  }
 }
