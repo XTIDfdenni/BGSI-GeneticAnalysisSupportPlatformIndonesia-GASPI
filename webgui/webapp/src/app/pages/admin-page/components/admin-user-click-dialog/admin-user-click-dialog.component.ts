@@ -30,6 +30,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DportalService } from 'src/app/services/dportal.service';
 import { AwsService } from 'src/app/services/aws.service';
+import { bytesToGigabytes, gigabytesToBytes } from 'src/app/utils/file';
 
 @Component({
   selector: 'app-admin-user-click-dialog',
@@ -73,13 +74,16 @@ export class AdminUserClickDialogComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       administrators: [false],
-      sizeOfData: ['', [Validators.required, Validators.min(0)]],
-      countOfQueries: ['', [Validators.required, Validators.min(0)]],
+      quotaSize: ['', [Validators.required, Validators.min(0)]],
+      quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
   ngOnInit(): void {
-    this.getUserGroups();
+    this.dialogRef.afterOpened().subscribe(() => {
+      this.getUserGroups();
+    });
+
     this.onChangeCalculateCost();
   }
 
@@ -87,11 +91,11 @@ export class AdminUserClickDialogComponent implements OnInit {
     this.form.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((values) => {
-        if (values.countOfQueries && values.sizeOfData) {
+        if (values.quotaQueryCount && values.quotaSize) {
           this.aws
             .calculateQuotaEstimationPerMonth(
-              values.countOfQueries,
-              values.sizeOfData,
+              values.quotaQueryCount,
+              values.quotaSize,
             )
 
             .subscribe((res) => {
@@ -103,7 +107,6 @@ export class AdminUserClickDialogComponent implements OnInit {
 
   getUserGroups() {
     this.loading = true;
-
     // Define both observables
     const userQuota$ = this.dp
       .getUserQuota(this.data.sub)
@@ -123,8 +126,8 @@ export class AdminUserClickDialogComponent implements OnInit {
           this.usageCount = userQuota.Usage.usageCount;
 
           this.form.patchValue({
-            sizeOfData: userQuota.Usage.quotaSize,
-            countOfQueries: userQuota.Usage.quotaQueryCount,
+            quotaSize: bytesToGigabytes(userQuota.Usage.quotaSize),
+            quotaQueryCount: userQuota.Usage.quotaQueryCount,
           });
         }
 
@@ -191,9 +194,9 @@ export class AdminUserClickDialogComponent implements OnInit {
   updateQuota() {
     return this.dp
       .upsertUserQuota(this.data.sub, this.costEstimation, {
-        quotaSize: this.form.value.sizeOfData,
-        quotaQueryCount: this.form.value.countOfQueries,
-        usageSize: this.usageSize,
+        quotaSize: gigabytesToBytes(this.form.value.quotaSize),
+        quotaQueryCount: this.form.value.quotaQueryCount,
+        usageSize: this.usageSize, // bytes
         usageCount: this.usageCount,
       })
       .pipe(catchError(() => of(null)));
