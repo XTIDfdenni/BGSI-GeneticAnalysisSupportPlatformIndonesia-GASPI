@@ -44,6 +44,17 @@ resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {
     "ALLOW_ADMIN_USER_PASSWORD_AUTH",
     "ALLOW_USER_PASSWORD_AUTH"
   ]
+
+  access_token_validity  = 5
+  auth_session_validity  = 3
+  refresh_token_validity = 2
+  id_token_validity      = 5
+
+  token_validity_units {
+    access_token  = "minutes"
+    id_token      = "minutes"
+    refresh_token = "hours"
+  }
 }
 
 # 

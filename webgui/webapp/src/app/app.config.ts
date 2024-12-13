@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   DetachedRouteHandle,
@@ -12,8 +12,15 @@ import { provideHttpClient, withFetch } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 
-class CustomReuseStrategy implements RouteReuseStrategy {
+@Injectable({
+  providedIn: 'root',
+})
+export class CustomReuseStrategy implements RouteReuseStrategy {
   private handlers: { [key: string]: DetachedRouteHandle } = {};
+
+  resetHandlers(): void {
+    this.handlers = {};
+  }
 
   shouldDetach(route: ActivatedRouteSnapshot): boolean {
     return true;
