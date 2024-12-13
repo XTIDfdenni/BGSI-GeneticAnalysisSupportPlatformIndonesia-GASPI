@@ -125,7 +125,7 @@ export class UserFileListComponent implements OnInit {
     });
     dialog.afterClosed().subscribe(async (result) => {
       if (result) {
-        // await Storage.remove(file.key, { level: 'private' });
+        await Storage.remove(file.key, { level: 'private' });
 
         this.myFiles = this.myFiles.filter((f) => f.key !== file.key);
 
