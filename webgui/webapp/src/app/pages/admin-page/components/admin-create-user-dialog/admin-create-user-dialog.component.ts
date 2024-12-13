@@ -32,6 +32,7 @@ import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AwsService } from 'src/app/services/aws.service';
 import { DportalService } from 'src/app/services/dportal.service';
+import { gigabytesToBytes } from 'src/app/utils/file';
 
 @Component({
   selector: 'app-admin-create-user-dialog',
@@ -78,8 +79,8 @@ export class AdminCreateUserComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       administrators: [false],
       // Quota
-      sizeOfData: ['', [Validators.required, Validators.min(0)]],
-      countOfQueries: ['', [Validators.required, Validators.min(0)]],
+      quotaSize: ['', [Validators.required, Validators.min(0)]],
+      quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -91,11 +92,11 @@ export class AdminCreateUserComponent implements OnInit {
     this.newUserForm.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((values) => {
-        if (values.countOfQueries && values.sizeOfData) {
+        if (values.quotaQueryCount && values.quotaSize) {
           this.aws
             .calculateQuotaEstimationPerMonth(
-              values.countOfQueries,
-              values.sizeOfData,
+              values.quotaQueryCount,
+              values.quotaSize,
             )
 
             .subscribe((res) => {
@@ -166,8 +167,8 @@ export class AdminCreateUserComponent implements OnInit {
   addUserQuota(sub: string): void {
     this.dp
       .upsertUserQuota(sub, this.costEstimation, {
-        quotaSize: this.newUserForm.value.sizeOfData,
-        quotaQueryCount: this.newUserForm.value.countOfQueries,
+        quotaSize: gigabytesToBytes(this.newUserForm.value.quotaSize),
+        quotaQueryCount: this.newUserForm.value.quotaQueryCount,
         usageSize: 0,
         usageCount: 0,
       })

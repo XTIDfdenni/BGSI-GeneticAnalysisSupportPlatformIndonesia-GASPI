@@ -1,4 +1,4 @@
-const bytesInOneGB = 1073741824;
+const bytesInOneGB = 1024 * 1024 * 1024; // 1024 * 1024 * 1024 Bytes
 
 /**
  * Converts a given number of bytes into a human-readable string format.
