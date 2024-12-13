@@ -24,7 +24,7 @@ import {
 } from 'src/app/utils/parsers';
 import { MatDialog } from '@angular/material/dialog';
 import { FilterTypes, ScopeTypes } from 'src/app/utils/interfaces';
-import { catchError, of, Subscription } from 'rxjs';
+import { catchError, filter, of, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import _ from 'lodash';
 import { AsyncPipe } from '@angular/common';
@@ -49,6 +49,7 @@ import {
   twoRangesValidator,
 } from 'src/app/utils/validators';
 import { customQueries } from './custom-queries';
+import { AuthService } from 'src/app/services/auth.service';
 // import { result, query, endpoint } from './test_responses/individuals';
 // import { result, query } from './test_responses/biosamples';
 
@@ -140,6 +141,10 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   page!: number;
   private subscription: Subscription | null = null;
 
+  // user quota
+  protected quotaQueryCount: number | null = null;
+  protected usageCount: number | null = null;
+
   constructor(
     private fb: FormBuilder,
     private qs: QueryService,
@@ -147,6 +152,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     public dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
+    private auth: AuthService,
   ) {
     this.form = this.fb.group({
       projects: [[], Validators.required],
@@ -270,6 +276,20 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
             }));
         }
       });
+  }
+
+  getCurrentUsage() {
+    this.auth.user.pipe(filter((u) => !!u)).subscribe((u: any) => {
+      const userSub = u.attributes.sub;
+
+      this.dps
+        .getUserQuota(userSub)
+        .pipe(catchError(() => of(null)))
+        .subscribe((res) => {
+          this.quotaQueryCount = res?.Usage.quotaSize || 0;
+          this.usageCount = res?.Usage.usageCount || 0;
+        });
+    });
   }
 
   ngAfterViewInit(): void {
