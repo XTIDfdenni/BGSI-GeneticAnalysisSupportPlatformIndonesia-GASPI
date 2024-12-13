@@ -129,7 +129,7 @@ export class FiltersTabComponent {
     const query = {
       skip: form.skip,
       limit: form.limit,
-      projects: projects
+      projects: projects,
     };
     let result$;
     let endpoint: any;

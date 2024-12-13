@@ -42,7 +42,7 @@
             <mat-error>Valid email is required</mat-error>
           </mat-form-field>
         </div>
-        <div class="flex flex-row gap-2" >
+        <div class="flex flex-row gap-2">
           <label for="Role Group">Role Access: </label>
           <div class="flex flex-1 flex-col">
             <mat-checkbox
@@ -79,16 +79,14 @@
         </mat-form-field>
         <mat-form-field>
           <mat-label>Count of Queries</mat-label>
-          <input matInput type="number" formControlName="quotaQueryCount">
+          <input matInput type="number" formControlName="quotaQueryCount" />
           <span matTextSuffix>Count</span>
           <mat-error>Field is required</mat-error>
         </mat-form-field>
 
         <div class="flex space-x-2">
           <span>Estimated Cost* : </span>
-          <span class="font font-semibold"
-            >${{ costEstimation }} / Month</span
-          >
+          <span class="font font-semibold">${{ costEstimation }} / Month</span>
         </div>
 
         <div class="text-red-500 text-sm flex space-x-2">
