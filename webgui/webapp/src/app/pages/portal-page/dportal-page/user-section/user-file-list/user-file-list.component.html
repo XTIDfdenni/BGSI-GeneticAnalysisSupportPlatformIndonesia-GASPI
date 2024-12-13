@@ -10,7 +10,7 @@
   </button>
 </div>
 <div class="flex flex-col space-y-1">
-  <div class="flex flex-col" *ngIf="totalSize > quotaSize; else limitReached">
+  <div class="flex flex-col" *ngIf="!loadingUsage">
     <div>
       The size of your data should not reach <b>{{ quotaSizeFormatted }}</b
       >.
@@ -22,16 +22,7 @@
       Estimated Cost of your data is <b>${{ costEstimation }}</b> per month.
     </div>
   </div>
-  <ng-template #limitReached>
-    <div class="flex flex-col">
-      <div>
-        The size of your data are <b>{{ totalSizeFormatted }}</b>
-      </div>
-      <div>
-        The Cost Estimation is <b>${{ costEstimation }}</b> per month.
-      </div>
-    </div>
-  </ng-template>
+
 
   @for (file of myFiles; track file) {
     <div class="flex flex-row justify-between w-full items-center">
