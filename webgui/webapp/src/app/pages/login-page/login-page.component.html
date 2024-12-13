@@ -1,6 +1,9 @@
 <mat-card>
   <mat-card-content>
-    <h2 style="text-align: center; color: #006064; text-transform: uppercase">
+    <h2
+      class="text-primary-60"
+      style="text-align: center; text-transform: uppercase"
+    >
       Login
     </h2>
     <!-- <div style="width: 100%; align-items: center; display: flex">
@@ -86,7 +89,7 @@
       }
       @if (state == StateTypes.ORDINARY_LOGIN) {
         <a
-          class="text-left w-[300px] font-medium text-cyan-900 text-sm"
+          class="text-left w-[300px] font-medium text-primary-60 text-sm"
           [routerLink]="[]"
           (click)="forgotPassword()"
           >Forgot password</a
@@ -97,6 +100,7 @@
         mat-raised-button
         color="primary"
         class="bui-login-input-field"
+        style="color: white"
       >
         Login
       </button>

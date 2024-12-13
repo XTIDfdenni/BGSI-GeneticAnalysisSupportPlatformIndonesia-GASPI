@@ -5,7 +5,7 @@
 .bui-header-wrapper {
   overflow: hidden;
   background: url(/assets/images/header.png) no-repeat right top;
-  background-size: contain;
+  background-size: cover;
 
   @media (max-width: 1024px) {
     background-size: cover;
@@ -144,7 +144,8 @@
 .bui-footer {
   height: 10%;
   overflow: hidden;
-  background: #2f2f2f url(/assets/images/bg02.jpg) repeat;
+  // background: #2f2f2f url(/assets/images/bg02.jpg) repeat;
+  background-color: theme("colors.primary-10");
   padding: 50px 1px;
   text-align: center;
   color: #6f6f6f;
@@ -179,7 +180,6 @@
   text-transform: uppercase;
   font-weight: 400;
   font-size: 0.9em;
-  color: #6f6f6f;
 }
 
 .bui-byline {
@@ -187,7 +187,6 @@
   top: -2em;
   font-weight: 500;
   font-size: 1em;
-  color: #8e8e8e;
   font: 16px Arial;
 }
 
@@ -204,6 +203,10 @@
 .bui-menu-items:hover .active {
   transform: scale(1);
   transition: transform 0.4s;
+}
+
+.bui-menu-items .active a {
+  color: theme("colors.warning-10");
 }
 
 .bui-menu-item.active {
