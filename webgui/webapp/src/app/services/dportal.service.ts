@@ -186,6 +186,33 @@ export class DportalService {
   }
 
   // data portal user actions
+  getMySavedQueries() {
+    console.log('get my saved queries');
+    return from(
+      API.get(environment.api_endpoint_sbeacon.name, 'dportal/queries', {}),
+    );
+  }
+
+  saveMyQuery(name: string, description: string, query: any) {
+    console.log('save my query');
+    return from(
+      API.post(environment.api_endpoint_sbeacon.name, 'dportal/queries', {
+        body: { name, description, query },
+      }),
+    );
+  }
+
+  deleteMyQuery(name: string) {
+    console.log('delete my query');
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/queries/${name}`,
+        {},
+      ),
+    );
+  }
+
   getMyProjects() {
     console.log('get my projects');
     return from(
