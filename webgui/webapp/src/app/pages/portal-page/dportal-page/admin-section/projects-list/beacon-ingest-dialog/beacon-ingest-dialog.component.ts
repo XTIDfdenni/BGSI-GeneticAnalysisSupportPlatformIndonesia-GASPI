@@ -65,7 +65,9 @@ export class BeaconIngestDialogComponent {
   ) {
     const vcfs = data.project.files.filter(
       (f: string) =>
-        f.endsWith('.vcf.gz') && data.project.files.includes(`${f}.tbi`),
+        f.endsWith('.vcf.gz') &&
+        (data.project.files.includes(`${f}.tbi`) ||
+          data.project.files.includes(`${f}.csi`)),
     );
     this.jsons = data.project.files.filter((f: string) => f.endsWith('.json'));
     this.ingestionForm = fb.group({
