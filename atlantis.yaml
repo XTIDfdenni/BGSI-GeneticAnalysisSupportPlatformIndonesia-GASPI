@@ -1,4 +1,5 @@
 version: 3
+
 automerge: true
 autodiscover:
   mode: auto
@@ -7,9 +8,7 @@ parallel_plan: true
 parallel_apply: true
 abort_on_execution_order_fail: true
 
-# Common project configurations
 projects:
-# Main Branch
 - name: gxc-main
   branch: /main/
   dir: .
@@ -30,8 +29,6 @@ projects:
   plan_requirements: [approved]
   apply_requirements: [approved]
   workflow: hub01-workflow
-
-# Xapiens Branch
 - name: gxc-xapiens
   branch: /xapiens/
   dir: .
@@ -44,8 +41,6 @@ projects:
   plan_requirements: [approved]
   apply_requirements: [approved]
   workflow: hub02-workflow
-
-# Hub Account Projects
 - name: gxc-hub01
   branch: /hub01/
   dir: .
@@ -55,7 +50,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub01-workflow
-
 - name: gxc-hub02
   branch: /hub02/
   dir: .
