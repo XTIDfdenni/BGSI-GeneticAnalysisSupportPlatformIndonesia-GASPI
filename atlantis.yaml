@@ -9,59 +9,59 @@ abort_on_execution_order_fail: true
 
 # Common project configurations
 projects:
-  # Main Branch
-  - name: gxc-main
-    branch: /main/
-    dir: .
-    workspace: default
-    terraform_version: &tf_version v1.9.4
-    execution_order_group: 1
-    autoplan:
-      when_modified: &tf_files
-        - "../modules/**/*.tf"
-        - ".terraform.lock.hcl"
-        - "*.json"
-        - "*.yaml"
-        - "*.js"
-        - "*.tf"
-        - "*.tfvars"
-        - "*.hcl"
-      enabled: true
-    plan_requirements: [approved]
-    apply_requirements: [approved]
-    workflow: hub01-workflow
+# Main Branch
+- name: gxc-main
+  branch: /main/
+  dir: .
+  workspace: default
+  terraform_version: &tf_version v1.9.4
+  execution_order_group: 1
+  autoplan:
+    when_modified: &tf_files
+      - "../modules/**/*.tf"
+      - ".terraform.lock.hcl"
+      - "*.json"
+      - "*.yaml"
+      - "*.js"
+      - "*.tf"
+      - "*.tfvars"
+      - "*.hcl"
+    enabled: true
+  plan_requirements: [approved]
+  apply_requirements: [approved]
+  workflow: hub01-workflow
 
-  # Xapiens Branch
-  - name: gxc-xapiens
-    branch: /xapiens/
-    dir: .
-    workspace: default
-    terraform_version: *tf_version
-    execution_order_group: 2
-    autoplan:
-      when_modified: *tf_files
-      enabled: true
-    plan_requirements: [approved]
-    apply_requirements: [approved]
-    workflow: hub02-workflow
+# Xapiens Branch
+- name: gxc-xapiens
+  branch: /xapiens/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 2
+  autoplan:
+    when_modified: *tf_files
+    enabled: true
+  plan_requirements: [approved]
+  apply_requirements: [approved]
+  workflow: hub02-workflow
 
-  # Hub Account Projects
-  - name: gxc-hub01
-    branch: /hub01/
-    dir: .
-    workspace: default
-    terraform_version: *tf_version
-    execution_order_group: 3
-    autoplan:
-      when_modified: *tf_files
-    workflow: hub01-workflow
+# Hub Account Projects
+- name: gxc-hub01
+  branch: /hub01/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 3
+  autoplan:
+    when_modified: *tf_files
+  workflow: hub01-workflow
 
-  - name: gxc-hub02
-    branch: /hub02/
-    dir: .
-    workspace: default
-    terraform_version: *tf_version
-    execution_order_group: 4
-    autoplan:
-      when_modified: *tf_files
-    workflow: hub02-workflow
+- name: gxc-hub02
+  branch: /hub02/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 4
+  autoplan:
+    when_modified: *tf_files
+  workflow: hub02-workflow
