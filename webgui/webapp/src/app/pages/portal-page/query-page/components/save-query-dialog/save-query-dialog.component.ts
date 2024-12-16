@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -24,9 +29,14 @@ import { MatInputModule } from '@angular/material/input';
   ],
 })
 export class SaveQueryDialogComponent {
+  form = this.fb.group({
+    name: ['', [Validators.required, Validators.maxLength(30)]],
+    description: ['', [Validators.required, Validators.maxLength(200)]],
+  });
+
   constructor(
     public dialogRef: MatDialogRef<SaveQueryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    private fb: FormBuilder,
   ) {}
 
   cancel(): void {

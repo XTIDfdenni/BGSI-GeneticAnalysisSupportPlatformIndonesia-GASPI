@@ -115,7 +115,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   protected allowedReturns: any = allowedReturns;
   protected loading = false;
   protected form: FormGroup;
-  protected examples: any = examples;
+  protected examples: any[] = examples;
   protected myProjects: Project[] = [];
   protected scopeTypes = ScopeTypes;
   protected filterTypes = FilterTypes;
@@ -133,9 +133,9 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   protected openPanels: boolean[] = [false, false, false];
   // custom queries
   protected customQuery = false;
-  protected customQueries: any = customQueries;
+  protected customQueries: any[] = customQueries;
   // saved queries
-  protected savedQueries: any = [];
+  protected savedQueries: any[] = [];
   @Input()
   page!: number;
   private subscription: Subscription | null = null;
@@ -242,6 +242,19 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     this.savedQueries = JSON.parse(
       localStorage.getItem('savedQueries') || '[]',
     );
+
+    this.dps
+      .getMySavedQueries()
+      .pipe(catchError(() => of(null)))
+      .subscribe((queries: any) => {
+        if (queries === null) {
+          this.sb.open('Unable to get saved queries.', 'Close', {
+            duration: 60000,
+          });
+        } else {
+          this.savedQueries = queries;
+        }
+      });
   }
 
   openPanel(index: number) {
@@ -413,7 +426,8 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     query.func(this);
   }
 
-  loadExample(query: any) {
+  loadQuery(entry: any) {
+    const query = entry.query;
     this.reset();
     (this.form.get('filters') as FormArray).clear();
     _.range(query.body.query.filters.length).forEach(() => {
@@ -421,6 +435,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.form.patchValue({
+      projects: query.projects,
       scope: query.scope,
       granularity: query.body.query.requestedGranularity,
       id: query.id,
@@ -448,43 +463,58 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {},
     });
 
-    dialog.afterClosed().subscribe((text) => {
-      if (_.isEmpty(text)) {
-        return;
-      }
-      const saved = JSON.parse(localStorage.getItem('savedQueries') || '[]');
-      const form: any = this.form.value;
-      const entry = {
-        text: text,
-        scope: form.scope,
-        return: form.return,
-        id: form.id,
-        customReturn: form.customReturn,
-        body: {
-          query: {
-            filters: serializeFilters(form.filters, form.scope),
-            requestedGranularity: form.granularity,
-            pagination: {
-              skip: form.skip,
-              limit: form.limit,
+    dialog
+      .afterClosed()
+      .subscribe((details: { name: string; description: string } | null) => {
+        if (!details) {
+          return;
+        }
+        const saved = JSON.parse(localStorage.getItem('savedQueries') || '[]');
+        const form: any = this.form.value;
+        const entry = {
+          projects: form.projects,
+          scope: form.scope,
+          return: form.return,
+          id: form.id,
+          customReturn: form.customReturn,
+          body: {
+            query: {
+              filters: serializeFilters(form.filters, form.scope),
+              requestedGranularity: form.granularity,
+              pagination: {
+                skip: form.skip,
+                limit: form.limit,
+              },
+            },
+            meta: {
+              apiVersion: 'v2.0',
             },
           },
-          meta: {
-            apiVersion: 'v2.0',
-          },
-        },
-      };
-      if (form.scope === ScopeTypes.GENOMIC_VARIANTS && !form.customReturn) {
-        _.set(
-          entry,
-          'body.query.requestParameters',
-          serializeRequestParameters(form.requestParameters),
-        );
-      }
-      console.log(entry);
-      this.savedQueries = [...saved, entry];
-      localStorage.setItem('savedQueries', JSON.stringify(this.savedQueries));
-    });
+        };
+        if (form.scope === ScopeTypes.GENOMIC_VARIANTS && !form.customReturn) {
+          _.set(
+            entry,
+            'body.query.requestParameters',
+            serializeRequestParameters(form.requestParameters),
+          );
+        }
+        this.dps
+          .saveMyQuery(details.name, details.description, entry)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res) => {
+            if (!res) {
+              this.sb.open('Unable to save query.', 'Close', {
+                duration: 60000,
+              });
+            } else {
+              this.savedQueries.push({
+                name: details.name,
+                description: details.description,
+                query: entry,
+              });
+            }
+          });
+      });
   }
 
   async deleteSavedQuery(index: number) {
@@ -500,9 +530,20 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialog.afterClosed().subscribe((yes) => {
       if (yes) {
-        const saved = JSON.parse(localStorage.getItem('savedQueries') || '[]');
-        this.savedQueries = _.filter(saved, (_, idx: number) => idx !== index);
-        localStorage.setItem('savedQueries', JSON.stringify(this.savedQueries));
+        this.dps
+          .deleteMyQuery(this.savedQueries[index].name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res) => {
+            if (res) {
+              this.savedQueries = this.savedQueries.filter(
+                (_, index) => index !== index,
+              );
+            } else {
+              this.sb.open('Unable to delete query.', 'Close', {
+                duration: 60000,
+              });
+            }
+          });
       }
     });
   }
