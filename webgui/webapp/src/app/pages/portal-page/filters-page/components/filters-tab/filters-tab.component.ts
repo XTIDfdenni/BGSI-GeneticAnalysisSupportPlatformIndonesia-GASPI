@@ -98,6 +98,8 @@ export class FiltersTabComponent {
         this.form.controls['id'].disable();
       }
     });
+
+    console.log(this.form.invalid);
   }
 
   ngOnInit(): void {
@@ -129,7 +131,7 @@ export class FiltersTabComponent {
     const query = {
       skip: form.skip,
       limit: form.limit,
-      projects: projects
+      projects: projects,
     };
     let result$;
     let endpoint: any;
