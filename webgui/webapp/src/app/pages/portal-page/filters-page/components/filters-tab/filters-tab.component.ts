@@ -98,8 +98,6 @@ export class FiltersTabComponent {
         this.form.controls['id'].disable();
       }
     });
-
-    console.log(this.form.invalid);
   }
 
   ngOnInit(): void {
