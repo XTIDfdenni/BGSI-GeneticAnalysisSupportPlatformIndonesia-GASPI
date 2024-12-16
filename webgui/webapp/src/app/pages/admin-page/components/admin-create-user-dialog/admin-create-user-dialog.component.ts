@@ -33,6 +33,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AwsService } from 'src/app/services/aws.service';
 import { DportalService } from 'src/app/services/dportal.service';
 import { gigabytesToBytes } from 'src/app/utils/file';
+import { UserQuotaService } from 'src/app/services/userquota.service';
 
 @Component({
   selector: 'app-admin-create-user-dialog',
@@ -71,7 +72,7 @@ export class AdminCreateUserComponent implements OnInit {
     private adminServ: AdminService,
     private sb: MatSnackBar,
     private aws: AwsService,
-    private dp: DportalService,
+    private uq: UserQuotaService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -165,7 +166,7 @@ export class AdminCreateUserComponent implements OnInit {
   }
 
   addUserQuota(sub: string): void {
-    this.dp
+    this.uq
       .upsertUserQuota(sub, this.costEstimation, {
         quotaSize: gigabytesToBytes(this.newUserForm.value.quotaSize),
         quotaQueryCount: this.newUserForm.value.quotaQueryCount,

@@ -9,7 +9,7 @@ import { DUMMY_DATA_STORAGE } from 'src/app/utils/data';
 import { AuthService } from 'src/app/services/auth.service';
 import { catchError, filter, firstValueFrom, of } from 'rxjs';
 import { DportalService } from 'src/app/services/dportal.service';
-import { formatBytes, getTotalSize } from 'src/app/utils/file';
+import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 
 @Component({
@@ -51,12 +51,13 @@ export class UserFileListComponent implements OnInit {
   }
 
   generateTotalSize(files: any[]) {
-    const bytesTotal = getTotalSize(files);
+    const bytesTotal = getTotalStorageSize(files);
 
     this.totalSize = bytesTotal;
     this.totalSizeFormatted = formatBytes(bytesTotal);
   }
 
+  // TODO: DELETE THIS
   dummyList() {
     this.myFiles = DUMMY_DATA_STORAGE.results;
     this.generateTotalSize(this.myFiles);
