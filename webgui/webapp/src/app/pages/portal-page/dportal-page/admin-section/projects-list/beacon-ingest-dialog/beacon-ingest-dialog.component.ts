@@ -76,8 +76,9 @@ export class BeaconIngestDialogComponent {
         '',
         [
           Validators.required,
-          Validators.pattern('^[^\\s/]+$'),
-          Validators.maxLength(32),
+          Validators.pattern(/^\S.*\S$/),
+          Validators.pattern(/^[^,.:;/\\]+$/),
+          Validators.maxLength(30),
           Validators.minLength(6),
         ],
       ],

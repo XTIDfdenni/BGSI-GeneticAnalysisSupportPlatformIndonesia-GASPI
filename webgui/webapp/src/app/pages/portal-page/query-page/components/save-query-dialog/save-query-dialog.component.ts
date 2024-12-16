@@ -30,8 +30,18 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class SaveQueryDialogComponent {
   form = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(30)]],
-    description: ['', [Validators.required, Validators.maxLength(200)]],
+    name: [
+      '',
+      [Validators.required, Validators.minLength(6), Validators.maxLength(30)],
+    ],
+    description: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(10),
+        Validators.maxLength(200),
+      ],
+    ],
   });
 
   constructor(
