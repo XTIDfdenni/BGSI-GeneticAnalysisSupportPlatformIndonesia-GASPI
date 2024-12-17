@@ -54,6 +54,7 @@ export class DataSubmissionFormComponent {
       projectName: fb.control('', [
         Validators.required,
         Validators.pattern(/^\S.*\S$/),
+        Validators.pattern(/^[^,.:;/\\]+$/),
       ]),
       projectDescription: fb.control('', Validators.required),
     });

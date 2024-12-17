@@ -8,12 +8,27 @@
     <mat-form-field class="w-full">
       <mat-label>Dataset ID</mat-label>
       <input matInput formControlName="datasetId" required />
-      <mat-error
-        >A 6 - 32 character dataset ID is required no spaces or /
-        allowed</mat-error
-      >
     </mat-form-field>
-
+    @if (
+      ingestionForm.get("datasetId")?.dirty &&
+      (ingestionForm.get("datasetId")?.hasError("required") ||
+        ingestionForm.get("datasetId")?.hasError("pattern"))
+    ) {
+      <mat-error class="text-sm"
+        >A unique dataset ID is required per project.
+      </mat-error>
+      <mat-error class="text-sm"
+        >White spaces not allowed at start or end.</mat-error
+      >
+      <mat-error class="text-sm">Can contain hiphen and underscore.</mat-error>
+    }
+    @if (
+      ingestionForm.get("datasetId")?.dirty &&
+      (ingestionForm.get("datasetId")?.hasError("maxLength") ||
+        ingestionForm.get("datasetId")?.hasError("minLength"))
+    ) {
+      <mat-error class="text-sm">Must be between 6-30 characters.</mat-error>
+    }
     <div formArrayName="vcfLocations">
       <span class="font-semibold">VCF Files:</span>
       @for (file of vcfLocations.controls; track file; let i = $index) {

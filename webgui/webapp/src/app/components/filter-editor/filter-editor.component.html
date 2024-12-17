@@ -32,7 +32,7 @@
         >Search</a
       ></mat-hint
     >
-    <mat-error
+    <mat-error *ngIf="form.get('id')?.hasError('required')"
       >Required (<a [routerLink]="[]" (click)="searchFiltersClicked.emit()"
         >Search</a
       >)</mat-error
