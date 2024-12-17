@@ -117,7 +117,7 @@ export class QueryResultViewerContainerComponent implements OnChanges {
     const currentTotalSize = await this.totalStorage(content);
 
     // Check if the current total size is greater than the user's quota size
-    if (currentTotalSize <= userQuota.quotaSize) {
+    if (currentTotalSize >= userQuota.quotaSize) {
       this.sb.open(
         'Cannot Save Query because Quota Limit reached. Please contact administrator to increase your quota.',
         'Okay',
