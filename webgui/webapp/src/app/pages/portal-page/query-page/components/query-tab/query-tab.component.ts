@@ -317,7 +317,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     if (usageCount >= quotaQueryCount) {
-      this.sb.open('Run Query is reach Quota Limit.', 'Okay', {
+      this.sb.open('Run Query is reach quota limit.', 'Okay', {
         duration: 60000,
       });
       this.ss.end();
@@ -367,7 +367,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
         this.endpoint = endpoint;
         this.scope = form.customReturn ? form.return : form.scope;
 
-        this.dps.incrementUsageCount(userSub).subscribe(() => {
+        this.uq.incrementUsageCount(userSub).subscribe(() => {
           console.log('usage count incremented');
         });
       } else {

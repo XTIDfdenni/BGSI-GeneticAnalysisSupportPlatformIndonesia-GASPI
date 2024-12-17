@@ -31,6 +31,7 @@ import { MatInputModule } from '@angular/material/input';
 import { DportalService } from 'src/app/services/dportal.service';
 import { AwsService } from 'src/app/services/aws.service';
 import { bytesToGigabytes, gigabytesToBytes } from 'src/app/utils/file';
+import { UserQuotaService } from 'src/app/services/userquota.service';
 
 @Component({
   selector: 'app-admin-user-click-dialog',
@@ -67,7 +68,7 @@ export class AdminUserClickDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<AdminUserClickDialogComponent>,
     private fb: FormBuilder,
     private as: AdminService,
-    private dp: DportalService,
+    private uq: UserQuotaService,
     private aws: AwsService,
     private dg: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -108,7 +109,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   getUserGroups() {
     this.loading = true;
     // Define both observables
-    const userQuota$ = this.dp
+    const userQuota$ = this.uq
       .getUserQuota(this.data.sub)
       .pipe(catchError(() => of(null)));
 
@@ -192,7 +193,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   }
 
   updateQuota() {
-    return this.dp
+    return this.uq
       .upsertUserQuota(this.data.sub, this.costEstimation, {
         quotaSize: gigabytesToBytes(this.form.value.quotaSize),
         quotaQueryCount: this.form.value.quotaQueryCount,

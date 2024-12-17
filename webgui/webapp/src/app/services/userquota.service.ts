@@ -31,7 +31,6 @@ export class UserQuotaService {
   }
 
   incrementUsageCount(id: string) {
-    debugger;
     console.log('incrementUsageCount');
     return from(
       API.post(

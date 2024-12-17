@@ -63,6 +63,6 @@ export function bytesToGigabytes(bytes: number): number {
  * getTotalSize(dataStorage); // 123456789
  * ```
  */
-export function getTotalSize(dataStorage: any): number {
+export function getTotalStorageSize(dataStorage: any): number {
   return dataStorage.reduce((total: number, item: any) => total + item.size, 0);
 }

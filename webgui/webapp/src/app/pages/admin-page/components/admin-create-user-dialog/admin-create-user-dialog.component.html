@@ -106,7 +106,7 @@
         mat-raised-button
         color="primary"
         (click)="createUser()"
-        [disabled]="newUserForm.invalid"
+        [disabled]="newUserForm.invalid || !costEstimation"
       >
         Create User
       </button>
