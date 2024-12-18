@@ -28,7 +28,6 @@ import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { DportalService } from 'src/app/services/dportal.service';
 import { AwsService } from 'src/app/services/aws.service';
 import { bytesToGigabytes, gigabytesToBytes } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
