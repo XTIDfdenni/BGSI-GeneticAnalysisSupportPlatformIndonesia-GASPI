@@ -24,7 +24,7 @@ import {
 } from 'src/app/utils/parsers';
 import { MatDialog } from '@angular/material/dialog';
 import { FilterTypes, ScopeTypes } from 'src/app/utils/interfaces';
-import { catchError, of, Subscription } from 'rxjs';
+import { catchError, filter, firstValueFrom, of, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import _ from 'lodash';
 import { AsyncPipe } from '@angular/common';
@@ -49,6 +49,8 @@ import {
   twoRangesValidator,
 } from 'src/app/utils/validators';
 import { customQueries } from './custom-queries';
+import { AuthService } from 'src/app/services/auth.service';
+import { UserQuotaService } from 'src/app/services/userquota.service';
 // import { result, query, endpoint } from './test_responses/individuals';
 // import { result, query } from './test_responses/biosamples';
 
@@ -140,6 +142,11 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   page!: number;
   private subscription: Subscription | null = null;
 
+  // user quota
+  protected userSub: string = '';
+  protected quotaQueryCount: number = 0;
+  protected usageCount: number = 0;
+
   constructor(
     private fb: FormBuilder,
     private qs: QueryService,
@@ -147,6 +154,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     public dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
+    private uq: UserQuotaService,
   ) {
     this.form = this.fb.group({
       projects: [[], Validators.required],
@@ -301,8 +309,21 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     this.openPanels[index] = false;
   }
 
-  run() {
+  async run() {
     this.ss.start();
+
+    const { quotaQueryCount, usageCount, userSub } = await firstValueFrom(
+      this.uq.getCurrentUsage(),
+    );
+
+    if (usageCount >= quotaQueryCount) {
+      this.sb.open('Run Query is reach quota limit.', 'Okay', {
+        duration: 60000,
+      });
+      this.ss.end();
+      return;
+    }
+
     const form: any = this.form.value;
     const query = {
       projects: form.projects,
@@ -345,6 +366,10 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
         this.results = data;
         this.endpoint = endpoint;
         this.scope = form.customReturn ? form.return : form.scope;
+
+        this.uq.incrementUsageCount(userSub).subscribe(() => {
+          console.log('usage count incremented');
+        });
       } else {
         this.sb.open(
           'API request failed. Please check your parameters.',

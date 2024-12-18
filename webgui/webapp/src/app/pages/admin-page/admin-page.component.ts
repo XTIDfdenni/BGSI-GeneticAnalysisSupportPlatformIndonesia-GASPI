@@ -156,22 +156,23 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
+  async openDialog(row: any, res: any) {}
+
   async userClick(row: any) {
     const { AdminUserClickDialogComponent } = await import(
       'src/app/pages/admin-page/components/admin-user-click-dialog/admin-user-click-dialog.component'
     );
+
     const dialog = this.dg.open(AdminUserClickDialogComponent, {
       data: {
+        sub: row.Sub,
         name: `${row['First name']} ${row['Last name']}`,
         email: row.Email,
         firstName: `${row['First name']}`,
         lastName: `${row['Last name']}`,
-        // TODO: Add more user attributes
-        sizeOfData: 0,
-        countOfQueries: 0,
-        costEstimation: 0,
       },
     });
+
     dialog.afterClosed().subscribe((data) => {
       if (_.get(data, 'reload', false)) {
         this.resetPagination();
@@ -256,6 +257,7 @@ export class AdminPageComponent implements OnInit {
           this.usersTableDataSource = _.map(
             _.get(response, 'users', []),
             (user: any) => ({
+              Sub: _.get(_.find(user.Attributes, { Name: 'sub' }), 'Value', ''),
               Email: _.get(
                 _.find(user.Attributes, { Name: 'email' }),
                 'Value',
