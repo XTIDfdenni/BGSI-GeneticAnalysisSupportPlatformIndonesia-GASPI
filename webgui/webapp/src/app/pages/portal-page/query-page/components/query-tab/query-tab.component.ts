@@ -315,6 +315,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     const { quotaQueryCount, usageCount, userSub } = await firstValueFrom(
       this.uq.getCurrentUsage(),
     );
+    debugger;
 
     if (usageCount >= quotaQueryCount) {
       this.sb.open('Run Query is reach quota limit.', 'Okay', {
