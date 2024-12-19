@@ -6,6 +6,7 @@ module "cognito" {
   gaspi-admin-username     = var.gaspi-admin-username
   gaspi-admin-password     = var.gaspi-admin-password
   dataportal-bucket-prefix = var.dataportal-bucket-prefix
+  staging-bucket-prefix    = var.staging-bucket-prefix
 
   common-tags = merge(var.common-tags, {
     "NAME" = "cognito-infrastructure"
@@ -19,6 +20,7 @@ module "sbeacon" {
   metadata-bucket-prefix      = var.metadata-bucket-prefix
   lambda-layers-bucket-prefix = var.lambda-layers-bucket-prefix
   dataportal-bucket-prefix    = var.dataportal-bucket-prefix
+  staging-bucket-prefix       = var.staging-bucket-prefix
   beacon-ui-url               = module.webgui.cloudfront-url
   cognito-user-pool-arn       = module.cognito.cognito_user_pool_arn
   cognito-user-pool-id        = module.cognito.cognito_user_pool_id
@@ -50,6 +52,7 @@ module "webgui" {
   identity_pool_id             = module.cognito.cognito_identity_pool_id
   user_pool_web_client_id      = module.cognito.cognito_client_id
   data_portal_bucket           = module.sbeacon.data-portal-bucket
+  staging_bucket               = module.sbeacon.staging-bucket
   api_endpoint_sbeacon         = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
   api_endpoint_svep            = module.svep.api_url
 

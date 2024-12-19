@@ -11,6 +11,7 @@ data "external" "build" {
     identity_pool_id             = var.identity_pool_id
     user_pool_web_client_id      = var.user_pool_web_client_id
     data_portal_bucket           = var.data_portal_bucket
+    staging_bucket               = var.staging_bucket
     api_endpoint_sbeacon         = var.api_endpoint_sbeacon
     api_endpoint_svep            = var.api_endpoint_svep
   }

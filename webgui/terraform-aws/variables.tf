@@ -55,6 +55,11 @@ variable "data_portal_bucket" {
   description = "Bucket name of the data portal."
 }
 
+variable "staging_bucket" {
+  type        = string
+  description = "Bucket name of the staging location."
+}
+
 variable "user_pool_web_client_id" {
   type        = string
   description = "User pool web client ID for authentication."

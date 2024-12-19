@@ -17,6 +17,7 @@ ENVIRONMENT = """export const environment = {{
   }},
   storage: {{
     dataPortalBucket: '{data_portal_bucket}',
+    stagingBucket: '{staging_bucket}',
   }},
   api_endpoint_sbeacon: {{
     name: 'sbeacon',
@@ -82,6 +83,7 @@ def setup_env(
     identity_pool_id: str,
     user_pool_web_client_id: str,
     data_portal_bucket: str,
+    staging_bucket: str,
     api_endpoint_sbeacon: str,
     api_endpoint_svep: str,
     dir: str,
@@ -97,6 +99,7 @@ def setup_env(
                 user_pool_id=user_pool_id,
                 identity_pool_id=identity_pool_id,
                 data_portal_bucket=data_portal_bucket,
+                staging_bucket=staging_bucket,
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
                 api_endpoint_svep=api_endpoint_svep,
@@ -111,6 +114,7 @@ def setup_env(
                 user_pool_id=user_pool_id,
                 identity_pool_id=identity_pool_id,
                 data_portal_bucket=data_portal_bucket,
+                staging_bucket=staging_bucket,
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
                 api_endpoint_svep=api_endpoint_svep,
@@ -132,6 +136,7 @@ if __name__ == "__main__":
     api_endpoint_sbeacon = args["api_endpoint_sbeacon"]
     api_endpoint_svep = args["api_endpoint_svep"]
     data_portal_bucket = args["data_portal_bucket"]
+    staging_bucket = args["staging_bucket"]
 
     setup_env(
         base_range,
@@ -140,6 +145,7 @@ if __name__ == "__main__":
         identity_pool_id,
         user_pool_web_client_id,
         data_portal_bucket,
+        staging_bucket,
         api_endpoint_sbeacon,
         api_endpoint_svep,
         webapp_dir,

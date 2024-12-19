@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DportalService } from '../../../../../services/dportal.service';
+import { StorageService } from '../../../../../services/storage.service';
 import { catchError, of, switchMap, map, defaultIfEmpty } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FileDropperComponent } from '../../file-dropper/file-dropper.component';
@@ -18,6 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-data-submission-form',
@@ -48,6 +50,7 @@ export class DataSubmissionFormComponent {
   constructor(
     private fb: FormBuilder,
     private dps: DportalService,
+    private sts: StorageService,
     private sb: MatSnackBar,
   ) {
     this.dataSubmissionForm = this.fb.group({
@@ -60,6 +63,7 @@ export class DataSubmissionFormComponent {
   }
 
   async uploadFile(path: string, file: File): Promise<string> {
+    this.sts.setBucket(environment.storage.stagingBucket, environment.auth.region);
     this.fileProgress.set(file.name, 0);
     try {
       await Storage.put(`projects/${path}/${file.name}`, file, {

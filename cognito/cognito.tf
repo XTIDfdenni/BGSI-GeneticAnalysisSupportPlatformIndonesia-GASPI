@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "admin_group_role_policy" {
       "s3:*"
     ]
     resources = [
-      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/projects/*",
+      "arn:aws:s3:::${var.staging-bucket-prefix}*/projects/*",
     ]
   }
 
@@ -212,7 +212,7 @@ data "aws_iam_policy_document" "manager_group_role_policy" {
       "s3:*"
     ]
     resources = [
-      "arn:aws:s3:::${var.dataportal-bucket-prefix}*/projects/*",
+      "arn:aws:s3:::${var.staging-bucket-prefix}*/projects/*",
     ]
   }
 

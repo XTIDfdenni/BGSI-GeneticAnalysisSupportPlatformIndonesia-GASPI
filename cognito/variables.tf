@@ -30,5 +30,10 @@ variable "gaspi-admin-password" {
 
 variable "dataportal-bucket-prefix" {
   type        = string
-  description = "Prefix for bucket names"
+  description = "Prefix for dataportal bucket names"
+}
+
+variable "staging-bucket-prefix" {
+  type        = string
+  description = "Prefix for staging bucket names"
 }
