@@ -31,7 +31,6 @@ import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AwsService } from 'src/app/services/aws.service';
-import { DportalService } from 'src/app/services/dportal.service';
 import { gigabytesToBytes } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 

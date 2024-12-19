@@ -32,7 +32,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
-import { DportalService } from 'src/app/services/dportal.service';
 // import { testUsers } from './test_responses/test_users';
 
 // Docs: https://material.angular.io/components/paginator/examples
@@ -105,7 +104,6 @@ export class AdminPageComponent implements OnInit {
     private dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
-    private dp: DportalService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],

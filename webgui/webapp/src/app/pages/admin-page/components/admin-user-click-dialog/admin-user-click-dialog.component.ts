@@ -28,7 +28,6 @@ import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { DportalService } from 'src/app/services/dportal.service';
 import { AwsService } from 'src/app/services/aws.service';
 import { bytesToGigabytes, gigabytesToBytes } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
@@ -121,14 +120,15 @@ export class AdminUserClickDialogComponent implements OnInit {
     forkJoin({ userQuota: userQuota$, userGroups: userGroups$ }).subscribe(
       ({ userQuota, userGroups }) => {
         // Process user quota response
-        if (userQuota) {
-          this.costEstimation = userQuota.CostEstimation;
-          this.usageSize = userQuota.Usage.usageSize;
-          this.usageCount = userQuota.Usage.usageCount;
+        const { success, data } = userQuota;
+        if (success) {
+          this.costEstimation = data.CostEstimation;
+          this.usageSize = data.Usage.usageSize;
+          this.usageCount = data.Usage.usageCount;
 
           this.form.patchValue({
-            quotaSize: bytesToGigabytes(userQuota.Usage.quotaSize),
-            quotaQueryCount: userQuota.Usage.quotaQueryCount,
+            quotaSize: bytesToGigabytes(data.Usage.quotaSize),
+            quotaQueryCount: data.Usage.quotaQueryCount,
           });
         }
 
