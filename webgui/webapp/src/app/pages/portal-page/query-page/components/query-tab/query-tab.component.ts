@@ -317,9 +317,13 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     if (usageCount >= quotaQueryCount) {
-      this.sb.open('Run Query is reach quota limit.', 'Okay', {
-        duration: 60000,
-      });
+      this.sb.open(
+        'Cannot run Query because Quota Limit reached. Please contact administrator to increase your quota.',
+        'Okay',
+        {
+          duration: 60000,
+        },
+      );
       this.ss.end();
       return;
     }
