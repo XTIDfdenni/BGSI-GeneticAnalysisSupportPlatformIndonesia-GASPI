@@ -52,11 +52,6 @@ variable "dataportal-bucket-prefix" {
   description = "Prefix for the dataportal S3 bucket"
 }
 
-variable "staging-bucket-prefix" {
-  type        = string
-  description = "Prefix for the staging S3 bucket"
-}
-
 variable "ses-source-email" {
   type        = string
   description = "Address from which to send SES emails"

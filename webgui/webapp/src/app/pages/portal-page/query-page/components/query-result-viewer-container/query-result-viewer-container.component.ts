@@ -9,13 +9,11 @@ import { VisualQueryResultsViewerComponent } from '../visual-query-results-viewe
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { DportalService } from 'src/app/services/dportal.service';
-import { StorageService } from 'src/app/services/storage.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { catchError, from, of } from 'rxjs';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Storage } from 'aws-amplify';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-query-result-viewer-container',
@@ -50,7 +48,6 @@ export class QueryResultViewerContainerComponent implements OnChanges {
   protected words: any[] = [];
 
   constructor(
-    private sts: StorageService,
     private dg: MatDialog,
     private ss: SpinnerService,
     private sb: MatSnackBar,
@@ -97,7 +94,6 @@ export class QueryResultViewerContainerComponent implements OnChanges {
     dialog.afterClosed().subscribe((name) => {
       if (name) {
         this.ss.start();
-        this.sts.setBucket(environment.storage.dataPortalBucket, environment.auth.region);
         from(
           Storage.put(`saved-queries/${name}.json`, content, {
             level: 'private',

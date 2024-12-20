@@ -19,7 +19,6 @@ import {
   Validators,
 } from '@angular/forms';
 import { DportalService } from 'src/app/services/dportal.service';
-import { StorageService } from 'src/app/services/storage.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DecimalPipe } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,7 +27,6 @@ import { Storage } from 'aws-amplify';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-project-updates',
@@ -63,7 +61,6 @@ export class ProjectUpdatesComponent implements OnChanges {
   constructor(
     private fb: FormBuilder,
     private dps: DportalService,
-    private sts: StorageService,
     private sb: MatSnackBar,
     private dg: MatDialog,
   ) {}
@@ -167,7 +164,6 @@ export class ProjectUpdatesComponent implements OnChanges {
   }
 
   async uploadFile(path: string, file: File): Promise<string> {
-    this.sts.setBucket(environment.storage.stagingBucket, environment.auth.region);
     this.fileProgress.set(file.name, 0);
     try {
       await Storage.put(`projects/${path}/${file.name}`, file, {

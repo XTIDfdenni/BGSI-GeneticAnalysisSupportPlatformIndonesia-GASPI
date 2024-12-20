@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { StorageService } from 'src/app/services/storage.service';
 import { Storage } from 'aws-amplify';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-user-file-list',
@@ -17,17 +15,13 @@ import { environment } from 'src/environments/environment';
 export class UserFileListComponent implements OnInit {
   myFiles: any[] = [];
 
-  constructor(
-    private dg: MatDialog,
-    private sts: StorageService,
-  ) {}
+  constructor(private dg: MatDialog) {}
 
   ngOnInit(): void {
     this.list();
   }
 
   async list() {
-    this.sts.setBucket(environment.storage.dataPortalBucket, environment.auth.region);
     const res = await Storage.list(``, {
       pageSize: 'ALL',
       level: 'private',
@@ -36,7 +30,6 @@ export class UserFileListComponent implements OnInit {
   }
 
   async copy(file: any) {
-    this.sts.setBucket(environment.storage.dataPortalBucket, environment.auth.region);
     const url = await Storage.get(file.key, {
       expires: 3600,
       level: 'private',
@@ -65,7 +58,6 @@ export class UserFileListComponent implements OnInit {
     });
     dialog.afterClosed().subscribe(async (result) => {
       if (result) {
-        this.sts.setBucket(environment.storage.dataPortalBucket, environment.auth.region);
         await Storage.remove(file.key, { level: 'private' });
         this.myFiles = this.myFiles.filter((f) => f.key !== file.key);
       }
