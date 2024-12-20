@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Auth, Hub } from 'aws-amplify';
-import { CognitoUser } from 'amazon-cognito-identity-js';
 import { BehaviorSubject } from 'rxjs';
 import { Router } from '@angular/router';
-import _, { identity } from 'lodash';
+import _ from 'lodash';
 import { CustomReuseStrategy } from '../app.config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  public user = new BehaviorSubject<CognitoUser | null>(null);
+  public user = new BehaviorSubject<any | null>(null);
   public userGroups = new BehaviorSubject<Set<string>>(new Set([]));
   private tempUser: any = null;
 
@@ -72,7 +71,18 @@ export class AuthService {
 
   async refresh() {
     try {
-      const user = await Auth.currentAuthenticatedUser();
+      const creds = await Auth.currentCredentials();
+      let user = await Auth.currentAuthenticatedUser();
+      console.log(user);
+
+      if (user.attributes['custom:identity_id'] != creds.identityId) {
+        console.log('Updating identity_id');
+        await Auth.updateUserAttributes(user, {
+          'custom:identity_id': creds.identityId,
+        });
+        user = await Auth.currentAuthenticatedUser();
+      }
+
       this.userGroups.next(
         new Set(user.signInUserSession.idToken.payload['cognito:groups']),
       );

@@ -89,12 +89,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.isCollapsed = this.el.nativeElement.offsetWidth < 1200;
-    // TODO - check if this is really necessary
-    // this prevents users from reloading and landing on same page even when they are logged in
-    // route security is enabled by the authguards
-    (async () => {
-      await this.auth.refresh();
-    })();
   }
 
   @HostListener('window:resize', ['event'])
