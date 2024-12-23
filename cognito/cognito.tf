@@ -39,6 +39,8 @@ resource "aws_cognito_user_pool" "gaspi_user_pool" {
     developer_only_attribute = false
     mutable                  = true
     required                 = false
+
+    string_attribute_constraints {}
   }
 }
 
