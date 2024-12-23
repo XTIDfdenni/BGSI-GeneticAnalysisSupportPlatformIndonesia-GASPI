@@ -23,7 +23,6 @@
     </div>
   </div>
 
-
   @for (file of myFiles; track file) {
     <div class="flex flex-row justify-between w-full items-center">
       <div class="flex">{{ file.key }}</div>
@@ -39,7 +38,7 @@
         </button>
         <button
           mat-mini-fab
-          color="primary"
+          color="warn"
           class="flex items-center"
           (click)="delete(file)"
           matTooltip="Delete file"
