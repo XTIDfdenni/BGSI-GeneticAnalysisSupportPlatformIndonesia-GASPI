@@ -73,7 +73,8 @@ export class AuthService {
     try {
       const creds = await Auth.currentCredentials();
       let user = await Auth.currentAuthenticatedUser();
-      console.log(user);
+      console.log('User', user);
+      console.log('Identity', creds.identityId);
 
       if (user.attributes['custom:identity_id'] != creds.identityId) {
         console.log('Updating identity_id');
