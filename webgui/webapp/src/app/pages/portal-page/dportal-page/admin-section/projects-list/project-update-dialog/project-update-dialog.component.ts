@@ -1,9 +1,7 @@
 import {
   Component,
-  EventEmitter,
-  Input,
+  Inject,
   OnChanges,
-  Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -26,7 +24,12 @@ import { catchError, defaultIfEmpty, forkJoin, map, of, switchMap } from 'rxjs';
 import { Storage } from 'aws-amplify';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-project-updates',
@@ -44,13 +47,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
     MatProgressSpinnerModule,
     MatDialogModule,
   ],
-  templateUrl: './project-updates.component.html',
-  styleUrl: './project-updates.component.scss',
+  templateUrl: './project-update-dialog.component.html',
+  styleUrl: './project-update-dialog.component.scss',
 })
-export class ProjectUpdatesComponent implements OnChanges {
-  @Input({ required: true }) project!: Project;
-  @Output() projectUpdated = new EventEmitter<void>();
+export class ProjectUpdateDialogComponent {
   @ViewChild(FileDropperComponent) fileDroppper!: FileDropperComponent;
+  project: Project;
   dataSubmissionForm!: FormGroup;
   totalSize = 0;
   progress = 0;
@@ -63,12 +65,13 @@ export class ProjectUpdatesComponent implements OnChanges {
     private dps: DportalService,
     private sb: MatSnackBar,
     private dg: MatDialog,
-  ) {}
-
-  ngOnChanges(changes: SimpleChanges): void {
+    public dialogRef: MatDialogRef<ProjectUpdateDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { project: Project },
+  ) {
+    this.project = data.project;
     this.dataSubmissionForm = this.fb.group({
       projectDescription: this.fb.control(
-        changes['project'].currentValue.description,
+        this.project.description,
         Validators.required,
       ),
     });
@@ -110,7 +113,6 @@ export class ProjectUpdatesComponent implements OnChanges {
                 },
               );
             }
-            this.projectUpdated.emit();
           });
       }
     });
@@ -216,9 +218,8 @@ export class ProjectUpdatesComponent implements OnChanges {
           this.sb.open('Project update failed', 'Okay', { duration: 60000 });
         } else {
           this.sb.open('Project updated', 'Okay', { duration: 60000 });
-          this.reset();
-          this.projectUpdated.emit();
         }
+        this.reset();
       });
   }
 }

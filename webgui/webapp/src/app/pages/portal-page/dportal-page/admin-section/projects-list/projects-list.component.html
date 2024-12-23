@@ -42,21 +42,51 @@
 
     <!-- Assignments Column -->
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Assignments</th>
+      <th mat-header-cell *matHeaderCellDef>
+        <span class="text-center">Actions</span>
+      </th>
       <td mat-cell *matCellDef="let element">
-        <div class="flex flex-col space-y-1 py-1">
+        <div class="flex flex-row flex-wrap space-x-1 py-1 justify-center">
           <button
-            mat-raised-button
-            (click)="setActive(element)"
+            mat-mini-fab
+            (click)="addUserDialog(element)"
             color="primary"
+            matTooltip="Add user"
           >
-            Add/Remove Users or Files
+            <mat-icon>person_add</mat-icon>
           </button>
-          <button mat-raised-button (click)="ingest(element)" color="primary">
-            Ingest to sBeacon
+          <button
+            mat-mini-fab
+            (click)="manageUsersDialog(element)"
+            color="primary"
+            matTooltip="Manage users"
+          >
+            <mat-icon>manage_accounts</mat-icon>
           </button>
-          <button mat-raised-button (click)="delete(element.name)" color="warn">
-            Delete
+          <button
+            mat-mini-fab
+            (click)="updateProject(element)"
+            color="primary"
+            matTooltip="Edit project"
+          >
+            <mat-icon>folder_managed</mat-icon>
+          </button>
+
+          <button
+            mat-mini-fab
+            (click)="ingest(element)"
+            color="primary"
+            matTooltip="Ingest files to sBeacon"
+          >
+            <mat-icon>publish</mat-icon>
+          </button>
+          <button
+            mat-mini-fab
+            (click)="delete(element.name)"
+            color="warn"
+            matTooltip="Delete project"
+          >
+            <mat-icon>delete</mat-icon>
           </button>
         </div>
       </td>
@@ -83,24 +113,3 @@
     <mat-icon>refresh</mat-icon>
   </button>
 </div>
-<br />
-@if (active) {
-  <h3 id="addRemoveUsers">Manage users of project: {{ active.name }}</h3>
-  <button
-    mat-mini-fab
-    type="button"
-    color="primary"
-    class="w-[110px]"
-    (click)="active = null"
-  >
-    <mat-icon>close</mat-icon>
-  </button>
-  <hr />
-
-  <app-project-assignments [project]="active.name" />
-  <hr />
-
-  <app-projects-users [project]="active.name" />
-  <hr />
-  <app-project-updates [project]="active" (projectUpdated)="list()" />
-}

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -7,6 +7,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -25,25 +30,28 @@ import { DportalService } from 'src/app/services/dportal.service';
     MatButtonModule,
     MatIconModule,
     MatSnackBarModule,
+    MatDialogModule,
   ],
-  templateUrl: './project-assignments.component.html',
-  styleUrl: './project-assignments.component.scss',
+  templateUrl: './project-assignments-dialog.component.html',
+  styleUrl: './project-assignments-dialog.component.scss',
 })
-export class ProjectAssignmentsComponent {
-  @Input({ required: true }) project!: string;
+export class ProjectAssignmentsDialogComponent {
+  project: string;
   emailForm: FormGroup;
 
   constructor(
     private dps: DportalService,
     private sb: MatSnackBar,
+    public dialogRef: MatDialogRef<ProjectAssignmentsDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { project: string },
   ) {
+    this.project = data.project;
     this.emailForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
     });
   }
 
   submit(email: string) {
-    console.log(this.project, email);
     this.dps
       .adminAddUserToProject(this.project, email)
       .pipe(catchError(() => of(null)))
@@ -57,6 +65,7 @@ export class ProjectAssignmentsComponent {
             duration: 60000,
           });
           this.emailForm.reset();
+          this.dialogRef.close();
         }
       });
   }
