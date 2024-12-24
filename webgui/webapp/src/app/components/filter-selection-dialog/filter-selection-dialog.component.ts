@@ -89,17 +89,21 @@ export class FilterSelectionDialogComponent implements AfterViewInit {
   protected dataSourceFilters = new MatTableDataSource<any>([]);
   protected displayedColumnsFilters = ['selected', 'id', 'label', 'type'];
   protected selected: { [key: string]: any } = {};
-  protected filter = '';
+  protected filter: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<FilterSelectionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA)
+    public data: { scope: string; projects: string[]; type: string },
     private fs: FilterService,
     private cd: ChangeDetectorRef,
     private sb: MatSnackBar,
   ) {}
 
   ngAfterViewInit(): void {
+    if (this.data.projects.length === 0) {
+      return;
+    }
     this.paginatorFilters.page
       .pipe(
         startWith({}),
@@ -111,6 +115,7 @@ export class FilterSelectionDialogComponent implements AfterViewInit {
             .fetch_by_scope(this.data.scope, {
               skip: this.limit * this.paginatorFilters.pageIndex,
               limit: this.limit,
+              projects: this.data.projects.join(','),
             })
             .pipe(catchError(() => of(null)));
         }),

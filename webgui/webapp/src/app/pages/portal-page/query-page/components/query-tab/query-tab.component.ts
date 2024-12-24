@@ -580,11 +580,12 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   async searchFilters(filter: FormGroup, index: number) {
     const scope = filter.get('scope')!.value;
     const type = filter.get('type')!.value;
+    const projects = this.form.get('projects')!.value;
     const { FilterSelectionDialogComponent } = await import(
       'src/app/components/filter-selection-dialog/filter-selection-dialog.component'
     );
     const dialog = this.dg.open(FilterSelectionDialogComponent, {
-      data: { scope, type },
+      data: { scope, type, projects },
     });
 
     dialog.afterClosed().subscribe((filters) => {
