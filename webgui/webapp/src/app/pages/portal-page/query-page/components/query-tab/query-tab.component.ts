@@ -580,7 +580,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   async searchFilters(filter: FormGroup, index: number) {
     const scope = filter.get('scope')!.value;
     const type = filter.get('type')!.value;
-    const projects = this.form.get('projects')!.value;
+    const projects = this.form.value.projects;
     const { FilterSelectionDialogComponent } = await import(
       'src/app/components/filter-selection-dialog/filter-selection-dialog.component'
     );
@@ -610,6 +610,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async searchEntries() {
     const scope = this.form.value.scope;
+    const projects = this.form.value.projects;
 
     if (scope === ScopeTypes.GENOMIC_VARIANTS) {
       alert(
@@ -621,7 +622,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       'src/app/components/entry-id-selection-dialog/entry-id-selection-dialog.component'
     );
     const dialog = this.dg.open(EntryIdSelectionDialogComponent, {
-      data: { scope },
+      data: { scope, projects },
     });
 
     dialog.afterClosed().subscribe((entry) => {
