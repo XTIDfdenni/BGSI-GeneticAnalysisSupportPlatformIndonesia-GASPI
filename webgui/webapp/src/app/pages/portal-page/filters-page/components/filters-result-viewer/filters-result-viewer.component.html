@@ -63,9 +63,10 @@
                         mat-button
                         cdkCopyToClipboard="{{ element[column] }}"
                         matTooltip="Click to copy"
+                        class="w-full"
                       >
-                        <pre>{{ element[column] }}</pre>
-                        <mat-icon iconPositionEnd>content_copy</mat-icon>
+                        <mat-icon class="text-black">content_copy</mat-icon>
+                        <pre class="text-black">{{ element[column] }}</pre>
                       </button>
                     } @else {
                       <pre>{{ element[column] }}</pre>

@@ -3,7 +3,7 @@
 
   <app-component-spinner [loading]="loading"></app-component-spinner>
   <div mat-dialog-content>
-    <div class="flex gap-5">
+    <div class="flex gap-5" [formGroup]="form">
       <div class="flex flex-col gap-2 w-1/2">
         <div class="font-semibold text-lg">User Info</div>
 
@@ -42,7 +42,7 @@
             <mat-error>Valid email is required</mat-error>
           </mat-form-field>
         </div>
-        <div class="flex flex-row gap-2" [formGroup]="form">
+        <div class="flex flex-row gap-2">
           <label for="Role Group">Role Access: </label>
           <div class="flex flex-1 flex-col">
             <mat-checkbox
@@ -73,27 +73,20 @@
         <div class="font-semibold text-lg">Quota</div>
         <mat-form-field>
           <mat-label>Size of Data</mat-label>
-          <input disabled matInput type="number" [value]="data.sizeOfData" />
+          <input matInput type="number" formControlName="quotaSize" />
           <span matTextSuffix>GB</span>
           <mat-error>Field is required</mat-error>
         </mat-form-field>
         <mat-form-field>
           <mat-label>Count of Queries</mat-label>
-          <input
-            disabled
-            matInput
-            type="number"
-            [value]="data.countOfQueries"
-          />
+          <input matInput type="number" formControlName="quotaQueryCount" />
           <span matTextSuffix>Count</span>
           <mat-error>Field is required</mat-error>
         </mat-form-field>
 
         <div class="flex space-x-2">
           <span>Estimated Cost* : </span>
-          <span class="font font-semibold"
-            >${{ data.costEstimation }} / Month</span
-          >
+          <span class="font font-semibold">${{ costEstimation }} / Month</span>
         </div>
 
         <div class="text-red-500 text-sm flex space-x-2">
@@ -129,6 +122,7 @@
         mat-raised-button
         color="primary"
         (click)="done()"
+        [disabled]="form.invalid || !costEstimation"
       >
         Update
       </button>

@@ -32,6 +32,16 @@ resource "aws_cognito_user_pool" "gaspi_user_pool" {
     mutable                  = false
     required                 = false
   }
+
+  schema {
+    name                     = "identity_id"
+    attribute_data_type      = "String"
+    developer_only_attribute = false
+    mutable                  = true
+    required                 = false
+
+    string_attribute_constraints {}
+  }
 }
 
 resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {

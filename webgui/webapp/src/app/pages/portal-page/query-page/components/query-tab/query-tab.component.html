@@ -41,24 +41,18 @@
                     mat-mini-fab
                     [routerLink]="[]"
                     color="primary"
-                    (click)="loadExample(example)"
+                    (click)="loadQuery(example)"
                   >
                     <mat-icon>double_arrow</mat-icon>
                   </button>
                 </div>
                 <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
+                  class="flex flex-row items-center cursor-pointer space-x-2"
+                  (click)="loadQuery(example)"
+                  [routerLink]="[]"
                 >
-                  <div
-                    style="cursor: pointer"
-                    [routerLink]="[]"
-                    (click)="loadExample(example)"
-                    [innerHTML]="example.text"
-                  ></div>
+                  <div class="font-semibold">{{ example.name }}:</div>
+                  <div [innerHTML]="example.description"></div>
                 </div>
               </div>
             </div>
@@ -105,7 +99,7 @@
                     mat-mini-fab
                     [routerLink]="[]"
                     color="primary"
-                    (click)="loadExample(savedQuery)"
+                    (click)="loadQuery(savedQuery)"
                   >
                     <mat-icon>double_arrow</mat-icon>
                   </button>
@@ -121,32 +115,26 @@
                     style="transform: scale(0.7)"
                     mat-mini-fab
                     [routerLink]="[]"
-                    color="primary"
+                    color="warn"
                     (click)="deleteSavedQuery(i)"
                   >
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
                 <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
+                  class="flex flex-row items-center cursor-pointer space-x-2"
+                  (click)="loadQuery(savedQuery)"
+                  [routerLink]="[]"
                 >
-                  <div
-                    style="cursor: pointer"
-                    [routerLink]="[]"
-                    (click)="loadExample(savedQuery)"
-                    [innerHTML]="savedQuery.text"
-                  ></div>
+                  <div class="font-semibold">{{ savedQuery.name }}:</div>
+                  <div [innerHTML]="savedQuery.description"></div>
                 </div>
               </div>
             </div>
           }
         </div>
       </mat-expansion-panel>
-      <mat-expansion-panel
+      <!-- <mat-expansion-panel
         [expanded]="openPanels[2]"
         (opened)="openPanel(2)"
         (closed)="closePanel(2)"
@@ -214,7 +202,7 @@
             </div>
           }
         </div>
-      </mat-expansion-panel>
+      </mat-expansion-panel> -->
     </mat-accordion>
   </mat-card-content>
   @if (!customQuery) {
@@ -378,7 +366,7 @@
             (click)="addFilter($any(form).get('filters'))"
             mat-raised-button
             color="primary"
-            style="margin-bottom: 10px; width: 110px"
+            style="margin-bottom: 10px; width: 120px"
           >
             Add Filter
           </button>
@@ -393,9 +381,9 @@
       (click)="reset()"
       mat-raised-button
       color="primary"
-      style="margin-bottom: 10px; margin-right: 10px; width: 110px"
+      style="margin-bottom: 10px; margin-right: 10px; width: 120px"
     >
-      Reset
+      Reset All
     </button>
     @if (!customQuery) {
       <button
@@ -404,9 +392,9 @@
         (click)="saveQuery()"
         mat-raised-button
         color="primary"
-        style="margin-bottom: 10px; margin-right: 10px; width: 110px"
+        style="margin-bottom: 10px; margin-right: 10px; width: 120px"
       >
-        Save
+        Save Query
       </button>
       <button
         type="button"
@@ -414,9 +402,9 @@
         [disabled]="form.invalid"
         mat-raised-button
         color="primary"
-        style="margin-bottom: 10px; width: 110px"
+        style="margin-bottom: 10px; width: 120px"
       >
-        Run query
+        Run Query
       </button>
     }
   </mat-card-content>

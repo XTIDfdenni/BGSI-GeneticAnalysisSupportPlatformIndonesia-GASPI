@@ -5,12 +5,10 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, of } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ProjectAssignmentsComponent } from './project-assignments/project-assignments.component';
-import { ProjectsUsersComponent } from './project-users/project-users.component';
-import { ProjectUpdatesComponent } from './project-updates/project-updates.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export interface Project {
   name: string;
@@ -29,9 +27,7 @@ export interface Project {
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
-    ProjectAssignmentsComponent,
-    ProjectsUsersComponent,
-    ProjectUpdatesComponent,
+    MatTooltipModule,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
@@ -97,6 +93,22 @@ export class ProjectsListComponent {
       });
   }
 
+  async updateProject(project: Project) {
+    const { ProjectUpdateDialogComponent } = await import(
+      './project-update-dialog/project-update-dialog.component'
+    );
+
+    const dialog = this.dg.open(ProjectUpdateDialogComponent, {
+      data: {
+        project,
+      },
+    });
+
+    dialog.afterClosed().subscribe((result) => {
+      this.list();
+    });
+  }
+
   async index() {
     const { ActionConfirmationDialogComponent } = await import(
       '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
@@ -158,6 +170,30 @@ export class ProjectsListComponent {
             this.list();
           });
       }
+    });
+  }
+
+  async addUserDialog(project: any) {
+    const { ProjectAssignmentsDialogComponent } = await import(
+      './project-assignments-dialog/project-assignments-dialog.component'
+    );
+
+    this.dg.open(ProjectAssignmentsDialogComponent, {
+      data: {
+        project: project.name,
+      },
+    });
+  }
+
+  async manageUsersDialog(project: any) {
+    const { ProjectUsersDialogComponent } = await import(
+      './project-users-dialog/project-users-dialog.component'
+    );
+
+    this.dg.open(ProjectUsersDialogComponent, {
+      data: {
+        project: project.name,
+      },
     });
   }
 

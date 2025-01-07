@@ -31,6 +31,8 @@ import { MatInputModule } from '@angular/material/input';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AwsService } from 'src/app/services/aws.service';
+import { gigabytesToBytes } from 'src/app/utils/file';
+import { UserQuotaService } from 'src/app/services/userquota.service';
 
 @Component({
   selector: 'app-admin-create-user-dialog',
@@ -69,6 +71,7 @@ export class AdminCreateUserComponent implements OnInit {
     private adminServ: AdminService,
     private sb: MatSnackBar,
     private aws: AwsService,
+    private uq: UserQuotaService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -76,8 +79,8 @@ export class AdminCreateUserComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       administrators: [false],
       // Quota
-      sizeOfData: ['', [Validators.required, Validators.min(0)]],
-      countOfQueries: ['', [Validators.required, Validators.min(0)]],
+      quotaSize: ['', [Validators.required, Validators.min(0)]],
+      quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
     });
   }
 
@@ -89,11 +92,11 @@ export class AdminCreateUserComponent implements OnInit {
     this.newUserForm.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((values) => {
-        if (values.countOfQueries && values.sizeOfData) {
+        if (values.quotaQueryCount && values.quotaSize) {
           this.aws
             .calculateQuotaEstimationPerMonth(
-              values.countOfQueries,
-              values.sizeOfData,
+              values.quotaQueryCount,
+              values.quotaSize,
             )
 
             .subscribe((res) => {
@@ -149,8 +152,9 @@ export class AdminCreateUserComponent implements OnInit {
       .subscribe((response) => {
         //api response always null
         this.ss.end();
-
         if (response) {
+          this.addUserQuota(response.uid);
+
           this.newUserForm.reset();
           this.sb.open('User created successfully!', 'Okay', {
             duration: 60000,
@@ -158,6 +162,17 @@ export class AdminCreateUserComponent implements OnInit {
           this.dialogRef.close({ reload: true });
         }
       });
+  }
+
+  addUserQuota(sub: string): void {
+    this.uq
+      .upsertUserQuota(sub, this.costEstimation, {
+        quotaSize: gigabytesToBytes(this.newUserForm.value.quotaSize),
+        quotaQueryCount: this.newUserForm.value.quotaQueryCount,
+        usageSize: 0,
+        usageCount: 0,
+      })
+      .pipe(catchError(() => of(null)));
   }
 
   updateUserRole(email: string, isAdmin: boolean): void {

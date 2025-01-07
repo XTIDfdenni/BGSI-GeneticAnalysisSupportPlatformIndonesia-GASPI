@@ -32,7 +32,7 @@
         >Search</a
       ></mat-hint
     >
-    <mat-error
+    <mat-error *ngIf="form.get('id')?.hasError('required')"
       >Required (<a [routerLink]="[]" (click)="searchFiltersClicked.emit()"
         >Search</a
       >)</mat-error
@@ -61,12 +61,12 @@
     <mat-label>Filter Value</mat-label>
     <input matInput formControlName="value" required />
   </mat-form-field>
-  <div class="flex md:justify-end">
+  <div class="flex md:justify-end items-center h-[56px]">
     <button
       type="button"
       (click)="removeFilterClicked.emit()"
-      mat-fab
-      color="primary"
+      mat-mini-fab
+      color="warn"
     >
       <mat-icon>delete</mat-icon>
     </button>

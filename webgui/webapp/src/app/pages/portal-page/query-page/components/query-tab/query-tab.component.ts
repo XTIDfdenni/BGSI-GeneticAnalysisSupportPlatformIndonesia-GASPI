@@ -24,7 +24,7 @@ import {
 } from 'src/app/utils/parsers';
 import { MatDialog } from '@angular/material/dialog';
 import { FilterTypes, ScopeTypes } from 'src/app/utils/interfaces';
-import { catchError, of, Subscription } from 'rxjs';
+import { catchError, filter, firstValueFrom, of, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import _ from 'lodash';
 import { AsyncPipe } from '@angular/common';
@@ -49,6 +49,8 @@ import {
   twoRangesValidator,
 } from 'src/app/utils/validators';
 import { customQueries } from './custom-queries';
+import { AuthService } from 'src/app/services/auth.service';
+import { UserQuotaService } from 'src/app/services/userquota.service';
 // import { result, query, endpoint } from './test_responses/individuals';
 // import { result, query } from './test_responses/biosamples';
 
@@ -115,7 +117,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   protected allowedReturns: any = allowedReturns;
   protected loading = false;
   protected form: FormGroup;
-  protected examples: any = examples;
+  protected examples: any[] = examples;
   protected myProjects: Project[] = [];
   protected scopeTypes = ScopeTypes;
   protected filterTypes = FilterTypes;
@@ -133,12 +135,17 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   protected openPanels: boolean[] = [false, false, false];
   // custom queries
   protected customQuery = false;
-  protected customQueries: any = customQueries;
+  protected customQueries: any[] = customQueries;
   // saved queries
-  protected savedQueries: any = [];
+  protected savedQueries: any[] = [];
   @Input()
   page!: number;
   private subscription: Subscription | null = null;
+
+  // user quota
+  protected userSub: string = '';
+  protected quotaQueryCount: number = 0;
+  protected usageCount: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -147,6 +154,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     public dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
+    private uq: UserQuotaService,
   ) {
     this.form = this.fb.group({
       projects: [[], Validators.required],
@@ -242,6 +250,19 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     this.savedQueries = JSON.parse(
       localStorage.getItem('savedQueries') || '[]',
     );
+
+    this.dps
+      .getMySavedQueries()
+      .pipe(catchError(() => of(null)))
+      .subscribe((queries: any) => {
+        if (queries === null) {
+          this.sb.open('Unable to get saved queries.', 'Close', {
+            duration: 60000,
+          });
+        } else {
+          this.savedQueries = queries;
+        }
+      });
   }
 
   openPanel(index: number) {
@@ -288,8 +309,25 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     this.openPanels[index] = false;
   }
 
-  run() {
+  async run() {
     this.ss.start();
+
+    const { quotaQueryCount, usageCount, userSub } = await firstValueFrom(
+      this.uq.getCurrentUsage(),
+    );
+
+    if (usageCount >= quotaQueryCount) {
+      this.sb.open(
+        'Cannot run Query because Quota Limit reached. Please contact administrator to increase your quota.',
+        'Okay',
+        {
+          duration: 60000,
+        },
+      );
+      this.ss.end();
+      return;
+    }
+
     const form: any = this.form.value;
     const query = {
       projects: form.projects,
@@ -332,6 +370,10 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
         this.results = data;
         this.endpoint = endpoint;
         this.scope = form.customReturn ? form.return : form.scope;
+
+        this.uq.incrementUsageCount(userSub).subscribe(() => {
+          console.log('usage count incremented');
+        });
       } else {
         this.sb.open(
           'API request failed. Please check your parameters.',
@@ -413,7 +455,8 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     query.func(this);
   }
 
-  loadExample(query: any) {
+  loadQuery(entry: any) {
+    const query = entry.query;
     this.reset();
     (this.form.get('filters') as FormArray).clear();
     _.range(query.body.query.filters.length).forEach(() => {
@@ -421,6 +464,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.form.patchValue({
+      projects: query.projects,
       scope: query.scope,
       granularity: query.body.query.requestedGranularity,
       id: query.id,
@@ -448,43 +492,58 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {},
     });
 
-    dialog.afterClosed().subscribe((text) => {
-      if (_.isEmpty(text)) {
-        return;
-      }
-      const saved = JSON.parse(localStorage.getItem('savedQueries') || '[]');
-      const form: any = this.form.value;
-      const entry = {
-        text: text,
-        scope: form.scope,
-        return: form.return,
-        id: form.id,
-        customReturn: form.customReturn,
-        body: {
-          query: {
-            filters: serializeFilters(form.filters, form.scope),
-            requestedGranularity: form.granularity,
-            pagination: {
-              skip: form.skip,
-              limit: form.limit,
+    dialog
+      .afterClosed()
+      .subscribe((details: { name: string; description: string } | null) => {
+        if (!details) {
+          return;
+        }
+        const saved = JSON.parse(localStorage.getItem('savedQueries') || '[]');
+        const form: any = this.form.value;
+        const entry = {
+          projects: form.projects,
+          scope: form.scope,
+          return: form.return,
+          id: form.id,
+          customReturn: form.customReturn,
+          body: {
+            query: {
+              filters: serializeFilters(form.filters, form.scope),
+              requestedGranularity: form.granularity,
+              pagination: {
+                skip: form.skip,
+                limit: form.limit,
+              },
+            },
+            meta: {
+              apiVersion: 'v2.0',
             },
           },
-          meta: {
-            apiVersion: 'v2.0',
-          },
-        },
-      };
-      if (form.scope === ScopeTypes.GENOMIC_VARIANTS && !form.customReturn) {
-        _.set(
-          entry,
-          'body.query.requestParameters',
-          serializeRequestParameters(form.requestParameters),
-        );
-      }
-      console.log(entry);
-      this.savedQueries = [...saved, entry];
-      localStorage.setItem('savedQueries', JSON.stringify(this.savedQueries));
-    });
+        };
+        if (form.scope === ScopeTypes.GENOMIC_VARIANTS && !form.customReturn) {
+          _.set(
+            entry,
+            'body.query.requestParameters',
+            serializeRequestParameters(form.requestParameters),
+          );
+        }
+        this.dps
+          .saveMyQuery(details.name, details.description, entry)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res) => {
+            if (!res) {
+              this.sb.open('Unable to save query.', 'Close', {
+                duration: 60000,
+              });
+            } else {
+              this.savedQueries.push({
+                name: details.name,
+                description: details.description,
+                query: entry,
+              });
+            }
+          });
+      });
   }
 
   async deleteSavedQuery(index: number) {
@@ -500,9 +559,20 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialog.afterClosed().subscribe((yes) => {
       if (yes) {
-        const saved = JSON.parse(localStorage.getItem('savedQueries') || '[]');
-        this.savedQueries = _.filter(saved, (_, idx: number) => idx !== index);
-        localStorage.setItem('savedQueries', JSON.stringify(this.savedQueries));
+        this.dps
+          .deleteMyQuery(this.savedQueries[index].name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res) => {
+            if (res) {
+              this.savedQueries = this.savedQueries.filter(
+                (_, index) => index !== index,
+              );
+            } else {
+              this.sb.open('Unable to delete query.', 'Close', {
+                duration: 60000,
+              });
+            }
+          });
       }
     });
   }
@@ -510,11 +580,12 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   async searchFilters(filter: FormGroup, index: number) {
     const scope = filter.get('scope')!.value;
     const type = filter.get('type')!.value;
+    const projects = this.form.value.projects;
     const { FilterSelectionDialogComponent } = await import(
       'src/app/components/filter-selection-dialog/filter-selection-dialog.component'
     );
     const dialog = this.dg.open(FilterSelectionDialogComponent, {
-      data: { scope, type },
+      data: { scope, type, projects },
     });
 
     dialog.afterClosed().subscribe((filters) => {
@@ -539,6 +610,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async searchEntries() {
     const scope = this.form.value.scope;
+    const projects = this.form.value.projects;
 
     if (scope === ScopeTypes.GENOMIC_VARIANTS) {
       alert(
@@ -550,7 +622,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       'src/app/components/entry-id-selection-dialog/entry-id-selection-dialog.component'
     );
     const dialog = this.dg.open(EntryIdSelectionDialogComponent, {
-      data: { scope },
+      data: { scope, projects },
     });
 
     dialog.afterClosed().subscribe((entry) => {

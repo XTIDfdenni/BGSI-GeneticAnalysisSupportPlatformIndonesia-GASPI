@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Inject,
   Input,
   OnChanges,
   OnInit,
@@ -8,7 +9,12 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -30,13 +36,13 @@ interface User {
     MatTableModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatDialogModule,
   ],
-  templateUrl: './project-users.component.html',
-  styleUrl: './project-users.component.scss',
+  templateUrl: './project-users-dialog.component.html',
+  styleUrl: './project-users-dialog.component.scss',
 })
-export class ProjectsUsersComponent implements OnChanges {
-  @Input({ required: true }) project!: string;
-
+export class ProjectUsersDialogComponent {
+  project: string;
   displayedColumns: string[] = ['firstName', 'lastName', 'email', 'actions'];
   dataSource = new MatTableDataSource<User>();
 
@@ -44,9 +50,10 @@ export class ProjectsUsersComponent implements OnChanges {
     private dps: DportalService,
     private sb: MatSnackBar,
     private dg: MatDialog,
-  ) {}
-
-  ngOnChanges(_: SimpleChanges): void {
+    public dialogRef: MatDialogRef<ProjectUsersDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { project: string },
+  ) {
+    this.project = data.project;
     this.list();
   }
 

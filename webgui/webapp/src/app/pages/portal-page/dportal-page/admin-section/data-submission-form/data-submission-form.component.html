@@ -6,7 +6,7 @@
       <input matInput formControlName="projectName" placeholder="Project 1" />
       <mat-error>
         A unique name is required. White spaces not allowed at start or end of
-        this name.</mat-error
+        this name. Can contain hiphen and underscore.</mat-error
       >
     </mat-form-field>
     <mat-form-field class="w-full">
@@ -29,7 +29,7 @@
     <div class="flex flex-row items-center space-x-2 mb-1">
       <button
         mat-mini-fab
-        color="primary"
+        color="warn"
         type="button"
         (click)="removeFile($index)"
         [disabled]="dataSubmissionForm.disabled"
