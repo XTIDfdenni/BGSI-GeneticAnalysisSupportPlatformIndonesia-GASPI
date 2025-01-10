@@ -74,6 +74,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       administrators: [false],
+      managers: [false],
       quotaSize: ['', [Validators.required, Validators.min(0)]],
       quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
     });
@@ -204,7 +205,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   }
 
   updateUser() {
-    const groups = _.pick(this.form.value, ['administrators']);
+    const groups = _.pick(this.form.value, ['administrators', 'managers']);
     return this.as
       .updateUsersGroups(this.data.email, groups)
       .pipe(catchError(() => of(null)));
