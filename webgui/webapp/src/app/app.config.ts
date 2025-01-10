@@ -4,6 +4,8 @@ import {
   DetachedRouteHandle,
   RouteReuseStrategy,
   provideRouter,
+  withPreloading,
+  PreloadAllModules,
 } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -64,7 +66,7 @@ export class CustomReuseStrategy implements RouteReuseStrategy {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
     provideAnimations(),
     {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,

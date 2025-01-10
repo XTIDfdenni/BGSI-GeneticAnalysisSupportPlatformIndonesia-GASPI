@@ -5,6 +5,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { ProjectsListComponent } from './projects-list/projects-list.component';
 import { NotebooksComponent } from './admin-notebooks-list/admin-notebooks-list.component';
 import { Router } from '@angular/router';
+import { AdminFolderListComponent } from './admin-folder-list/admin-folder-list.component';
 
 @Component({
   selector: 'app-admin-section',
@@ -15,6 +16,7 @@ import { Router } from '@angular/router';
     MatTabsModule,
     ProjectsListComponent,
     NotebooksComponent,
+    AdminFolderListComponent,
   ],
   templateUrl: './admin-section.component.html',
   styleUrl: './admin-section.component.scss',

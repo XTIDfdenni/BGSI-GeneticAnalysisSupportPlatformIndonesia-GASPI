@@ -9,6 +9,29 @@ import { environment } from 'src/environments/environment';
 export class DportalService {
   constructor() {}
 
+  // data portal admin user file actions
+  adminGetUserFolders() {
+    console.log('get user folders');
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        'dportal/admin/folders',
+        {},
+      ),
+    );
+  }
+
+  adminDeleteUserFolder(folder: string) {
+    console.log('delete user folder');
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/admin/folders/${folder}`,
+        {},
+      ),
+    );
+  }
+
   // data portal admin project actions
   adminCreateProject(name: string, description: string) {
     console.log('create project');
