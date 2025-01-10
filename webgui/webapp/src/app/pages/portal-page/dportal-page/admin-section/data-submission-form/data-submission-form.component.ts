@@ -63,7 +63,7 @@ export class DataSubmissionFormComponent {
   async uploadFile(path: string, file: File): Promise<string> {
     this.fileProgress.set(file.name, 0);
     try {
-      await Storage.put(`/staging/projects/${path}/${file.name}`, file, {
+      await Storage.put(`staging/projects/${path}/${file.name}`, file, {
         customPrefix: { public: '' },
         progressCallback: (progress: { loaded: number; total: number }) => {
           this.fileProgress.set(file.name, progress.loaded);
