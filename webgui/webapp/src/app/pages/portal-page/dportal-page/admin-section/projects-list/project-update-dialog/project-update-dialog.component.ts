@@ -105,6 +105,10 @@ export class ProjectUpdateDialogComponent {
                 duration: 60000,
               });
             } else {
+              this.project.ingestedDatasets =
+                this.project.ingestedDatasets.filter(
+                  (dataset) => dataset !== datasetId,
+                );
               this.sb.open(
                 'Dataset un-ingested. Please re-index when you have un-ingested all desired datasets.',
                 'Okay',
