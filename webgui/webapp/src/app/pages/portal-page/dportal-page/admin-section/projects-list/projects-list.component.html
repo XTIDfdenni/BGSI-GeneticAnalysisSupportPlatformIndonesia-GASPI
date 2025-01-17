@@ -71,7 +71,14 @@
           >
             <mat-icon>folder_managed</mat-icon>
           </button>
-
+          <button
+            mat-mini-fab
+            (click)="createUploadLink(element)"
+            color="primary"
+            matTooltip="Generate file upload link"
+          >
+            <mat-icon>link</mat-icon>
+          </button>
           <button
             mat-mini-fab
             (click)="ingest(element)"

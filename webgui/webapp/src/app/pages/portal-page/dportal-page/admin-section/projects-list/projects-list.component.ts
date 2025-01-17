@@ -185,6 +185,18 @@ export class ProjectsListComponent {
     });
   }
 
+  async createUploadLink(project: any) {
+    const { UploadLinkGenerationDialogComponent } = await import(
+      './upload-link-generation-dialog/upload-link-generation-dialog.component'
+    );
+
+    this.dg.open(UploadLinkGenerationDialogComponent, {
+      data: {
+        project: project.name,
+      },
+    });
+  }
+
   async manageUsersDialog(project: any) {
     const { ProjectUsersDialogComponent } = await import(
       './project-users-dialog/project-users-dialog.component'
