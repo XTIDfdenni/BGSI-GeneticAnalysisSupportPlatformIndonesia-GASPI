@@ -8,10 +8,9 @@ describe('UserManagementDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UserManagementDialogComponent]
-    })
-    .compileComponents();
-    
+      imports: [UserManagementDialogComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(UserManagementDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -32,6 +32,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import { bytesToGigabytes } from 'src/app/utils/file';
 // import { testUsers } from './test_responses/test_users';
 
 // Docs: https://material.angular.io/components/paginator/examples
@@ -88,6 +89,8 @@ export class AdminPageComponent implements OnInit {
     'First name',
     'Last name',
     'Email',
+    'User Quota',
+    'User Usage',
     'Confirmed',
   ];
   protected usersTableDataSource: any = [];
@@ -236,9 +239,15 @@ export class AdminPageComponent implements OnInit {
     this.listUsers();
   }
 
+  formatData(size: number, count: number, isConvert: boolean) {
+    if (isConvert) {
+      return `${bytesToGigabytes(size)} GB/ ${count} Count(s)`;
+    }
+    return `${size} GB/ ${count} Count(s)`;
+  }
+
   listUsers() {
     const form = this.filterUsersForm.value;
-    console.log;
     let key = null;
     let query = null;
     this.usersLoading = true;
@@ -272,6 +281,16 @@ export class AdminPageComponent implements OnInit {
                 _.find(user.Attributes, { Name: 'family_name' }),
                 'Value',
                 '',
+              ),
+              'User Quota': this.formatData(
+                user.Usage.quotaSize ?? 0,
+                user.Usage.quotaQueryCount ?? 0,
+                true,
+              ),
+              'User Usage': this.formatData(
+                user.Usage.usageSize ?? 0,
+                user.Usage.usageCount ?? 0,
+                true,
               ),
               Confirmed:
                 _.get(user, 'UserStatus') === 'CONFIRMED' ? 'Yes' : 'No',

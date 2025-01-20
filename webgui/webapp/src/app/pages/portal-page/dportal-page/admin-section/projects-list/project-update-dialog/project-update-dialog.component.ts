@@ -105,6 +105,10 @@ export class ProjectUpdateDialogComponent {
                 duration: 60000,
               });
             } else {
+              this.project.ingestedDatasets =
+                this.project.ingestedDatasets.filter(
+                  (dataset) => dataset !== datasetId,
+                );
               this.sb.open(
                 'Dataset un-ingested. Please re-index when you have un-ingested all desired datasets.',
                 'Okay',
@@ -189,13 +193,12 @@ export class ProjectUpdateDialogComponent {
     this.dataSubmissionForm.disable();
     this.progress = 0;
     this.totalSize = this.addedFiles.reduce((acc, file) => acc + file.size, 0);
+    const files = [
+      ...this.addedFiles.map((file) => file.name),
+      ...this.project.files.filter((file) => !this.removedFiles.includes(file)),
+    ];
     this.dps
-      .adminUpdateProject(this.project.name, entry.projectDescription, [
-        ...this.addedFiles.map((file) => file.name),
-        ...this.project.files.filter(
-          (file) => !this.removedFiles.includes(file),
-        ),
-      ])
+      .adminUpdateProject(this.project.name, entry.projectDescription, files)
       .pipe(
         catchError(() => of(null)),
         switchMap((res: any) => {
@@ -218,6 +221,8 @@ export class ProjectUpdateDialogComponent {
           this.sb.open('Project update failed', 'Okay', { duration: 60000 });
         } else {
           this.sb.open('Project updated', 'Okay', { duration: 60000 });
+          this.project.description = entry.projectDescription;
+          this.project.files = files;
         }
         this.reset();
       });

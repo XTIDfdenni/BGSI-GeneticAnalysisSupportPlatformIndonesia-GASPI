@@ -5,8 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './user-management-dialog.component.html',
-  styleUrl: './user-management-dialog.component.scss'
+  styleUrl: './user-management-dialog.component.scss',
 })
-export class UserManagementDialogComponent {
-
-}
+export class UserManagementDialogComponent {}
