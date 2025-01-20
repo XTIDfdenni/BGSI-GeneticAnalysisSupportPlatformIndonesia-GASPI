@@ -9,9 +9,9 @@
     <mat-icon>refresh</mat-icon>
   </button>
 </div>
-<div class="flex flex-col space-y-1 h-full overflow-scroll">
-  <div class="flex flex-col justify-between h-5/6">
-    <div class="overflow-scroll">
+<div class="flex flex-col space-y-1 h-full no-scrollbar">
+  <div class="flex flex-col justify-between h-5/6 no-scrollbar">
+    <div class="overflow-scroll no-scrollbar">
       <table mat-table [dataSource]="dataSource">
         <!-- Name Column -->
         <ng-container matColumnDef="name">
@@ -34,12 +34,16 @@
                   <button
                     mat-mini-fab
                     color="primary"
-                    class="flex items-center mt-2 mb-2"
-                    style="box-shadow: 0 2px 5px 0.5px gray"
+                    class="flex items-center"
+                    style="
+                      box-shadow: 0 2px 5px 0.5px gray;
+                      width: 2rem;
+                      height: 2rem;
+                    "
                     matTooltip="Click to view files"
                     (click)="element.expanded = !element.expanded"
                   >
-                    <mat-icon>folder_open</mat-icon>
+                    <mat-icon style="font-size: 1.5rem">folder_open</mat-icon>
                   </button>
                 }
               </div>
@@ -50,12 +54,18 @@
                       <button
                         mat-mini-fab
                         color="primary"
-                        style="box-shadow: 0 2px 5px 0.5px gray"
-                        class="flex items-center mt-2 mb-2"
+                        style="
+                          box-shadow: 0 2px 5px 0.5px gray;
+                          width: 2rem;
+                          height: 2rem;
+                        "
+                        class="flex items-center mt-2 mb-2 justify-center"
                         matTooltip="Copy access URL"
                         (click)="copy(element.name, file)"
                       >
-                        <mat-icon>file_copy</mat-icon>
+                        <mat-icon style="font-size: 1.3rem; padding-top: 0.3rem"
+                          >file_copy</mat-icon
+                        >
                       </button>
                       <div>{{ file.split("/").pop() }}</div>
                     </div>

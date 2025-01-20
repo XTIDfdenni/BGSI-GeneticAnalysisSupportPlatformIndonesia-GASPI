@@ -77,7 +77,7 @@ export class ProjectsListComponent {
   ];
   active: Project | null = null;
 
-  protected pageSize = 10;
+  protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens: (string | null)[] = [];
@@ -139,18 +139,23 @@ export class ProjectsListComponent {
     }
   }
 
-  list() {
+  list(pageToken?: string) {
     this.loading = true;
     this.dataSource.data = [];
     this.dps
-      .getAdminProjects(this.pageSize, this.pageTokens.at(-1))
+      .getAdminProjects(this.pageSize, pageToken ?? this.pageTokens.at(-1))
       .pipe(catchError(() => of(null)))
       .subscribe((data: any) => {
         if (!data) {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
           this.dataSource.data = [];
         } else {
-          this.pageTokens.push(data.last_evaluated_key);
+          //handle for refresh page or edit data dont push token when refresh data
+          if (!pageToken) {
+            this.pageTokens.push(data.last_evaluated_key);
+          }
+
+          //handle push data
           this.dataSource.data = data.data.map((project: any) => ({
             name: project.name,
             description: project.description,
@@ -169,6 +174,15 @@ export class ProjectsListComponent {
       });
   }
 
+  refresh() {
+    try {
+      this.resetPagination();
+      this.list();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async updateProject(project: Project) {
     const { ProjectUpdateDialogComponent } = await import(
       './project-update-dialog/project-update-dialog.component'
@@ -181,7 +195,7 @@ export class ProjectsListComponent {
     });
 
     dialog.afterClosed().subscribe((result) => {
-      this.list();
+      this.list(this.pageTokens.at(this.lastPage - 1) || undefined);
     });
   }
 
