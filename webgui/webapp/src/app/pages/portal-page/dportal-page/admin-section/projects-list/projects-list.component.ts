@@ -93,7 +93,6 @@ export class ProjectsListComponent {
 
   ngOnInit(): void {
     this.list();
-    // this.dataSource.paginator = this.paginator;
     this.cd.detectChanges();
 
     this.paginator.page.subscribe(() => {

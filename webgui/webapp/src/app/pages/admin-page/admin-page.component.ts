@@ -248,7 +248,6 @@ export class AdminPageComponent implements OnInit {
 
   listUsers() {
     const form = this.filterUsersForm.value;
-    console.log;
     let key = null;
     let query = null;
     this.usersLoading = true;
