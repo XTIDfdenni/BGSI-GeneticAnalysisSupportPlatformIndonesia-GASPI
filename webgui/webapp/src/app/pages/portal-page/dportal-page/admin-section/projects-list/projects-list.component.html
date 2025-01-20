@@ -1,110 +1,112 @@
 <app-component-spinner [loading]="loading" />
-@if (dataSource.data.length > 0) {
-  <br />
-  <table mat-table [dataSource]="dataSource">
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
-    </ng-container>
+<br />
+<table mat-table [dataSource]="dataSource" style="margin-bottom: 1rem">
+  <!-- Name Column -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+  </ng-container>
 
-    <!-- Description Column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef>Description</th>
-      <td mat-cell *matCellDef="let element">{{ element.description }}</td>
-    </ng-container>
+  <!-- Description Column -->
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef>Description</th>
+    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+  </ng-container>
 
-    <!-- Files Column -->
-    <ng-container matColumnDef="files">
-      <th mat-header-cell *matHeaderCellDef>Files</th>
-      <td mat-cell *matCellDef="let element">
-        @if (element.files.length > 0) {
-          <span class="text-cyan-900">{{ element.files.length }} file(s)</span>
-        } @else {
-          <span class="text-red-900">No</span>
-        }
-      </td>
-    </ng-container>
+  <!-- Files Column -->
+  <ng-container matColumnDef="files">
+    <th mat-header-cell *matHeaderCellDef>Files</th>
+    <td mat-cell *matCellDef="let element">
+      @if (element.files.length > 0) {
+        <span class="text-cyan-900">{{ element.files.length }} file(s)</span>
+      } @else {
+        <span class="text-red-900">No</span>
+      }
+    </td>
+  </ng-container>
 
-    <!-- Indexed to Beacon Column -->
-    <ng-container matColumnDef="indexed">
-      <th mat-header-cell *matHeaderCellDef>Added to sBeacon</th>
-      <td mat-cell *matCellDef="let element">
-        @if (element.ingestedDatasets.length > 0) {
-          <span class="text-cyan-900"
-            >{{ element.ingestedDatasets.length }} dataset(s)</span
-          >
-        } @else {
-          <span class="text-red-900">No</span>
-        }
-      </td>
-    </ng-container>
+  <!-- Indexed to Beacon Column -->
+  <ng-container matColumnDef="indexed">
+    <th mat-header-cell *matHeaderCellDef>Added to sBeacon</th>
+    <td mat-cell *matCellDef="let element">
+      @if (element.ingestedDatasets.length > 0) {
+        <span class="text-cyan-900"
+          >{{ element.ingestedDatasets.length }} dataset(s)</span
+        >
+      } @else {
+        <span class="text-red-900">No</span>
+      }
+    </td>
+  </ng-container>
 
-    <!-- Assignments Column -->
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>
-        <span class="text-center">Actions</span>
-      </th>
-      <td mat-cell *matCellDef="let element">
-        <div class="flex flex-row space-x-1 py-1 justify-center">
-          <button
-            mat-mini-fab
-            (click)="addUserDialog(element)"
-            color="primary"
-            matTooltip="Add user"
-          >
-            <mat-icon>person_add</mat-icon>
-          </button>
-          <button
-            mat-mini-fab
-            (click)="manageUsersDialog(element)"
-            color="primary"
-            matTooltip="Manage users"
-          >
-            <mat-icon>manage_accounts</mat-icon>
-          </button>
-          <button
-            mat-mini-fab
-            (click)="updateProject(element)"
-            color="primary"
-            matTooltip="Edit project"
-          >
-            <mat-icon>folder_managed</mat-icon>
-          </button>
-          <button
-            mat-mini-fab
-            (click)="createUploadLink(element)"
-            color="primary"
-            matTooltip="Generate file upload link"
-          >
-            <mat-icon>link</mat-icon>
-          </button>
-          <button
-            mat-mini-fab
-            (click)="ingest(element)"
-            color="primary"
-            matTooltip="Ingest files to sBeacon"
-          >
-            <mat-icon>publish</mat-icon>
-          </button>
-          <button
-            mat-mini-fab
-            (click)="delete(element.name)"
-            color="warn"
-            matTooltip="Delete project"
-          >
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </td>
-    </ng-container>
+  <!-- Assignments Column -->
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>
+      <span class="text-center">Actions</span>
+    </th>
+    <td mat-cell *matCellDef="let element">
+      <div class="flex flex-row space-x-1 py-1 justify-center">
+        <button
+          mat-mini-fab
+          (click)="addUserDialog(element)"
+          color="primary"
+          matTooltip="Add user"
+        >
+          <mat-icon>person_add</mat-icon>
+        </button>
+        <button
+          mat-mini-fab
+          (click)="manageUsersDialog(element)"
+          color="primary"
+          matTooltip="Manage users"
+        >
+          <mat-icon>manage_accounts</mat-icon>
+        </button>
+        <button
+          mat-mini-fab
+          (click)="updateProject(element)"
+          color="primary"
+          matTooltip="Edit project"
+        >
+          <mat-icon>folder_managed</mat-icon>
+        </button>
+        <button
+          mat-mini-fab
+          (click)="createUploadLink(element)"
+          color="primary"
+          matTooltip="Generate file upload link"
+        >
+          <mat-icon>link</mat-icon>
+        </button>
+        <button
+          mat-mini-fab
+          (click)="ingest(element)"
+          color="primary"
+          matTooltip="Ingest files to sBeacon"
+        >
+          <mat-icon>publish</mat-icon>
+        </button>
+        <button
+          mat-mini-fab
+          (click)="delete(element.name)"
+          color="warn"
+          matTooltip="Delete project"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </td>
+  </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
-} @else {
-  <h3>No projects found</h3>
-}
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+<mat-paginator
+  #paginator
+  [pageSizeOptions]="[10, 50]"
+  [pageSize]="pageSize"
+  length="9999"
+></mat-paginator>
 <br />
 <div class="flex flex-row space-x-[10px] items-center">
   <button

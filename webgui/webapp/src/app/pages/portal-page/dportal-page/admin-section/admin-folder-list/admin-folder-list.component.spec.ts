@@ -8,10 +8,9 @@ describe('AdminFolderListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AdminFolderListComponent]
-    })
-    .compileComponents();
-    
+      imports: [AdminFolderListComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AdminFolderListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

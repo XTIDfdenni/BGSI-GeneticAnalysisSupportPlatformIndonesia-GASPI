@@ -59,14 +59,31 @@ export class DportalService {
     );
   }
 
-  getAdminProjects() {
-    console.log('get projects');
+  getAdminProjects(
+    limit: number = 10,
+    last_evaluated_key: string | null = null,
+  ) {
     return from(
-      API.get(
-        environment.api_endpoint_sbeacon.name,
-        'dportal/admin/projects',
-        {},
-      ),
+      API.get(environment.api_endpoint_sbeacon.name, 'dportal/admin/projects', {
+        queryStringParameters: {
+          limit: limit,
+          last_evaluated_key: last_evaluated_key,
+        },
+      }),
+    );
+  }
+
+  getMyProjectsPagination(
+    limit: number = 10,
+    last_evaluated_key: string | null = null,
+  ) {
+    return from(
+      API.get(environment.api_endpoint_sbeacon.name, 'dportal/my-projects', {
+        queryStringParameters: {
+          limit: limit,
+          last_evaluated_key: last_evaluated_key,
+        },
+      }),
     );
   }
 

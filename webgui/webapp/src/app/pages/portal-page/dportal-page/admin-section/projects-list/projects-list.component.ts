@@ -1,14 +1,25 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  Injectable,
+  ViewChild,
+} from '@angular/core';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { DportalService } from 'src/app/services/dportal.service';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, of } from 'rxjs';
+import { Subject, catchError, of } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  MatPaginator,
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from '@angular/material/paginator';
+import * as _ from 'lodash';
 
 export interface Project {
   name: string;
@@ -18,8 +29,29 @@ export interface Project {
   ingestedDatasets: string[];
 }
 
+@Injectable()
+export class MyCustomPaginatorIntl implements MatPaginatorIntl {
+  changes = new Subject<void>();
+
+  // For internationalization, the `$localize` function from
+  // the `@angular/localize` package can be used.
+  firstPageLabel = $localize`First page`;
+  itemsPerPageLabel = $localize`Items per page:`;
+  lastPageLabel = $localize`Last page`;
+
+  // You can set labels to an arbitrary string too, or dynamically compute
+  // it through other third-party internationalization libraries.
+  nextPageLabel = 'Next page';
+  previousPageLabel = 'Previous page';
+
+  getRangeLabel(page: number, pageSize: number, length: number): string {
+    return $localize`Page ${page + 1}`;
+  }
+}
+
 @Component({
   selector: 'app-projects-list',
+  providers: [{ provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl }],
   standalone: true,
   imports: [
     ComponentSpinnerComponent,
@@ -28,6 +60,7 @@ export interface Project {
     MatIconModule,
     MatDialogModule,
     MatTooltipModule,
+    MatPaginatorModule,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
@@ -44,14 +77,57 @@ export class ProjectsListComponent {
   ];
   active: Project | null = null;
 
+  protected pageSize = 10;
+  @ViewChild('paginator')
+  paginator!: MatPaginator;
+  private pageTokens: (string | null)[] = [];
+  private lastPage: number = 0;
+
   constructor(
     private dps: DportalService,
     private ss: SpinnerService,
     private sb: MatSnackBar,
     private dg: MatDialog,
     private cd: ChangeDetectorRef,
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     this.list();
+    // this.dataSource.paginator = this.paginator;
+    this.cd.detectChanges();
+
+    this.paginator.page.subscribe(() => {
+      if (this.pageSize != this.paginator.pageSize) {
+        this.resetPagination();
+        return this.list();
+      }
+
+      if (
+        _.isEmpty(this.pageTokens.at(-1)) &&
+        !_.isEmpty(this.pageTokens) &&
+        this.lastPage < this.paginator.pageIndex
+      ) {
+        // last page
+        this.paginator.pageIndex--;
+      } else if (this.lastPage < this.paginator.pageIndex) {
+        this.lastPage++;
+        this.list();
+      } else if (this.lastPage > this.paginator.pageIndex) {
+        this.lastPage--;
+        // remove next page token
+        this.pageTokens.pop();
+        // remove current page token
+        this.pageTokens.pop();
+        this.list();
+      }
+    });
+  }
+
+  resetPagination() {
+    this.pageTokens = [];
+    this.lastPage = 0;
+    this.paginator.pageIndex = 0;
+    this.pageSize = this.paginator.pageSize;
   }
 
   setActive(project: Project) {
@@ -68,14 +144,15 @@ export class ProjectsListComponent {
     this.loading = true;
     this.dataSource.data = [];
     this.dps
-      .getAdminProjects()
+      .getAdminProjects(this.pageSize, this.pageTokens.at(-1))
       .pipe(catchError(() => of(null)))
-      .subscribe((data: any[]) => {
+      .subscribe((data: any) => {
         if (!data) {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
           this.dataSource.data = [];
         } else {
-          this.dataSource.data = data.map((project) => ({
+          this.pageTokens.push(data.last_evaluated_key);
+          this.dataSource.data = data.data.map((project: any) => ({
             name: project.name,
             description: project.description,
             files: project.files,
