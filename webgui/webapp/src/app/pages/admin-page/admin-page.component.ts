@@ -94,7 +94,7 @@ export class AdminPageComponent implements OnInit {
     'Confirmed',
   ];
   protected usersTableDataSource: any = [];
-  protected pageSize = 10;
+  protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens: (string | null)[] = [];
