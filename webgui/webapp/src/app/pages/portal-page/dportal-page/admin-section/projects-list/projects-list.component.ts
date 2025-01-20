@@ -94,7 +94,6 @@ export class ProjectsListComponent {
   ngOnInit(): void {
     this.list();
     this.cd.detectChanges();
-    console.log(this.pageTokens);
 
     this.paginator.page.subscribe(() => {
       if (this.pageSize != this.paginator.pageSize) {
@@ -151,7 +150,6 @@ export class ProjectsListComponent {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
           this.dataSource.data = [];
         } else {
-          console.log(this.pageTokens);
           //handle for refresh page or edit data dont push token when refresh data
           if (!pageToken) {
             this.pageTokens.push(data.last_evaluated_key);
