@@ -55,6 +55,9 @@
       <li class="bui-menu-item" [routerLinkActive]="'active'">
         <a [routerLink]="['profile']">Profile</a>
       </li>
+      <li class="bui-menu-item-static">
+        <span>Logged in as: {{ (auth.user | async)?.username }}</span>
+      </li>
       <li class="bui-menu-item">
         <a [routerLink]="[]" (click)="auth.signOut()">Logout</a>
       </li>

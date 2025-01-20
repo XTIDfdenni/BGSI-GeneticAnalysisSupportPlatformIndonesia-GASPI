@@ -125,7 +125,7 @@
   @apply border-solid border-0 border-b-[1px] border-b-[#2e2e2e] lg:border-b-[0px];
 }
 
-.bui-menu li a {
+.bui-menu li a, span {
   display: block;
   padding: 0.8em 1.5em;
   letter-spacing: 0.25em;
