@@ -32,7 +32,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
-import { bytesToGigabytes } from 'src/app/utils/file';
+import { bytesToGigabytes, formatBytes } from 'src/app/utils/file';
 // import { testUsers } from './test_responses/test_users';
 
 // Docs: https://material.angular.io/components/paginator/examples
@@ -240,10 +240,11 @@ export class AdminPageComponent implements OnInit {
   }
 
   formatData(size: number, count: number, isConvert: boolean) {
+    const valueInGB = formatBytes(size, 2);
     if (isConvert) {
-      return `${bytesToGigabytes(size)} GB/ ${count} Count(s)`;
+      return `${valueInGB}/ ${count} Count(s)`;
     }
-    return `${size} GB/ ${count} Count(s)`;
+    return `${bytesToGigabytes(size)} GB/ ${count} Count(s)`;
   }
 
   listUsers() {
@@ -285,7 +286,7 @@ export class AdminPageComponent implements OnInit {
               'User Quota': this.formatData(
                 user.Usage.quotaSize ?? 0,
                 user.Usage.quotaQueryCount ?? 0,
-                true,
+                false,
               ),
               'User Usage': this.formatData(
                 user.Usage.usageSize ?? 0,
