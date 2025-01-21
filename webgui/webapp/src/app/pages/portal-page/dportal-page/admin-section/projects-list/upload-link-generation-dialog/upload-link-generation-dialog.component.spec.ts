@@ -8,10 +8,9 @@ describe('UploadLinkGenerationDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UploadLinkGenerationDialogComponent]
-    })
-    .compileComponents();
-    
+      imports: [UploadLinkGenerationDialogComponent],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(UploadLinkGenerationDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
