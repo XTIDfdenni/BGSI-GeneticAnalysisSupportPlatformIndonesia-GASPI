@@ -53,7 +53,7 @@ export class UserFileListComponent implements OnInit {
     const bytesTotal = getTotalStorageSize(files);
 
     this.totalSize = bytesTotal;
-    this.totalSizeFormatted = formatBytes(bytesTotal);
+    this.totalSizeFormatted = formatBytes(bytesTotal, 2);
   }
 
   async list() {
@@ -73,7 +73,7 @@ export class UserFileListComponent implements OnInit {
     );
 
     this.quotaSize = quotaSize;
-    this.quotaSizeFormatted = formatBytes(this.quotaSize);
+    this.quotaSizeFormatted = formatBytes(this.quotaSize, 2);
     this.costEstimation = costEstimation;
     this.loadingUsage = false;
   }
