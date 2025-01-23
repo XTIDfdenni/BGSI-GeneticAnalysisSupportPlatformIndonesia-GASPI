@@ -41,13 +41,6 @@
       <li class="bui-menu-item" [routerLinkActive]="'active'">
         <a [routerLink]="['dportal']" accesskey="1" title="">Data Portal</a>
       </li>
-      <!-- hide for now (deleted soon after code complete) -->
-      <!-- <li class="bui-menu-item" [routerLinkActive]="'active'">
-      <a [routerLink]="['query']" accesskey="2" title="">Query</a>
-    </li>
-    <li class="bui-menu-item" [routerLinkActive]="'active'">
-      <a [routerLink]="['filters']" accesskey="3" title="">Filters</a>
-    </li> -->
       <li class="bui-menu-item" [routerLinkActive]="'active'">
         <a [routerLink]="['clinic']" accesskey="3" title="">Clinic</a>
       </li>
@@ -62,17 +55,12 @@
         <a [routerLink]="['profile']">Profile</a>
       </li>
       <li class="bui-menu-item-static">
-        <span>Logged in as: {{ (auth.user | async)?.username }}</span>
+        <span>Logged in as: {{ (auth.user | async)?.attributes?.given_name }}</span>
       </li>
       <li class="bui-menu-item">
         <a [routerLink]="[]" (click)="auth.signOut()">Logout</a>
       </li>
     }
-    <!-- @else {
-    <li class="bui-menu-item" [routerLinkActive]="'active'">
-      <a routerLink="/login">Login</a>
-    </li>
-    } -->
   </ul>
 </div>
 <div class="bui-card-background">
