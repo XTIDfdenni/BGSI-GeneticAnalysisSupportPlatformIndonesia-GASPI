@@ -22,7 +22,7 @@ export class FilterService {
   }
 
   fetch_by_scope_and_id(scope: string, id: string, query: any) {
-    console.log('scope', scope, query);
+    console.log('scope', scope, id, query);
     return from(
       API.get(
         environment.api_endpoint_sbeacon.name,
