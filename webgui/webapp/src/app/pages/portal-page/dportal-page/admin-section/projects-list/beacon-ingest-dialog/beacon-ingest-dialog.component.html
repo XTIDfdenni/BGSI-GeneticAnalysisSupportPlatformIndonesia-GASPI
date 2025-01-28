@@ -43,22 +43,61 @@
       }
     </div>
     <div>
-      <span class="font-semibold">JSON File:</span>
-      <mat-radio-group formControlName="s3Payload">
-        @for (file of jsons; track file) {
-          <div>
-            <mat-radio-button [value]="file" color="primary">{{
-              file
-            }}</mat-radio-button>
-          </div>
-        }
-        @if (ingestionForm.controls["s3Payload"].hasError("required")) {
-          <mat-error class="text-sm"
-            >At least one JSON must be selected</mat-error
-          >
-        }
-      </mat-radio-group>
+      <span class="font-semibold">File Type:</span>
+      <div>
+        <mat-form-field>
+          <mat-select formControlName="fileType" placeholder="Select File Type" required>
+            <mat-option value="json">JSON</mat-option>
+            <mat-option value="tabular">CSV/TSV</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
     </div>
+    @if (ingestionForm.controls["fileType"].value === "json") {
+      <div>
+        <span class="font-semibold">JSON File:</span>
+        <mat-radio-group formControlName="jsons">
+          @for (file of jsons; track file) {
+            <div>
+              <mat-radio-button [value]="file" color="primary">{{
+                file
+              }}</mat-radio-button>
+            </div>
+          }
+          @if (ingestionForm.controls["jsons"].hasError("required")) {
+            <mat-error class="text-sm"
+              >At least one JSON must be selected</mat-error
+            >
+          }
+        </mat-radio-group>
+      </div>
+    }
+    @if (ingestionForm.controls["fileType"].value === "tabular") {
+      <div class="font-semibold">CSV/TSV Files:</div>
+      <mat-tab-group>
+        @for (key of tabularKeys; track key) {
+          <mat-tab [label]="key.charAt(0).toUpperCase() + key.slice(1)">
+            <mat-form-field>
+              <input 
+                matInput 
+                [formControl]="getTabularFileControl(key)"
+                [matAutocomplete]="auto"
+                placeholder="Select {{key}} file"
+                (input)="filterFiles($event, key)"
+              />
+              <mat-autocomplete #auto="matAutocomplete">
+                @for (file of getFilteredFiles(key); track file) {
+                  <mat-option [value]="file">{{file}}</mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+          </mat-tab>
+        }
+      </mat-tab-group>
+    }    
+    @if (ingestionForm.hasError("metadataInvalid")) {
+      <mat-error class="text-sm">{{ ingestionForm.errors?.["message"] }}</mat-error>
+    }
   </form>
   <br />
   <div>

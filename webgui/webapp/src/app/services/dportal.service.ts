@@ -183,7 +183,7 @@ export class DportalService {
   adminIngestToBeacon(
     name: string,
     datasetId: string,
-    s3Payload: string,
+    s3Payload: string | { [key: string]: string },
     vcfLocations: string[],
   ): Observable<{ success: boolean; message: string }> {
     console.log('ingest to sbeacon');
