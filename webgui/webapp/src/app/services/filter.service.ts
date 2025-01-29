@@ -34,12 +34,13 @@ export class FilterService {
     );
   }
 
-  fetch_counts_by_scope_and_term(scope: string, term: any) {
+  fetch_counts_by_scope_and_term(projects: string[], scope: string, term: any) {
     const query = {
       query: {
         filters: [term],
         requestedGranularity: 'count',
       },
+      projects,
       meta: {
         apiVersion: 'v2.0',
       },

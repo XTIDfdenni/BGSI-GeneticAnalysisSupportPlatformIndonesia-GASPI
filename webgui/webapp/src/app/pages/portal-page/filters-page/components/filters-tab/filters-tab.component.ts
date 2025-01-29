@@ -65,6 +65,7 @@ export class FiltersTabComponent {
   protected scopeTypes = ScopeTypes;
   protected activeScope: string | null = null;
   protected terms: any[] = [];
+  protected projects: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -156,6 +157,7 @@ export class FiltersTabComponent {
             }))
           : [];
         this.activeScope = form.stats ? form.scope : null;
+        this.projects = form.projects;
       } else {
         if (!data) {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
@@ -173,6 +175,7 @@ export class FiltersTabComponent {
     this.query = null;
     this.endpoint = null;
     this.terms = [];
+    this.projects = [];
     this.activeScope = null;
     this.form.patchValue({
       scope: ScopeTypes.INDIVIDUALS,
