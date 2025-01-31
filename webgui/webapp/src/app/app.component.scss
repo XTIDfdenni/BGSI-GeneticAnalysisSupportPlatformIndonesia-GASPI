@@ -82,12 +82,25 @@
 /*********************************************************************************/
 /* Menu                                                                           */
 /*********************************************************************************/
+.bui-menu-items {
+  @media (max-width: 900px) {
+    @apply w-full;
+  }
+}
+
+.bui-menu-wrapper {
+  @media (max-width: 900px) {
+    @apply flex-col items-start justify-normal;
+  }
+
+  @apply flex items-center justify-between;
+}
 
 .bui-menu-expander {
   display: none;
 
   @media (max-width: 1200px) {
-    display: unset;
+    @apply flex items-center justify-between;
   }
 }
 
@@ -100,6 +113,15 @@
   @media (max-width: 1200px) {
     position: relative;
     margin-top: 0px;
+  }
+
+  @apply w-full;
+}
+
+.bui-menu-icon {
+  @apply text-white;
+  @media (max-width: 900px) {
+    @apply text-black;
   }
 }
 
@@ -125,9 +147,8 @@
   @apply border-solid border-0 border-b-[1px] border-b-[#2e2e2e] lg:border-b-[0px];
 }
 
-.bui-menu li a {
+.bui-menu li a, span {
   display: block;
-  padding: 0.8em 1.5em;
   letter-spacing: 0.25em;
   text-decoration: none;
   font-size: 0.8em;
@@ -135,7 +156,26 @@
   text-transform: uppercase;
   outline: 0;
   color: #fff;
+
+  @apply px-4 py-3;
+
+  @media (max-width: 900px) {
+    color: #000;
+  }
 }
+
+.bui-profile-lg-visibility {
+  @media (max-width: 900px) {
+    display: none;
+  }
+}
+
+.bui-profile-sm-visibility {
+  @media (max-width: 900px) {
+    display: block;
+  }
+}
+
 
 /*********************************************************************************/
 /* Footer                                                                           */
