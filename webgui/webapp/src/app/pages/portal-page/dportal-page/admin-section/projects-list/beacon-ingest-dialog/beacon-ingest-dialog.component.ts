@@ -106,7 +106,7 @@ export class BeaconIngestDialogComponent {
   ) {
     const vcfs = data.project.files.filter(
       (f: string) =>
-        f.endsWith('.vcf.gz') &&
+        (f.endsWith('.vcf.gz') || f.endsWith('.bcf.gz')) &&
         (data.project.files.includes(`${f}.tbi`) ||
           data.project.files.includes(`${f}.csi`)),
     );
