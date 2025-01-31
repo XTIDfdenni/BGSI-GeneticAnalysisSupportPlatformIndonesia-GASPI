@@ -96,13 +96,13 @@
         >
       }
       <button
-        [disabled]="loginForm.invalid"
+        [disabled]="isSubmitDisabled()"
         mat-raised-button
         color="primary"
         class="bui-login-input-field"
         style="color: white"
       >
-        Login
+        {{ state === StateTypes.PASSWORD_RESET ? 'Change Password' : 'Login' }}
       </button>
     </form>
   </mat-card-content>
