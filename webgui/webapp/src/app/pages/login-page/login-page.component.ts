@@ -89,6 +89,18 @@ export class LoginPageComponent {
     private ss: SpinnerService,
   ) {}
 
+  resetFormForgotPassword() {
+    this.loginForm.reset({
+      email: this.loginForm.value.email,
+      password: '',
+      newPassword: '',
+      resetCode: '',
+    });
+
+    this.loginForm.controls.newPassword.disable();
+    this.loginForm.controls.resetCode.disable();
+  }
+
   async login() {
     this.ss.start();
     switch (this.state) {
@@ -123,6 +135,9 @@ export class LoginPageComponent {
             );
 
             this.state = StateTypes.ORDINARY_LOGIN;
+
+            // reset form resetCode and newPassword
+            this.resetFormForgotPassword();
           } else {
             this.sb.open(
               'Something went wrong, please contact admin!',
@@ -163,6 +178,9 @@ export class LoginPageComponent {
       }
     }
     this.ss.end();
+
+    // clear validators message after login
+    this.loginForm.clearValidators();
   }
 
   async forgotPassword() {
@@ -196,11 +214,12 @@ export class LoginPageComponent {
     const newPassword = this.loginForm.controls.newPassword.value;
     const resetCode = this.loginForm.controls.resetCode.value;
 
-    // Disable button if any required field is empty
+    // Disable button if using first login and no new password
     if (this.state === StateTypes.FIRST_LOGIN && !newPassword) {
       return true;
     }
 
+    // Disable button if using password reset and no reset code or new password
     if (
       this.state === StateTypes.PASSWORD_RESET &&
       (!resetCode || !newPassword)
@@ -208,6 +227,7 @@ export class LoginPageComponent {
       return true;
     }
 
+    // disable button if using ordinary login and no email or password
     if (this.state === StateTypes.ORDINARY_LOGIN && (!email || !password)) {
       return true;
     }
