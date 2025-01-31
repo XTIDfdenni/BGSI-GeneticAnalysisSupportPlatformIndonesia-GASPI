@@ -99,4 +99,8 @@ export class AuthService {
   async forgotPassword(username: string) {
     return await Auth.forgotPassword(username);
   }
+
+  async resetPassword(username: string, code: string, newPassword: string) {
+    return await Auth.forgotPasswordSubmit(username, code, newPassword);
+  }
 }
