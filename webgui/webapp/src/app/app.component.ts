@@ -21,8 +21,10 @@ import {
 } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { GlobalSpinnerComponent } from './components/global-spinner/global-spinner.component';
 import { SpinnerService } from './services/spinner.service';
+import { ProfileMenuComponent } from './components/profile-menu/profile-menu.component';
 
 @Component({
   selector: 'app-root',
@@ -54,11 +56,13 @@ import { SpinnerService } from './services/spinner.service';
   imports: [
     MatButtonModule,
     MatIconModule,
+    MatMenuModule,
     RouterLinkActive,
     RouterLink,
     RouterOutlet,
     AsyncPipe,
     GlobalSpinnerComponent,
+    ProfileMenuComponent,
   ],
   providers: [SpinnerService],
 })

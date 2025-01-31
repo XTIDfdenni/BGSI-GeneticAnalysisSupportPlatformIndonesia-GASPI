@@ -3,10 +3,12 @@
   <p>
     Please provide a unique name to avoid overwriting an existing file in the
     project.
+    <br />
+    Please provide the extension of file (eg: .json, .csv, .txt).
   </p>
   <form [formGroup]="fileNameForm">
     <mat-form-field class="w-full">
-      <mat-label>Project Name</mat-label>
+      <mat-label>File Name</mat-label>
       <input
         matInput
         formControlName="name"

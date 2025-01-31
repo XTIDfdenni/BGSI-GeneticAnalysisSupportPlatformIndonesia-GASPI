@@ -23,54 +23,41 @@
 <div class="bui-menu-expander">
   <button type="button" mat-button (click)="isCollapsed = !isCollapsed">
     @if (isCollapsed) {
-      <mat-icon style="color: white">menu</mat-icon>
+      <mat-icon class="bui-menu-icon">menu</mat-icon>
     } @else {
-      <mat-icon style="color: white">close</mat-icon>
+      <mat-icon class="bui-menu-icon">close</mat-icon>
     }
     <ng-template #close>
-      <mat-icon style="color: white">close</mat-icon>
+      <mat-icon class="bui-menu-icon">close</mat-icon>
     </ng-template>
   </button>
+
+  <app-profile-menu></app-profile-menu>
 </div>
 <div [@collapse]="isCollapsed ? 'closed' : 'open'" class="bui-menu">
-  <ul class="bui-menu-items">
-    @if (auth.user | async) {
-      <li class="bui-menu-item" [routerLinkActive]="'active'">
-        <a [routerLink]="['home']" accesskey="1" title="">About</a>
-      </li>
-      <li class="bui-menu-item" [routerLinkActive]="'active'">
-        <a [routerLink]="['dportal']" accesskey="1" title="">Data Portal</a>
-      </li>
-      <!-- hide for now (deleted soon after code complete) -->
-      <!-- <li class="bui-menu-item" [routerLinkActive]="'active'">
-      <a [routerLink]="['query']" accesskey="2" title="">Query</a>
-    </li>
-    <li class="bui-menu-item" [routerLinkActive]="'active'">
-      <a [routerLink]="['filters']" accesskey="3" title="">Filters</a>
-    </li> -->
-      <li class="bui-menu-item" [routerLinkActive]="'active'">
-        <a [routerLink]="['clinic']" accesskey="3" title="">Clinic</a>
-      </li>
-    }
-    @if ((auth.userGroups | async)!.has("administrators")) {
-      <li class="bui-menu-item" [routerLinkActive]="'active'">
-        <a [routerLink]="['admin']" title="">Admin</a>
-      </li>
-    }
-    @if (auth.user | async) {
-      <li class="bui-menu-item" [routerLinkActive]="'active'">
-        <a [routerLink]="['profile']">Profile</a>
-      </li>
-      <li class="bui-menu-item">
-        <a [routerLink]="[]" (click)="auth.signOut()">Logout</a>
-      </li>
-    }
-    <!-- @else {
-    <li class="bui-menu-item" [routerLinkActive]="'active'">
-      <a routerLink="/login">Login</a>
-    </li>
-    } -->
-  </ul>
+  <div class="bui-menu-wrapper">
+    <ul class="bui-menu-items">
+      @if (auth.user | async) {
+        <li class="bui-menu-item" [routerLinkActive]="'active'">
+          <a [routerLink]="['home']" accesskey="1" title="">About</a>
+        </li>
+        <li class="bui-menu-item" [routerLinkActive]="'active'">
+          <a [routerLink]="['dportal']" accesskey="1" title="">Data Portal</a>
+        </li>
+        <li class="bui-menu-item" [routerLinkActive]="'active'">
+          <a [routerLink]="['clinic']" accesskey="3" title="">Clinic</a>
+        </li>
+      }
+      @if ((auth.userGroups | async)!.has("administrators")) {
+        <li class="bui-menu-item" [routerLinkActive]="'active'">
+          <a [routerLink]="['admin']" title="">Admin</a>
+        </li>
+      }
+    </ul>
+    <div class="bui-profile-lg-visibility">
+      <app-profile-menu></app-profile-menu>
+    </div>
+  </div>
 </div>
 <div class="bui-card-background">
   <div class="bui-card-resize">
