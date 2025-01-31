@@ -53,14 +53,31 @@ export class TabularQueryResultsViewerComponent
       : this.results.response.resultSets[0].results;
     // Handle the special case for variants
     const idName = _.isEmpty(results[0]['id']) ? 'variantInternalId' : 'id';
+    // expand out info column for non-variants
+    const processedResults = results.map((item: any) => {
+      if (!item.variantInternalId) {
+        const { projectName = '', datasetName = '', additionalInfo = '' } = item.info || {};
+        return {
+          ...item,
+          projectName,
+          datasetName,
+          info: additionalInfo,
+        };
+      }
+      return item;
+    });
+  
     const header = [
       idName,
-      ..._.filter(_.keys(results[0]), (item) => item != idName),
+      ..._.filter(
+        _.keys(processedResults[0]),
+        (item) => item !== idName
+      ),
     ];
-    const data = _.map(results, (item) => _.pick(item, header));
-
+    const data = _.map(processedResults, (item) => _.pick(item, header));
+  
     this.displayedColumns = header;
     this.dataSource = new MatTableDataSource<any>(data);
     this.dataSource.paginator = this.paginator;
   }
-}
+}  
