@@ -89,6 +89,18 @@ export class LoginPageComponent {
     private ss: SpinnerService,
   ) {}
 
+  resetFormForgotPassword() {
+    this.loginForm.reset({
+      email: this.loginForm.value.email,
+      password: '',
+      newPassword: '',
+      resetCode: '',
+    });
+
+    this.loginForm.controls.newPassword.disable();
+    this.loginForm.controls.resetCode.disable();
+  }
+
   async login() {
     this.ss.start();
     switch (this.state) {
@@ -106,6 +118,41 @@ export class LoginPageComponent {
         break;
       }
       case StateTypes.PASSWORD_RESET: {
+        try {
+          const response = await this.auth.resetPassword(
+            this.loginForm.value.email!,
+            this.loginForm.value.resetCode!,
+            this.loginForm.value.newPassword!,
+          );
+
+          if (response === 'SUCCESS') {
+            this.sb.open(
+              'Password reset successful! You can now log in with your new password.',
+              'Okay',
+              {
+                duration: 60000,
+              },
+            );
+
+            this.state = StateTypes.ORDINARY_LOGIN;
+
+            // reset form resetCode and newPassword
+            this.resetFormForgotPassword();
+          } else {
+            this.sb.open(
+              'Something went wrong, please contact admin!',
+              'Okay',
+              {
+                duration: 60000,
+              },
+            );
+          }
+        } catch (error: any) {
+          this.sb.open(error.message, 'Okay', {
+            duration: 60000,
+          });
+        }
+
         break;
       }
       case StateTypes.ORDINARY_LOGIN: {
@@ -131,22 +178,61 @@ export class LoginPageComponent {
       }
     }
     this.ss.end();
+
+    // clear validators message after login
+    this.loginForm.clearValidators();
   }
 
   async forgotPassword() {
     if (this.loginForm.controls.email.valid) {
-      this.state = StateTypes.PASSWORD_RESET;
-      this.loginForm.controls.resetCode.enable();
-      this.loginForm.controls.newPassword.enable();
-
       this.loading = true;
-      const success = await this.auth.forgotPassword(
-        this.loginForm.value.email!,
-      );
-      this.loading = false;
+      try {
+        const success = await this.auth.forgotPassword(
+          this.loginForm.value.email!,
+        );
+
+        if (success) {
+          this.state = StateTypes.PASSWORD_RESET;
+          this.loginForm.controls.resetCode.enable();
+          this.loginForm.controls.newPassword.enable();
+        }
+
+        this.loading = false;
+      } catch (error: any) {
+        this.sb.open(error.message, 'Okay', {
+          duration: 60000,
+        });
+      }
     } else {
       this.loginForm.controls.email.markAsTouched();
     }
-    console.log(this.loginForm.controls.email.valid);
+  }
+
+  isSubmitDisabled(): boolean {
+    const email = this.loginForm.controls.email.value;
+    const password = this.loginForm.controls.password.value;
+    const newPassword = this.loginForm.controls.newPassword.value;
+    const resetCode = this.loginForm.controls.resetCode.value;
+
+    // Disable button if using first login and no new password
+    if (this.state === StateTypes.FIRST_LOGIN && !newPassword) {
+      return true;
+    }
+
+    // Disable button if using password reset and no reset code or new password
+    if (
+      this.state === StateTypes.PASSWORD_RESET &&
+      (!resetCode || !newPassword)
+    ) {
+      return true;
+    }
+
+    // disable button if using ordinary login and no email or password
+    if (this.state === StateTypes.ORDINARY_LOGIN && (!email || !password)) {
+      return true;
+    }
+
+    // Return false (button enabled) if no conditions match
+    return false;
   }
 }
