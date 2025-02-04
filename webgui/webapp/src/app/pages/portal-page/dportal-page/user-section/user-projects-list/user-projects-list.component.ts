@@ -12,6 +12,7 @@ import {
   MatPaginator,
   MatPaginatorIntl,
   MatPaginatorModule,
+  PageEvent,
 } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
@@ -71,51 +72,35 @@ export class UserProjectsListComponent implements OnInit {
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
-  private pageTokens: (string | null)[] = [];
-  private lastPage: number = 0;
+  private pageTokens = new Map<number, string>();
 
   constructor(
     private dps: DportalService,
     private sb: MatSnackBar,
     private cb: Clipboard,
     private cd: ChangeDetectorRef,
-  ) {}
+  ) {
+    // first page token
+    this.pageTokens.set(0, '');
+  }
 
   ngOnInit(): void {
-    this.listPagination();
-
+    this.list(0);
     this.cd.detectChanges();
-    console.log(this.paginator);
-    this.paginator.page.subscribe(() => {
+
+    this.paginator.page.subscribe((event: PageEvent) => {
       if (this.pageSize != this.paginator.pageSize) {
         this.resetPagination();
-        return this.listPagination();
-      }
-
-      if (
-        _.isEmpty(this.pageTokens.at(-1)) &&
-        !_.isEmpty(this.pageTokens) &&
-        this.lastPage < this.paginator.pageIndex
-      ) {
-        // last page
-        this.paginator.pageIndex--;
-      } else if (this.lastPage < this.paginator.pageIndex) {
-        this.lastPage++;
-        this.listPagination();
-      } else if (this.lastPage > this.paginator.pageIndex) {
-        this.lastPage--;
-        // remove next page token
-        this.pageTokens.pop();
-        // remove current page token
-        this.pageTokens.pop();
-        this.listPagination();
+        this.refresh();
+      } else {
+        this.list(event.pageIndex);
       }
     });
   }
 
-  listPagination() {
+  list(page: number) {
     this.dps
-      .getMyProjectsPagination(this.pageSize, this.pageTokens.at(-1))
+      .getMyProjectsPagination(this.pageSize, this.pageTokens.get(page))
       .pipe(catchError(() => of(null)))
       .subscribe((data: any) => {
         if (!data) {
@@ -123,31 +108,29 @@ export class UserProjectsListComponent implements OnInit {
           this.dataSource.data = [];
         } else {
           //handle if there no data on next page (set page index and last page to prev value)
-          if (data && data.data.length <= 0) {
+          if (data && data.data.length <= 0 && this.paginator.pageIndex > 0) {
             this.paginator.pageIndex--;
             this.sb.open('No more items to show', 'Okay', { duration: 60000 });
-            this.lastPage--;
             return;
           }
 
-          this.dataSource.data = [];
-          this.pageTokens.push(data.last_evaluated_key);
           this.dataSource.data = data.data.map((project: Project) => ({
             name: project.name,
             description: project.description,
             files: project.files,
             expanded: false,
           }));
+
+          // set next page token
+          this.pageTokens.set(page + 1, data.last_evaluated_key);
         }
       });
   }
 
   async resetPagination() {
-    this.pageTokens = [];
-    this.lastPage = 0;
+    this.pageTokens = new Map<number, string>();
     this.paginator.pageIndex = 0;
     this.pageSize = this.paginator.pageSize;
-    return true;
   }
 
   copy(project: string, prefix: string) {
@@ -175,10 +158,10 @@ export class UserProjectsListComponent implements OnInit {
       });
   }
 
-  refreshData() {
+  refresh() {
     try {
       this.resetPagination();
-      this.listPagination();
+      this.list(0);
     } catch (error) {
       console.log(error);
     }

@@ -98,26 +98,9 @@ export class ProjectsListComponent {
     this.paginator.page.subscribe(() => {
       if (this.pageSize != this.paginator.pageSize) {
         this.resetPagination();
-        return this.list();
-      }
-
-      if (
-        _.isEmpty(this.pageTokens.at(-1)) &&
-        !_.isEmpty(this.pageTokens) &&
-        this.lastPage < this.paginator.pageIndex
-      ) {
-        // last page
-        this.paginator.pageIndex--;
-      } else if (this.lastPage < this.paginator.pageIndex) {
-        this.lastPage++;
-        this.list();
-      } else if (this.lastPage > this.paginator.pageIndex) {
-        this.lastPage--;
-        // remove next page token
-        this.pageTokens.pop();
-        // remove current page token
-        this.pageTokens.pop();
-        this.list();
+        this.refresh();
+      } else {
+        this.list(event.pageIndex);
       }
     });
   }
@@ -150,7 +133,7 @@ export class ProjectsListComponent {
           this.dataSource.data = [];
         } else {
           //handle if there no data on next page (set page index and last page to prev value)
-          if (data && data.data.length <= 0) {
+          if (data && data.data.length <= 0 && this.paginator.pageIndex > 0) {
             this.paginator.pageIndex--;
             this.sb.open('No more items to show', 'Okay', { duration: 60000 });
             this.lastPage--;
