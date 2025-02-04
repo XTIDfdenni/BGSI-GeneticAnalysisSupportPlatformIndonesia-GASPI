@@ -51,9 +51,10 @@ export class TabularQueryResultsViewerComponent
     const results = _.isEmpty(this.results.response.resultSets)
       ? this.results.response.collections
       : this.results.response.resultSets[0].results;
+    const variantInfoMapping = this.results?.info?.variantInfoMapping ?? {};
     // Handle the special case for variants
     const idName = _.isEmpty(results[0]['id']) ? 'variantInternalId' : 'id';
-    // expand out info column for non-variants
+    // Expand info column, only including additional info for non-variant queries
     const processedResults = results.map((item: any) => {
       if (!item.variantInternalId) {
         const { projectName = '', datasetName = '', additionalInfo = '' } = item.info || {};
@@ -63,8 +64,14 @@ export class TabularQueryResultsViewerComponent
           datasetName,
           info: additionalInfo,
         };
+      } else {
+        const { projectName = '', datasetName = '' } = variantInfoMapping?.[item.variantInternalId] || {}; 
+        return {
+          ...item,
+          projectName,
+          datasetName,
+        };
       }
-      return item;
     });
   
     const header = [
