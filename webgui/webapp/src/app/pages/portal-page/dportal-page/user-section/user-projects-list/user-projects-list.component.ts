@@ -127,7 +127,7 @@ export class UserProjectsListComponent implements OnInit {
       });
   }
 
-  async resetPagination() {
+  resetPagination() {
     this.pageTokens = new Map<number, string>();
     this.paginator.pageIndex = 0;
     this.pageSize = this.paginator.pageSize;
