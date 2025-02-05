@@ -1,11 +1,15 @@
 module "cognito" {
-  source                   = "./cognito"
-  region                   = var.region
-  gaspi-guest-username     = var.gaspi-guest-username
-  gaspi-guest-password     = var.gaspi-guest-password
-  gaspi-admin-username     = var.gaspi-admin-username
-  gaspi-admin-password     = var.gaspi-admin-password
-  dataportal-bucket-prefix = var.dataportal-bucket-prefix
+  source                          = "./cognito"
+  region                          = var.region
+  gaspi-guest-username            = var.gaspi-guest-username
+  gaspi-guest-password            = var.gaspi-guest-password
+  gaspi-admin-username            = var.gaspi-admin-username
+  gaspi-admin-password            = var.gaspi-admin-password
+  dataportal-bucket-prefix        = var.dataportal-bucket-prefix
+  password-reset-email-lambda-arn = module.sbeacon.password-reset-email-lambda-arn
+  ses-source-email                = var.ses-source-email
+  ses-source-email-arn            = module.sbeacon.ses-source-email-arn
+  ses-configuration-set           = module.sbeacon.ses-configuration-set
 
   common-tags = merge(var.common-tags, {
     "NAME" = "cognito-infrastructure"
@@ -43,15 +47,15 @@ module "svep" {
 }
 
 module "webgui" {
-  source                       = "./webgui/terraform-aws"
-  region                       = var.region
-  base_range                   = 5000
-  user_pool_id                 = module.cognito.cognito_user_pool_id
-  identity_pool_id             = module.cognito.cognito_identity_pool_id
-  user_pool_web_client_id      = module.cognito.cognito_client_id
-  data_portal_bucket           = module.sbeacon.data-portal-bucket
-  api_endpoint_sbeacon         = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
-  api_endpoint_svep            = module.svep.api_url
+  source                  = "./webgui/terraform-aws"
+  region                  = var.region
+  base_range              = 5000
+  user_pool_id            = module.cognito.cognito_user_pool_id
+  identity_pool_id        = module.cognito.cognito_identity_pool_id
+  user_pool_web_client_id = module.cognito.cognito_client_id
+  data_portal_bucket      = module.sbeacon.data-portal-bucket
+  api_endpoint_sbeacon    = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
+  api_endpoint_svep       = module.svep.api_url
 
   common-tags = merge(var.common-tags, {
     "NAME" = "portal-frontend"
