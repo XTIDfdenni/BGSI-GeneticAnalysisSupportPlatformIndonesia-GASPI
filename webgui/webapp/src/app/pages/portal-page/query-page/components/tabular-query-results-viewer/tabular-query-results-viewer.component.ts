@@ -116,4 +116,23 @@ export class TabularQueryResultsViewerComponent
     };
     this.dataSource.sort = this.sort;
   }
+
+  disableOrder(columnName: string) {
+    const listDisableOrder = [
+      'diseases',
+      'interventionsorprocedures',
+      'obtentionprocedure',
+      'pathologicaltnmfinding',
+      'variation',
+      'datauseconditions',
+    ];
+
+    const find = listDisableOrder.find(
+      (e) => e.toLowerCase() === columnName.toLowerCase(),
+    );
+    if (find) {
+      return true;
+    }
+    return false;
+  }
 }
