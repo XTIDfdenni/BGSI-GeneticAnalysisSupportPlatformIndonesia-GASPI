@@ -74,14 +74,39 @@ export class TabularQueryResultsViewerComponent
     const results = _.isEmpty(this.results.response.resultSets)
       ? this.results.response.collections
       : this.results.response.resultSets[0].results;
-
+    const variantInfoMapping = this.results?.info?.variantInfoMapping ?? {};
     // Handle the special case for variants
     const idName = _.isEmpty(results[0]['id']) ? 'variantInternalId' : 'id';
+    // Expand info column, only including additional info for non-variant queries
+    const processedResults = results.map((item: any) => {
+      if (!item.variantInternalId) {
+        const {
+          projectName = '',
+          datasetName = '',
+          additionalInfo = '',
+        } = item.info || {};
+        return {
+          ...item,
+          projectName,
+          datasetName,
+          info: additionalInfo,
+        };
+      } else {
+        const { projectName = '', datasetName = '' } =
+          variantInfoMapping?.[item.variantInternalId] || {};
+        return {
+          ...item,
+          projectName,
+          datasetName,
+        };
+      }
+    });
+
     const header = [
       idName,
-      ..._.filter(_.keys(results[0]), (item) => item != idName),
+      ..._.filter(_.keys(processedResults[0]), (item) => item !== idName),
     ];
-    const data = _.map(results, (item) => _.pick(item, header));
+    const data = _.map(processedResults, (item) => _.pick(item, header));
 
     this.displayedColumns = header;
     this.dataSource = new MatTableDataSource<any>(data);

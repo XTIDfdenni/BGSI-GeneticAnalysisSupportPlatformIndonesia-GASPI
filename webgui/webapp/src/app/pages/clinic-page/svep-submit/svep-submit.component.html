@@ -7,7 +7,8 @@
         select a VCF from the list of available files.
       </p>
       <p>
-        Disabled options indicate missing .tbi index files in project bucket.
+        Disabled options indicate missing .tbi/.csi index files in project
+        bucket.
       </p>
       <app-projects-list #projects (filesSelected)="filesSelected($event)" />
       <br />

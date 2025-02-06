@@ -18,6 +18,7 @@ import {
   MatPaginator,
   MatPaginatorIntl,
   MatPaginatorModule,
+  PageEvent,
 } from '@angular/material/paginator';
 import * as _ from 'lodash';
 
@@ -80,8 +81,7 @@ export class ProjectsListComponent {
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
-  private pageTokens: (string | null)[] = [];
-  private lastPage: number = 0;
+  private pageTokens = new Map<number, string>();
 
   constructor(
     private dps: DportalService,
@@ -92,39 +92,21 @@ export class ProjectsListComponent {
   ) {}
 
   ngOnInit(): void {
-    this.list();
+    this.list(0);
     this.cd.detectChanges();
 
-    this.paginator.page.subscribe(() => {
+    this.paginator.page.subscribe((event: PageEvent) => {
       if (this.pageSize != this.paginator.pageSize) {
         this.resetPagination();
-        return this.list();
-      }
-
-      if (
-        _.isEmpty(this.pageTokens.at(-1)) &&
-        !_.isEmpty(this.pageTokens) &&
-        this.lastPage < this.paginator.pageIndex
-      ) {
-        // last page
-        this.paginator.pageIndex--;
-      } else if (this.lastPage < this.paginator.pageIndex) {
-        this.lastPage++;
-        this.list();
-      } else if (this.lastPage > this.paginator.pageIndex) {
-        this.lastPage--;
-        // remove next page token
-        this.pageTokens.pop();
-        // remove current page token
-        this.pageTokens.pop();
-        this.list();
+        this.refresh();
+      } else {
+        this.list(event.pageIndex);
       }
     });
   }
 
   resetPagination() {
-    this.pageTokens = [];
-    this.lastPage = 0;
+    this.pageTokens = new Map<number, string>();
     this.paginator.pageIndex = 0;
     this.pageSize = this.paginator.pageSize;
   }
@@ -139,10 +121,10 @@ export class ProjectsListComponent {
     }
   }
 
-  list(pageToken?: string) {
+  list(page: number) {
     this.loading = true;
     this.dps
-      .getAdminProjects(this.pageSize, pageToken ?? this.pageTokens.at(-1))
+      .getAdminProjects(this.pageSize, this.pageTokens.get(page))
       .pipe(catchError(() => of(null)))
       .subscribe((data: any) => {
         if (!data) {
@@ -150,21 +132,13 @@ export class ProjectsListComponent {
           this.dataSource.data = [];
         } else {
           //handle if there no data on next page (set page index and last page to prev value)
-          if (data && data.data.length <= 0) {
+          if (data && data.data.length <= 0 && this.paginator.pageIndex > 0) {
             this.paginator.pageIndex--;
             this.sb.open('No more items to show', 'Okay', { duration: 60000 });
-            this.lastPage--;
             this.loading = false;
             return;
           }
 
-          this.dataSource.data = [];
-          //handle for refresh page or edit data dont push token when refresh data
-          if (!pageToken) {
-            this.pageTokens.push(data.last_evaluated_key);
-          }
-
-          //handle push data
           this.dataSource.data = data.data.map((project: any) => ({
             name: project.name,
             description: project.description,
@@ -172,12 +146,9 @@ export class ProjectsListComponent {
             totalSamples: project.total_samples,
             ingestedDatasets: project.ingested_datasets,
           }));
-          if (this.active) {
-            this.active =
-              this.dataSource.data.find(
-                (project) => project.name === this.active?.name,
-              ) || null;
-          }
+
+          // set next page token
+          this.pageTokens.set(page + 1, data.last_evaluated_key);
         }
         this.loading = false;
       });
@@ -186,7 +157,7 @@ export class ProjectsListComponent {
   refresh() {
     try {
       this.resetPagination();
-      this.list();
+      this.list(0);
     } catch (error) {
       console.log(error);
     }
@@ -204,7 +175,7 @@ export class ProjectsListComponent {
     });
 
     dialog.afterClosed().subscribe((result) => {
-      this.list(this.pageTokens.at(this.lastPage - 1) || undefined);
+      this.list(this.paginator.pageIndex);
     });
   }
 
@@ -266,7 +237,7 @@ export class ProjectsListComponent {
             } else {
               this.sb.open('Project deleted.', 'Okay', { duration: 60000 });
             }
-            this.list();
+            this.refresh();
           });
       }
     });
@@ -319,7 +290,7 @@ export class ProjectsListComponent {
       },
     });
     dialog.afterClosed().subscribe((result) => {
-      this.list();
+      this.list(this.paginator.pageIndex);
     });
   }
 }

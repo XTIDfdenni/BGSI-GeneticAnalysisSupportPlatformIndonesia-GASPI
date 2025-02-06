@@ -23,7 +23,6 @@ interface Project {
 export interface FileSelectEvent {
   projectName: string;
   vcf: string;
-  index: string;
 }
 
 @Component({
@@ -53,7 +52,6 @@ export class ProjectsListComponent {
   viewUsers: string | null = null;
   projectName: string | null = null;
   vcfFile: string | null = null;
-  indexFile: string | null = null;
 
   constructor(
     private dps: DportalService,
@@ -78,12 +76,14 @@ export class ProjectsListComponent {
           this.dataSource.data = [];
         } else {
           this.dataSource.data = data.map((project) => {
-            const vcfFiles = project.files.filter((file: string) =>
-              file.endsWith('.vcf.gz'),
+            const vcfFiles = project.files.filter(
+              (file: string) =>
+                file.endsWith('.vcf.gz') || file.endsWith('.bcf.gz'),
             );
             const filesWithStatus = vcfFiles.map((file: string) => {
-              const prefix = file.slice(0, -7);
-              const hasIndex = project.files.includes(`${prefix}.vcf.gz.tbi`);
+              const hasIndex =
+                project.files.includes(`${file}.tbi`) ||
+                project.files.includes(`${file}.csi`);
               return {
                 filename: file,
                 disabled: !hasIndex,
@@ -110,7 +110,6 @@ export class ProjectsListComponent {
     const fileEvent: FileSelectEvent = {
       projectName: projectName,
       vcf: fileName,
-      index: `${fileName}.tbi`,
     };
     this.filesSelected.emit(fileEvent);
   }
