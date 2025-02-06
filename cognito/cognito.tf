@@ -44,14 +44,14 @@ resource "aws_cognito_user_pool" "gaspi_user_pool" {
   }
 
   email_configuration {
-    configuration_set = var.ses-configuration-set 
+    configuration_set     = var.ses-configuration-set
     email_sending_account = "DEVELOPER"
-    from_email_address = var.ses-source-email
-    source_arn = var.ses-source-email-arn
+    from_email_address    = var.ses-source-email
+    source_arn            = var.ses-source-email-arn
   }
-  
+
   lambda_config {
-    custom_message = var.password-reset-email-lambda-arn
+    custom_message = module.lambda-customMessageLambdaTrigger.lambda_function_arn
   }
 }
 

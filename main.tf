@@ -6,7 +6,6 @@ module "cognito" {
   gaspi-admin-username            = var.gaspi-admin-username
   gaspi-admin-password            = var.gaspi-admin-password
   dataportal-bucket-prefix        = var.dataportal-bucket-prefix
-  password-reset-email-lambda-arn = module.sbeacon.password-reset-email-lambda-arn
   ses-source-email                = var.ses-source-email
   ses-source-email-arn            = module.sbeacon.ses-source-email-arn
   ses-configuration-set           = module.sbeacon.ses-configuration-set
