@@ -33,11 +33,6 @@ variable "dataportal-bucket-prefix" {
   description = "Prefix for bucket names"
 }
 
-variable "password-reset-email-lambda-arn" {
-  type        = string
-  description = "ARN for the password reset email lambda function"
-}
-
 variable "ses-source-email" {
   type = string
   description = "Address from which to send emails"
