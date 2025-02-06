@@ -62,9 +62,21 @@
             matInput
             [defaultValue]="100"
             min="1"
-            max="500"
+            max="5000"
             type="number"
             formControlName="limit"
+          />
+        </mat-form-field>
+      </div>
+      <h3>Use a keyword to refine the query</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-4">
+        <mat-form-field>
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            type="text"
+            formControlName="search"
+            placeholder="Ontology code/label"
           />
         </mat-form-field>
       </div>
@@ -106,6 +118,7 @@
   <app-term-freq-viewer
     [scope]="activeScope!"
     [terms]="terms"
+    [projects]="projects"
   ></app-term-freq-viewer>
 }
 @if (results) {

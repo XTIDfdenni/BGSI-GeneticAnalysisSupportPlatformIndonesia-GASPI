@@ -19,10 +19,12 @@ import { MatCardModule } from '@angular/material/card';
   ],
 })
 export class TermFreqViewerComponent implements OnChanges, OnDestroy {
-  @Input()
+  @Input({ required: true })
   scope!: string;
-  @Input()
+  @Input({ required: true })
   terms!: any[];
+  @Input({ required: true })
+  projects!: string[];
   protected completed = 0;
   protected loading = true;
   protected counts: any[] = [];
@@ -47,16 +49,20 @@ export class TermFreqViewerComponent implements OnChanges, OnDestroy {
     this.completed = 0;
 
     const observables$ = _.map(this.terms, (term) =>
-      this.fs.fetch_counts_by_scope_and_term(this.scope, { id: term.id }).pipe(
-        map((count) => {
-          this.completed++;
-          return {
-            term: term.id,
-            count: count,
-            label: term.label,
-          };
-        }),
-      ),
+      this.fs
+        .fetch_counts_by_scope_and_term(this.projects, this.scope, {
+          id: term.id,
+        })
+        .pipe(
+          map((count) => {
+            this.completed++;
+            return {
+              term: term.id,
+              count: count,
+              label: term.label,
+            };
+          }),
+        ),
     );
 
     forkJoin(observables$)

@@ -42,6 +42,17 @@ resource "aws_cognito_user_pool" "gaspi_user_pool" {
 
     string_attribute_constraints {}
   }
+
+  email_configuration {
+    configuration_set = var.ses-configuration-set 
+    email_sending_account = "DEVELOPER"
+    from_email_address = var.ses-source-email
+    source_arn = var.ses-source-email-arn
+  }
+  
+  lambda_config {
+    custom_message = var.password-reset-email-lambda-arn
+  }
 }
 
 resource "aws_cognito_user_pool_client" "gaspi_user_pool_client" {

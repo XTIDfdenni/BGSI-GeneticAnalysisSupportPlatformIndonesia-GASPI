@@ -155,14 +155,23 @@ export class DportalService {
     );
   }
 
-  adminAddUserToProject(project: string, email: string) {
+  adminSearchUsers(search: string) {
+    console.log('search users', search);
+    return from(
+      API.get(environment.api_endpoint_sbeacon.name, `dportal/admin/users`, {
+        queryStringParameters: { search },
+      }),
+    );
+  }
+
+  adminAddUserToProject(project: string, emails: string[]) {
     console.log('add user to project');
     return from(
       API.post(
         environment.api_endpoint_sbeacon.name,
         `dportal/admin/projects/${project}/users`,
         {
-          body: { emails: [email] },
+          body: { emails },
         },
       ),
     );
@@ -183,7 +192,7 @@ export class DportalService {
   adminIngestToBeacon(
     name: string,
     datasetId: string,
-    s3Payload: string,
+    s3Payload: string | { [key: string]: string },
     vcfLocations: string[],
   ): Observable<{ success: boolean; message: string }> {
     console.log('ingest to sbeacon');

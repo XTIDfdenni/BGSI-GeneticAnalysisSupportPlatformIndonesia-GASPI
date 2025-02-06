@@ -42,7 +42,6 @@ export class SvepSubmitComponent {
   @ViewChild('projects') private projects!: ProjectsListComponent;
   protected projectName: string | null = null;
   protected vcfFile: string | null = null;
-  protected indexFile: string | null = null;
   protected valid = false;
   protected submissionStarted = false;
   protected results = null;
@@ -56,7 +55,6 @@ export class SvepSubmitComponent {
     console.log(event);
     this.projectName = event.projectName;
     this.vcfFile = event.vcf;
-    this.indexFile = event.index;
     this.valid = true;
   }
 

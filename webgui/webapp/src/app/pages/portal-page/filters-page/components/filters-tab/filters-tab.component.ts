@@ -65,6 +65,7 @@ export class FiltersTabComponent {
   protected scopeTypes = ScopeTypes;
   protected activeScope: string | null = null;
   protected terms: any[] = [];
+  protected projects: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -82,8 +83,9 @@ export class FiltersTabComponent {
       limit: this.fb.control(100, [
         Validators.required,
         Validators.min(1),
-        Validators.max(500),
+        Validators.max(5000),
       ]),
+      search: this.fb.control('', [Validators.pattern(/^\S.*\S$/)]),
       stats: this.fb.control(false),
     });
 
@@ -126,11 +128,13 @@ export class FiltersTabComponent {
     this.ss.start();
     const form = this.form.value;
     const projects = form.projects.join(',');
-    const query = {
+    const query: any = {
       skip: form.skip,
       limit: form.limit,
       projects: projects,
+      search: form.search,
     };
+
     let result$;
     let endpoint: any;
 
@@ -153,6 +157,7 @@ export class FiltersTabComponent {
             }))
           : [];
         this.activeScope = form.stats ? form.scope : null;
+        this.projects = form.projects;
       } else {
         if (!data) {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
@@ -170,21 +175,24 @@ export class FiltersTabComponent {
     this.query = null;
     this.endpoint = null;
     this.terms = [];
+    this.projects = [];
     this.activeScope = null;
     this.form.patchValue({
       scope: ScopeTypes.INDIVIDUALS,
       skip: 0,
       limit: 100,
+      search: '',
     });
   }
 
   async searchIds() {
     const scope = this.form.value.scope;
+    const projects = this.form.value.projects;
     const { EntryIdSelectionDialogComponent } = await import(
       'src/app/components/entry-id-selection-dialog/entry-id-selection-dialog.component'
     );
     const dialog = this.dg.open(EntryIdSelectionDialogComponent, {
-      data: { scope },
+      data: { scope, projects },
     });
 
     dialog.afterClosed().subscribe((entry) => {
