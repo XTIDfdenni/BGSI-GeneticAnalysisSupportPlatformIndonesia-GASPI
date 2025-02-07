@@ -99,6 +99,12 @@ export class UserProjectsListComponent implements OnInit {
   }
 
   list(page: number) {
+    // not the first page but the page token is not set
+    if (!this.pageTokens.get(page) && page > 0) {
+      this.paginator.pageIndex--;
+      this.sb.open('No more items to show', 'Okay', { duration: 60000 });
+      return;
+    }
     this.dps
       .getMyProjectsPagination(this.pageSize, this.pageTokens.get(page))
       .pipe(catchError(() => of(null)))
