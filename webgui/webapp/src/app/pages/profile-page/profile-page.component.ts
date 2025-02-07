@@ -21,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import { Auth } from 'aws-amplify';
 
 /**
  * A validator function that checks if the 'confirmPassword' and 'newPassword' fields of a form match.
@@ -80,7 +81,6 @@ const mustNotMatch = (): ValidatorFn => {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    GlobalSpinnerComponent,
   ],
   providers: [UserService],
 })
@@ -88,6 +88,7 @@ export class ProfilePageComponent {
   protected user: any;
   protected userDetailsForm: FormGroup;
   protected userPasswordForm: FormGroup;
+  protected mfaActivated = false;
 
   constructor(
     private auth: AuthService,
@@ -112,6 +113,44 @@ export class ProfilePageComponent {
     auth.user.pipe(filter((u) => !!u)).subscribe((u: any) => {
       this.user = u.signInUserSession.idToken.payload;
       this.resetDetails();
+
+      Auth.getPreferredMFA(u).then((mfa) => {
+        console.log('MFA', mfa);
+        this.mfaActivated = mfa !== 'NOMFA';
+      });
+    });
+  }
+
+  async activateMfa() {
+    const secretCode = await Auth.setupTOTP(this.auth.user.value);
+    const str =
+      'otpauth://totp/BGSI DataPortal:' +
+      this.auth.user.value.username +
+      '?secret=' +
+      secretCode +
+      '&issuer=dataportal';
+
+    const { MFAQRCodeComponent } = await import(
+      './components/mfa-qr-code/mfa-qr-code.component'
+    );
+
+    const dialogRef = this.dg.open(MFAQRCodeComponent, {
+      data: str,
+    });
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        try {
+          await Auth.verifyTotpToken(this.auth.user.value, result);
+          await Auth.setPreferredMFA(this.auth.user.value, 'TOTP');
+          this.mfaActivated = true;
+        } catch (error) {
+          console.error(error);
+          this.sb.open('Invalid code. Try again.', 'Okay', {
+            duration: 60000,
+          });
+        }
+      }
     });
   }
 

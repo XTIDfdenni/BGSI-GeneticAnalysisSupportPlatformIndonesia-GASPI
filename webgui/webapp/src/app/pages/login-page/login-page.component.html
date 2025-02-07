@@ -95,6 +95,18 @@
           >Forgot password</a
         >
       }
+      @if (state == StateTypes.TOTP_LOGIN) {
+        <mat-form-field class="bui-login-input-field" required>
+          <mat-label>OTP Code</mat-label>
+          <input
+            formControlName="totp"
+            matInput
+            placeholder=""
+            type="password"
+          />
+          <mat-hint>Enter the six digit OTP</mat-hint>
+        </mat-form-field>
+      }
       <button
         [disabled]="isSubmitDisabled()"
         mat-raised-button
