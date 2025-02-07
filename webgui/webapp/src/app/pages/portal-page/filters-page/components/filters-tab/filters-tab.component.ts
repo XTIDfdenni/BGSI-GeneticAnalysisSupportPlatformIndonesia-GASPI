@@ -111,10 +111,10 @@ export class FiltersTabComponent {
       .getMyProjects()
       .pipe(catchError(() => of(null)))
       .subscribe((projects: any) => {
-        if (!projects || !Array.isArray(projects)) {
+        if (!projects.data || !Array.isArray(projects.data)) {
           this.sb.open('Unable to get projects.', 'Close', { duration: 60000 });
         } else {
-          this.myProjects = projects
+          this.myProjects = projects.data
             .filter((p: Project) => p.ingested_datasets.length > 0)
             .map((p: Project) => ({
               ...p,
