@@ -33,10 +33,15 @@ export class AuthService {
     try {
       const user = await Auth.signIn(username, password);
 
-      if (_.get(user, 'challengeName', '') === 'NEW_PASSWORD_REQUIRED') {
-        this.tempUser = user;
-        return 'NEW_PASSWORD_REQUIRED';
+      switch (user.challengeName) {
+        case 'NEW_PASSWORD_REQUIRED':
+          this.tempUser = user;
+          return 'NEW_PASSWORD_REQUIRED';
+        case 'SOFTWARE_TOKEN_MFA':
+          this.tempUser = user;
+          return 'SOFTWARE_TOKEN_MFA';
       }
+
       console.log('Logged in as ', user);
       await this.refresh();
       return true;
@@ -60,6 +65,17 @@ export class AuthService {
     await Auth.completeNewPassword(this.tempUser, newPassword);
     await this.refresh();
     return true;
+  }
+
+  async signInWithTOTP(totp: string) {
+    try {
+      await Auth.confirmSignIn(this.tempUser, totp, 'SOFTWARE_TOKEN_MFA');
+      await this.refresh();
+      return true;
+    } catch (error) {
+      console.log('error signing in', error);
+      return false;
+    }
   }
 
   async signOut() {

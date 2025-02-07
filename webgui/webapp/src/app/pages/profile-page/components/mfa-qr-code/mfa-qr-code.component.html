@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Register Your MFA App</h2>
+<mat-dialog-content>
+  <div class="flex flex-col items-center">
+    <qrcode
+      [qrdata]="data"
+      [width]="450"
+      [margin]="0"
+      [errorCorrectionLevel]="'M'"
+    ></qrcode>
+    <br />
+    <mat-form-field class="w-[450px]">
+      <mat-label>Authenticator Code</mat-label>
+      <input matInput [formControl]="code" />
+      <mat-error>Invalid code</mat-error>
+    </mat-form-field>
+  </div>
+
+  <button
+    mat-raised-button
+    mat-dialog-close
+    color="primary"
+    style="margin-right: 10px"
+  >
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    [mat-dialog-close]="code.value"
+    color="primary"
+    [disabled]="code.invalid"
+  >
+    Finish
+  </button>
+</mat-dialog-content>
