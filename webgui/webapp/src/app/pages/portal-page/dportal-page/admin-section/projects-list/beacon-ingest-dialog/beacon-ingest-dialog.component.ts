@@ -40,33 +40,37 @@ function atLeastOneCheckboxChecked(
   return isChecked ? null : { atLeastOneRequired: true };
 }
 
-function metadataValidation(formGroup: AbstractControl): ValidationErrors | null {
+function metadataValidation(
+  formGroup: AbstractControl,
+): ValidationErrors | null {
   const metadataGroup = formGroup as FormGroup;
   const fileType = metadataGroup.get('fileType')?.value;
   if (!fileType) {
-    return { metadataInvalid: true, message: "File type must be selected." };
+    return { metadataInvalid: true, message: 'File type must be selected.' };
   }
-  if (fileType === "json") {
+  if (fileType === 'json') {
     const jsons = metadataGroup.get('jsons')?.value;
-    if (!jsons || jsons.trim() === "") {
-      return { metadataInvalid: true, message: "JSON file must be selected." };
+    if (!jsons || jsons.trim() === '') {
+      return { metadataInvalid: true, message: 'JSON file must be selected.' };
     }
-  } else if (fileType === "tabular") {
+  } else if (fileType === 'tabular') {
     const tabularFiles = metadataGroup.get('tabularFiles') as FormGroup;
     if (
       !tabularFiles ||
       !Object.values(tabularFiles.value).every(
-        (value) => typeof value === "string" && value.trim() !== ""
+        (value) => typeof value === 'string' && value.trim() !== '',
       )
     ) {
-      return { metadataInvalid: true, message: "CSV or TSV files must be selected for all tabs." };
+      return {
+        metadataInvalid: true,
+        message: 'CSV or TSV files must be selected for all tabs.',
+      };
     }
   } else {
-    return { metadataInvalid: true, message: "Invalid file type selected." };
+    return { metadataInvalid: true, message: 'Invalid file type selected.' };
   }
   return null;
 }
-
 
 @Component({
   selector: 'app-beacon-ingest-dialog',
@@ -118,38 +122,43 @@ export class BeaconIngestDialogComponent {
       'analyses',
       'diseases',
       'dictionary',
-    ]
-    this.tabularFiles = data.project.files.filter((f: string) => f.endsWith('.csv') || f.endsWith('.tsv'));
+    ];
+    this.tabularFiles = data.project.files.filter(
+      (f: string) => f.endsWith('.csv') || f.endsWith('.tsv'),
+    );
     this.jsons = data.project.files.filter((f: string) => f.endsWith('.json'));
-    
-    this.ingestionForm = fb.group({
-      projectName: [data.project.name],
-      datasetId: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern(/^\S.*\S$/),
-          Validators.pattern(/^[^,.:;/\\]+$/),
-          Validators.maxLength(30),
-          Validators.minLength(6),
+
+    this.ingestionForm = fb.group(
+      {
+        projectName: [data.project.name],
+        datasetId: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern(/^\S.*\S$/),
+            Validators.pattern(/^[^,.:;/\\]+$/),
+            Validators.maxLength(30),
+            Validators.minLength(6),
+          ],
         ],
-      ],
-      vcfLocations: fb.array(
-        vcfs.map((v: string) => fb.group({ name: v, checked: false })),
-        atLeastOneCheckboxChecked,
-      ),
-      fileType: ['json', Validators.required],
-      jsons: [''],
-      tabularFiles: fb.group({
-        dataset: [''],
-        individuals: [''],
-        biosamples: [''],
-        runs: [''],
-        analyses: [''],
-        diseases: [''],
-        dictionary: [''],
-      })
-    }, { validators: metadataValidation });
+        vcfLocations: fb.array(
+          vcfs.map((v: string) => fb.group({ name: v, checked: false })),
+          atLeastOneCheckboxChecked,
+        ),
+        fileType: ['json', Validators.required],
+        jsons: [''],
+        tabularFiles: fb.group({
+          dataset: [''],
+          individuals: [''],
+          biosamples: [''],
+          runs: [''],
+          analyses: [''],
+          diseases: [''],
+          dictionary: [''],
+        }),
+      },
+      { validators: metadataValidation },
+    );
   }
 
   get vcfLocations(): FormArray {
@@ -158,11 +167,11 @@ export class BeaconIngestDialogComponent {
 
   filterFiles(event: Event, key: string) {
     const searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
-    this.filteredTabularFilesMap[key] = this.tabularFiles.filter(file => 
-      file.toLowerCase().includes(searchTerm)
+    this.filteredTabularFilesMap[key] = this.tabularFiles.filter((file) =>
+      file.toLowerCase().includes(searchTerm),
     );
   }
-  
+
   getFilteredFiles(key: string): string[] {
     return this.filteredTabularFilesMap[key] || this.tabularFiles;
   }
@@ -181,16 +190,26 @@ export class BeaconIngestDialogComponent {
         (v: any) =>
           `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${v.name}`,
       );
-      console.log(this.ingestionForm.value)
-      const metadataPayload: string | { [key: string]: string } = value.fileType === "json"
-       ? `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.jsons}`
-       : Object.keys(value.tabularFiles).reduce((acc: { [key: string]: string }, key) => {
-           acc[key] = `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.tabularFiles[key]}`;
-           return acc;
-         }, {});
+    console.log(this.ingestionForm.value);
+    const metadataPayload: string | { [key: string]: string } =
+      value.fileType === 'json'
+        ? `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.jsons}`
+        : Object.keys(value.tabularFiles).reduce(
+            (acc: { [key: string]: string }, key) => {
+              acc[key] =
+                `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.tabularFiles[key]}`;
+              return acc;
+            },
+            {},
+          );
     this.loading = true;
     this.dps
-      .adminIngestToBeacon(projectName, datasetId, metadataPayload, vcfLocations)
+      .adminIngestToBeacon(
+        projectName,
+        datasetId,
+        metadataPayload,
+        vcfLocations,
+      )
       .pipe(catchError(() => of(null)))
       .subscribe((res: null | { success: boolean; message: string }) => {
         if (!res) {

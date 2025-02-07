@@ -76,14 +76,14 @@ export class ProjectsListComponent {
           this.dataSource.data = [];
         } else {
           this.dataSource.data = data.map((project) => {
-            const vcfFiles = project.files.filter((file: string) =>
-              file.endsWith('.vcf.gz') || file.endsWith('.bcf.gz'),
+            const vcfFiles = project.files.filter(
+              (file: string) =>
+                file.endsWith('.vcf.gz') || file.endsWith('.bcf.gz'),
             );
             const filesWithStatus = vcfFiles.map((file: string) => {
-              const hasIndex = (
-                project.files.includes(`${file}.tbi`)
-                || project.files.includes(`${file}.csi`)
-              );
+              const hasIndex =
+                project.files.includes(`${file}.tbi`) ||
+                project.files.includes(`${file}.csi`);
               return {
                 filename: file,
                 disabled: !hasIndex,
