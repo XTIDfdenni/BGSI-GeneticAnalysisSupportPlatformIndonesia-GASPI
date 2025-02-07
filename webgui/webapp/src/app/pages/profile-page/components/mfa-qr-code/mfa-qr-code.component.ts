@@ -1,3 +1,4 @@
+import { ClipboardModule } from '@angular/cdk/clipboard';
 import { Component, Inject } from '@angular/core';
 import {
   FormBuilder,
@@ -12,6 +13,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { QRCodeModule } from 'angularx-qrcode';
 
@@ -26,6 +28,8 @@ import { QRCodeModule } from 'angularx-qrcode';
     FormsModule,
     ReactiveFormsModule,
     MatInputModule,
+    ClipboardModule,
+    MatIconModule,
   ],
   templateUrl: './mfa-qr-code.component.html',
   styleUrl: './mfa-qr-code.component.scss',
@@ -41,8 +45,7 @@ export class MFAQRCodeComponent {
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<MFAQRCodeComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: string,
-  ) {
-    console.log(data);
-  }
+    @Inject(MAT_DIALOG_DATA)
+    public data: { qrCode: string; secretCode: string },
+  ) {}
 }

@@ -115,7 +115,6 @@ export class ProfilePageComponent {
       this.resetDetails();
 
       Auth.getPreferredMFA(u).then((mfa) => {
-        console.log('MFA', mfa);
         this.mfaActivated = mfa !== 'NOMFA';
       });
     });
@@ -123,7 +122,7 @@ export class ProfilePageComponent {
 
   async activateMfa() {
     const secretCode = await Auth.setupTOTP(this.auth.user.value);
-    const str =
+    const qrCode =
       'otpauth://totp/BGSI DataPortal:' +
       this.auth.user.value.username +
       '?secret=' +
@@ -135,7 +134,7 @@ export class ProfilePageComponent {
     );
 
     const dialogRef = this.dg.open(MFAQRCodeComponent, {
-      data: str,
+      data: { qrCode, secretCode },
     });
 
     dialogRef.afterClosed().subscribe(async (result) => {
