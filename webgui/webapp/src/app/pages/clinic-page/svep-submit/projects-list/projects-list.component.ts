@@ -70,12 +70,12 @@ export class ProjectsListComponent {
           return of(null); // Return null to continue the stream
         }),
       )
-      .subscribe(({ data }: any) => {
+      .subscribe((data: any[]) => {
         if (!data) {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
           this.dataSource.data = [];
         } else {
-          this.dataSource.data = data.map((project: any) => {
+          this.dataSource.data = data.map((project) => {
             const vcfFiles = project.files.filter(
               (file: string) =>
                 file.endsWith('.vcf.gz') || file.endsWith('.bcf.gz'),
