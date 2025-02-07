@@ -106,6 +106,31 @@ export class AdminUserClickDialogComponent implements OnInit {
       });
   }
 
+  async disableMFA() {
+    const { ActionConfirmationDialogComponent } = await import(
+      '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Clear User MFA',
+        message: 'Are you sure you want to clear MFA for this user?',
+      },
+    });
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loading = true;
+        this.as
+          .clearUserMfa(this.data.email)
+          .pipe(catchError(() => of(null)))
+          .subscribe(() => {
+            this.loading = false;
+            this.dialogRef.close({ reload: true });
+          });
+      }
+    });
+  }
+
   getUserGroups() {
     this.loading = true;
     // Define both observables

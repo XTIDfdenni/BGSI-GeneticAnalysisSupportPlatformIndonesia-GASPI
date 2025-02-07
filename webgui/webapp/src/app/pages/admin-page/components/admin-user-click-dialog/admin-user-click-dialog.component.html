@@ -99,15 +99,28 @@
     </div>
 
     <br />
-    <button
-      mat-raised-button
-      color="warn"
-      (click)="delete()"
-      [disabled]="disableDelete"
-      class="mb-[10px] w-[110px]"
-    >
-      Delete
-    </button>
+    <div class="flex space-x-[10px]">
+      @if (data.mfaActive) {
+        <button
+          mat-raised-button
+          color="warn"
+          (click)="disableMFA()"
+          [disabled]="disableDelete"
+          class="mb-[10px] w-[110px]"
+        >
+          Clear MFA
+        </button>
+      }
+      <button
+        mat-raised-button
+        color="warn"
+        (click)="delete()"
+        [disabled]="disableDelete"
+        class="mb-[10px] w-[110px]"
+      >
+        Delete
+      </button>
+    </div>
     <div class="flex space-x-[10px]">
       <button
         class="w-[110px]"
