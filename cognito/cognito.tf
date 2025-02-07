@@ -16,6 +16,12 @@ resource "aws_cognito_user_pool" "gaspi_user_pool" {
     }
   }
 
+  mfa_configuration = "OPTIONAL"
+
+  software_token_mfa_configuration {
+    enabled = true
+  }
+
   password_policy {
     minimum_length                   = 6
     require_lowercase                = false
