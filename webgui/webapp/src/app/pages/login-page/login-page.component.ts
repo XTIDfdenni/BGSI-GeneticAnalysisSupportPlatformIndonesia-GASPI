@@ -193,6 +193,7 @@ export class LoginPageComponent {
             duration: 60000,
           });
         }
+        this.state = StateTypes.ORDINARY_LOGIN;
         break;
       }
     }
