@@ -62,12 +62,14 @@ export class DportalService {
   getAdminProjects(
     limit: number = 10,
     last_evaluated_key: string | null = null,
+    search?: string,
   ) {
     return from(
       API.get(environment.api_endpoint_sbeacon.name, 'dportal/admin/projects', {
         queryStringParameters: {
           limit: limit,
           last_evaluated_key: last_evaluated_key,
+          search,
         },
       }),
     );
