@@ -117,6 +117,14 @@ export class ProjectsListComponent {
 
   list(page: number) {
     this.loading = true;
+
+    if (this.isEmptyLastPage && this.paginator.pageIndex > 0) {
+      this.paginator.pageIndex--;
+      this.sb.open('No more items to show', 'Okay', { duration: 60000 });
+      this.loading = false;
+      return;
+    }
+
     this.dps
       .getMyProjects(this.pageSize, this.pageTokens.get(page))
       .pipe(
@@ -130,13 +138,6 @@ export class ProjectsListComponent {
           this.sb.open('API request failed', 'Okay', { duration: 60000 });
           this.dataSource.data = [];
         } else {
-          if (this.isEmptyLastPage && this.paginator.pageIndex > 0) {
-            this.paginator.pageIndex--;
-            this.sb.open('No more items to show', 'Okay', { duration: 60000 });
-            this.loading = false;
-            return;
-          }
-
           this.dataSource.data = response.data.map((project: any) => {
             const vcfFiles = project.files.filter(
               (file: string) =>
