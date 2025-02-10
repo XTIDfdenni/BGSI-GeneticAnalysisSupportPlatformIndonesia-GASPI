@@ -24,10 +24,14 @@
       </div>
     </div>
   </div>
-  <div class="flex flex-col space-y-1 overflow-scroll no-scrollbar">
+  <div
+    class="flex flex-col space-y-1 overflow-scroll no-scrollbar overflow-x-hidden mt-2"
+  >
     @for (file of myFiles; track file) {
       <div class="flex flex-row justify-between w-full items-center">
-        <div class="flex">{{ file.key }}</div>
+        <div class="ellipsis" [matTooltip]="getFilename(file.key)">
+          {{ file.key }}
+        </div>
         <div class="flex space-x-1">
           <button
             mat-mini-fab
