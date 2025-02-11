@@ -58,6 +58,16 @@ export class AdminService {
     );
   }
 
+  clearUserMfa(email: string) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `admin/users/${email}/mfa`,
+        {},
+      ),
+    );
+  }
+
   updateUsersGroups(email: string, groups: any) {
     return from(
       API.post(

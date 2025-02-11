@@ -4,7 +4,7 @@
     <div class="flex space-x-[10px]">
       <h4 class="w-[200px]">Username:</h4>
       <h4 class="w-[250px] whitespace-nowrap overflow-x-auto">
-        {{ user.email }}
+        {{ user?.email }}
       </h4>
     </div>
     <form action="" [formGroup]="userDetailsForm">
@@ -44,6 +44,27 @@
         Update
       </button>
     </div>
+  </mat-card-content>
+</mat-card>
+<br />
+<mat-card>
+  <mat-card-content>
+    <h3>Multi Factor Authentication</h3>
+    @if (mfaActivated) {
+      <h5 class="text-green-600">You have successfully activate MFA.</h5>
+    } @else {
+      <h5 class="text-red-600">
+        You have not activate MFA. Please activate MFA immediately.
+      </h5>
+      <button
+        class="w-[100px]"
+        (click)="activateMfa()"
+        mat-raised-button
+        color="primary"
+      >
+        Activate
+      </button>
+    }
   </mat-card-content>
 </mat-card>
 <br />

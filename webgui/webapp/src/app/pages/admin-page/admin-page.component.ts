@@ -92,6 +92,7 @@ export class AdminPageComponent implements OnInit {
     'User Quota',
     'User Usage',
     'Confirmed',
+    'MFA Active',
   ];
   protected usersTableDataSource: any = [];
   protected pageSize = 5;
@@ -173,6 +174,7 @@ export class AdminPageComponent implements OnInit {
         email: row.Email,
         firstName: `${row['First name']}`,
         lastName: `${row['Last name']}`,
+        mfaActive: row['MFA Active'] === 'Yes',
       },
     });
 
@@ -295,6 +297,7 @@ export class AdminPageComponent implements OnInit {
               ),
               Confirmed:
                 _.get(user, 'UserStatus') === 'CONFIRMED' ? 'Yes' : 'No',
+              'MFA Active': _.get(user, 'MFA').length > 0 ? 'Yes' : 'No',
             }),
           );
         }

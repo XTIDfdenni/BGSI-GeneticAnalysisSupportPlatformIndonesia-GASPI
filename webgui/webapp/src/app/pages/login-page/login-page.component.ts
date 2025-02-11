@@ -12,7 +12,6 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
-import { GlobalSpinnerComponent } from '../../components/global-spinner/global-spinner.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -38,6 +37,7 @@ enum StateTypes {
   ORDINARY_LOGIN = 1,
   FIRST_LOGIN = 2,
   PASSWORD_RESET = 3,
+  TOTP_LOGIN = 4,
 }
 
 /*
@@ -58,7 +58,6 @@ enum StateTypes {
     MatInputModule,
     RouterLink,
     MatButtonModule,
-    GlobalSpinnerComponent,
   ],
 })
 export class LoginPageComponent {
@@ -77,6 +76,10 @@ export class LoginPageComponent {
       resetCode: new FormControl(
         { value: '', disabled: this.state !== StateTypes.PASSWORD_RESET },
         [Validators.required],
+      ),
+      totp: new FormControl(
+        { value: '', disabled: this.state !== StateTypes.TOTP_LOGIN },
+        [Validators.required, Validators.minLength(6), Validators.maxLength(6)],
       ),
     },
     { validators: passwordsValidator() },
@@ -173,7 +176,24 @@ export class LoginPageComponent {
             this.state = StateTypes.FIRST_LOGIN;
             this.loginForm.controls.newPassword.enable();
             break;
+          case 'SOFTWARE_TOKEN_MFA':
+            this.state = StateTypes.TOTP_LOGIN;
+            this.loginForm.controls.totp.enable();
         }
+        break;
+      }
+      case StateTypes.TOTP_LOGIN: {
+        const success = await this.auth.signInWithTOTP(
+          this.loginForm.value.totp!,
+        );
+        if (success) {
+          this.router.navigate(['/']);
+        } else {
+          this.sb.open('Please recheck TOTP!', 'Okay', {
+            duration: 60000,
+          });
+        }
+        this.state = StateTypes.ORDINARY_LOGIN;
         break;
       }
     }
@@ -230,6 +250,10 @@ export class LoginPageComponent {
     // disable button if using ordinary login and no email or password
     if (this.state === StateTypes.ORDINARY_LOGIN && (!email || !password)) {
       return true;
+    }
+
+    if (this.state === StateTypes.TOTP_LOGIN) {
+      return !this.loginForm.controls.totp.valid;
     }
 
     // Return false (button enabled) if no conditions match

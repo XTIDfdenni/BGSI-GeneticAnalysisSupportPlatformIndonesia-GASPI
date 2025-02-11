@@ -264,15 +264,10 @@ export class DportalService {
     );
   }
 
-  getMyProjects(limit?: number, last_evaluated_key?: string | null) {
+  getMyProjects() {
     console.log('get my projects');
     return from(
-      API.get(environment.api_endpoint_sbeacon.name, 'dportal/projects', {
-        queryStringParameters: {
-          ...(limit !== undefined && limit !== null ? { limit } : {}), // Include limit only if not null/undefined
-          ...(last_evaluated_key ? { last_evaluated_key } : {}), // Include last_evaluated_key only if it's truthy
-        },
-      }),
+      API.get(environment.api_endpoint_sbeacon.name, 'dportal/projects', {}),
     );
   }
 

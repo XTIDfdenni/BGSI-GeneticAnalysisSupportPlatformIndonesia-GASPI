@@ -280,10 +280,10 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       .getMyProjects()
       .pipe(catchError(() => of(null)))
       .subscribe((projects: any) => {
-        if (!projects.data || !Array.isArray(projects.data)) {
+        if (!projects || !Array.isArray(projects)) {
           this.sb.open('Unable to get projects.', 'Close', { duration: 60000 });
         } else {
-          this.myProjects = projects.data
+          this.myProjects = projects
             .filter((p: Project) => p.ingested_datasets.length > 0)
             .map((p: Project) => ({
               ...p,
