@@ -8,7 +8,7 @@
         @for (column of displayedColumnsEntries; track column) {
           <ng-container [matColumnDef]="column">
             <th
-              [style.width]="column === 'selected' ? '100px' : ''"
+              [ngClass]="{ 'bui-header-selected': column === 'selected' }"
               mat-header-cell
               *matHeaderCellDef
             >
@@ -24,7 +24,7 @@
                       <pre>{{ element[column] }}</pre>
                     } @else {
                       <ngx-json-viewer
-                        style="text-wrap: nowrap"
+                        class="bui-ngx-json-viewer"
                         [expanded]="false"
                         [json]="element[column]"
                       ></ngx-json-viewer>
@@ -50,13 +50,14 @@
       </table>
       <br />
     </div>
-    <mat-paginator
-      [style.display]="dataSourceEntries.data.length ? '' : 'none'"
-      #paginator
-      [pageSizeOptions]="[10, 50, 100]"
-      [length]="total"
-      page
-    ></mat-paginator>
+    @if (dataSourceEntries.data.length && !loading) {
+      <mat-paginator
+        #paginator
+        [pageSizeOptions]="[10, 50, 100]"
+        [length]="total"
+        page
+      ></mat-paginator>
+    }
     @if (!dataSourceEntries.data.length && !loading) {
       <p>No entries available in the selected scope</p>
     }
@@ -65,7 +66,7 @@
         mat-raised-button
         color="primary"
         (click)="cancel()"
-        style="margin-right: 10px"
+        class="mr-2.5"
       >
         Cancel
       </button>
@@ -79,7 +80,7 @@
       mat-raised-button
       color="primary"
       (click)="cancel()"
-      style="margin-right: 10px"
+      class="mr-2.5"
     >
       Cancel
     </button>

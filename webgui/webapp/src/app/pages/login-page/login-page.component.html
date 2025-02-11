@@ -1,19 +1,10 @@
 <mat-card>
   <mat-card-content>
     <h2
-      class="text-primary-60"
-      style="text-align: center; text-transform: uppercase"
+      class="text-primary-60 text-center uppercase"
     >
       Login
     </h2>
-    <!-- <div style="width: 100%; align-items: center; display: flex">
-      <img
-        src="/assets/images/sbeacon-tile.png"
-        alt=""
-        height="150px"
-        style="margin: 0 auto"
-      />
-    </div> -->
     <form [formGroup]="loginForm" (ngSubmit)="login()" class="bui-login-form">
       <mat-form-field class="bui-login-input-field">
         <mat-label>Email</mat-label>
@@ -112,7 +103,6 @@
         mat-raised-button
         color="primary"
         class="bui-login-input-field"
-        style="color: white"
       >
         {{ state === StateTypes.PASSWORD_RESET ? "Change Password" : "Login" }}
       </button>

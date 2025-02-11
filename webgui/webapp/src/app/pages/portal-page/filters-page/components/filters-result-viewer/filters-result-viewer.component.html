@@ -7,7 +7,7 @@
       <mat-card-content>
         <h2>Resources</h2>
         <mat-card>
-          <div style="overflow-x: auto; max-height: 300px">
+          <div class="overflow-x-auto max-h-[300px]">
             <table mat-table [dataSource]="dataSourceResources">
               @for (column of displayedColumnsResources; track $index) {
                 <ng-container [matColumnDef]="column">
@@ -50,7 +50,7 @@
           </mat-form-field>
         </div>
         <mat-card>
-          <div class="overflow-x-auto" style="height: 500px">
+          <div class="overflow-x-auto h-[500px]">
             <table mat-table [dataSource]="dataSourceFilters">
               @for (column of displayedColumnsFilters; track $index) {
                 <ng-container [matColumnDef]="column">
@@ -97,7 +97,7 @@
       <ng-template mat-tab-label>
         <h2>JSON Data</h2>
       </ng-template>
-      <mat-card-content style="margin-bottom: 10px">
+      <mat-card-content class="mb-2.5">
         <mat-accordion>
           <mat-expansion-panel
             [expanded]="queryJSONOpen"
@@ -200,7 +200,7 @@
           (click)="download(query)"
           mat-raised-button
           color="primary"
-          style="margin-bottom: 10px; margin-right: 10px; width: 110px"
+          class="mb-2.5 mr-2.5 w-[100px]"
         >
           Query
         </button>
@@ -208,7 +208,7 @@
           (click)="download(results)"
           mat-raised-button
           color="primary"
-          style="margin-bottom: 10px; margin-right: 10px; width: 110px"
+          class="mb-2.5 mr-2.5 w-[100px]"
         >
           Result
         </button>

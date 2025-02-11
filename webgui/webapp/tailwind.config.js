@@ -13,6 +13,13 @@ module.exports = {
         "warning-10": "#FFA705",
         // Add your custom color here
       },
+      spacing: {
+        '1.5': '5px',
+        '2.5': '10px',
+      },
+      flexGrow: {
+        '2': '2',
+      }
     },
   },
   plugins: [],
