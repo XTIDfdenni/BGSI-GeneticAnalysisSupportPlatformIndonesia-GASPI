@@ -64,7 +64,7 @@ const allowedReturns = {
     biosamples: true,
     g_variants: true,
   },
-  biomsaples: {
+  biosamples: {
     runs: true,
     analyses: true,
     g_variants: true,
