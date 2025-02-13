@@ -10,10 +10,20 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject, catchError, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+} from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
 import {
   MatPaginator,
   MatPaginatorIntl,
@@ -21,6 +31,7 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import * as _ from 'lodash';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 export interface Project {
   name: string;
@@ -62,6 +73,9 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatDialogModule,
     MatTooltipModule,
     MatPaginatorModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
@@ -79,6 +93,11 @@ export class ProjectsListComponent {
   active: Project | null = null;
 
   protected pageSize = 5;
+
+  searchControl = new FormControl('');
+  private searchSubject = new BehaviorSubject<string>(''); // Stores latest search value
+  disabledNextPage = false;
+
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
@@ -92,7 +111,7 @@ export class ProjectsListComponent {
   ) {}
 
   ngOnInit(): void {
-    this.list(0);
+    this.list(0, '');
     this.cd.detectChanges();
 
     this.paginator.page.subscribe((event: PageEvent) => {
@@ -100,15 +119,28 @@ export class ProjectsListComponent {
         this.resetPagination();
         this.refresh();
       } else {
-        this.list(event.pageIndex);
+        this.list(event.pageIndex, this.searchSubject.value);
       }
     });
+
+    // Detect changes on search input
+    this.searchControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((value) => {
+        this.resetPagination();
+        this.setSearchInput(value as string);
+        this.list(this.paginator.pageIndex, value as string);
+      });
   }
 
   resetPagination() {
     this.pageTokens = new Map<number, string>();
     this.paginator.pageIndex = 0;
     this.pageSize = this.paginator.pageSize;
+  }
+
+  setSearchInput(query: string) {
+    this.searchSubject.next(query);
   }
 
   setActive(project: Project) {
@@ -121,16 +153,10 @@ export class ProjectsListComponent {
     }
   }
 
-  list(page: number) {
-    // not the first page but the page token is not set
-    if (!this.pageTokens.get(page) && page > 0) {
-      this.paginator.pageIndex--;
-      this.sb.open('No more items to show', 'Okay', { duration: 60000 });
-      return;
-    }
+  list(page: number, search: string) {
     this.loading = true;
     this.dps
-      .getAdminProjects(this.pageSize, this.pageTokens.get(page))
+      .getAdminProjects(this.pageSize, this.pageTokens.get(page), search)
       .pipe(catchError(() => of(null)))
       .subscribe((data: any) => {
         if (!data) {
@@ -163,7 +189,7 @@ export class ProjectsListComponent {
   refresh() {
     try {
       this.resetPagination();
-      this.list(0);
+      this.list(0, this.searchSubject.value);
     } catch (error) {
       console.log(error);
     }
@@ -181,7 +207,7 @@ export class ProjectsListComponent {
     });
 
     dialog.afterClosed().subscribe((result) => {
-      this.list(this.paginator.pageIndex);
+      this.list(this.paginator.pageIndex, '');
     });
   }
 
@@ -296,7 +322,7 @@ export class ProjectsListComponent {
       },
     });
     dialog.afterClosed().subscribe((result) => {
-      this.list(this.paginator.pageIndex);
+      this.list(this.paginator.pageIndex, '');
     });
   }
 }

@@ -1,5 +1,11 @@
 <br />
 <app-component-spinner [loading]="loading" />
+<div class="flex flex-row-reverse space-x-[10px]">
+  <button mat-mini-fab color="primary" (click)="refresh()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+</div>
+<br />
 <table mat-table [dataSource]="dataSource">
   <!-- Name Column -->
   <ng-container matColumnDef="name">
@@ -35,10 +41,10 @@
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 </table>
-<br />
-<div class="flex flex-row space-x-[10px]">
-  <button mat-mini-fab color="primary" (click)="list()">
-    <mat-icon>refresh</mat-icon>
-  </button>
-</div>
+<mat-paginator
+  #paginator
+  [pageSizeOptions]="[5, 10, 50]"
+  [pageSize]="pageSize"
+  length="9999"
+></mat-paginator>
 <br />

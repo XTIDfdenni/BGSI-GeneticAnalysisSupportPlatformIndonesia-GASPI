@@ -59,7 +59,7 @@ export class SvepSubmitComponent {
   }
 
   reset() {
-    this.projects.list();
+    this.projects.list(0);
     this.submissionStarted = false;
     this.valid = false;
   }
