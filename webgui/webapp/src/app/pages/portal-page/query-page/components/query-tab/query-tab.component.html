@@ -38,7 +38,7 @@
                   [routerLink]="[]"
                 >
                   <div class="font-semibold">{{ example.name }}:</div>
-                  <div [innerHTML]="example.description"></div>
+                  <div [innerHTML]="getSafeHtml(example.description)"></div>
                 </div>
               </div>
             </div>
@@ -93,7 +93,7 @@
                   [routerLink]="[]"
                 >
                   <div class="font-semibold">{{ savedQuery.name }}:</div>
-                  <div [innerHTML]="savedQuery.description"></div>
+                  <div [innerHTML]="getSafeHtml(savedQuery.description)"></div>
                 </div>
               </div>
             </div>
@@ -299,7 +299,7 @@
         [disabled]="form.invalid"
         mat-raised-button
         color="primary"
-        class="mb-2.5 w-[120px]"
+        class="!mb-2.5 w-[120px]"
       >
         Run Query
       </button>
