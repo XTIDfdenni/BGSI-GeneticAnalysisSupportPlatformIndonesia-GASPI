@@ -69,3 +69,8 @@ variable "api_endpoint_svep" {
   type        = string
   description = "API endpoint for svep."
 }
+
+variable "bui-ssm-parameter-name" {
+  type = string
+  description = "Name of the SSM parameter storing the Beacon UI URL"
+}

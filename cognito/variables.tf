@@ -34,17 +34,11 @@ variable "dataportal-bucket-prefix" {
 }
 
 variable "ses-source-email" {
-  type = string
+  type        = string
   description = "Address from which to send emails"
 }
 
-variable "ses-source-email-arn" {
-  type = string
-  description = "ARN for the identity from which to send emails"
+variable "bui-ssm-parameter-name" {
+  type        = string
+  description = "Name of the ssm parameter storing cloudfront URL"
 }
-
-variable "ses-configuration-set" {
-  type = string
-  description = "Name of the configuration set to use for emails"
-}
-

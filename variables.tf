@@ -56,3 +56,9 @@ variable "ses-source-email" {
   type        = string
   description = "Address from which to send SES emails"
 }
+
+variable "bui-ssm-parameter-name" {
+  type        = string 
+  description = "Name of the SSM parameter storing the Beacon UI URL"
+  default     = "bui-ssm-beacon-ui-url"
+}
