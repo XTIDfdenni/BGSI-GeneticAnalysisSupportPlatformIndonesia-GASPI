@@ -39,6 +39,7 @@ export interface Project {
   files: string[];
   totalSamples: number;
   ingestedDatasets: string[];
+  errorMessages: { file: string; error: string }[];
 }
 
 @Injectable()
@@ -177,6 +178,7 @@ export class ProjectsListComponent {
             files: project.files,
             totalSamples: project.total_samples,
             ingestedDatasets: project.ingested_datasets,
+            errorMessages: project.error_messages,
           }));
 
           // set next page token
@@ -240,6 +242,36 @@ export class ProjectsListComponent {
               );
             }
             this.ss.end();
+          });
+      }
+    });
+  }
+
+  async clearErrors(name: string) {
+    const { ActionConfirmationDialogComponent } = await import(
+      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Clear Errors',
+        message: 'Are you sure you want to clear errors from this project?',
+      },
+    });
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.dps
+          .clearAdminProjectErrors(name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res: any) => {
+            if (!res) {
+              this.sb.open('Unable to clear errors.', 'Close', {
+                duration: 60000,
+              });
+            } else {
+              this.sb.open('Errors cleared.', 'Okay', { duration: 60000 });
+            }
+            this.list(this.paginator.pageIndex, '');
           });
       }
     });

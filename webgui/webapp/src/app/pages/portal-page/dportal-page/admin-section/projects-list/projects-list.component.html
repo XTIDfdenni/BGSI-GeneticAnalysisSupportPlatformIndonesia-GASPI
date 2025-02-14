@@ -29,7 +29,12 @@
     </button>
   </div>
 </div>
-<table mat-table [dataSource]="dataSource" style="margin-bottom: 1rem">
+<table
+  mat-table
+  [dataSource]="dataSource"
+  style="margin-bottom: 1rem"
+  class="block overflow-x-auto"
+>
   <!-- Name Column -->
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -39,7 +44,30 @@
   <!-- Description Column -->
   <ng-container matColumnDef="description">
     <th mat-header-cell *matHeaderCellDef>Description</th>
-    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+    <td mat-cell *matCellDef="let element">
+      <p>{{ element.description }}</p>
+      @if (element.errorMessages.length > 0) {
+        <br />
+        @for (error of element.errorMessages; track error) {
+          <div class="text-red-900">
+            <strong>File:</strong> {{ error.file }}
+          </div>
+          <div class="text-red-900">
+            <strong>Error:</strong>
+            <pre class="overflow-x-auto">{{ error.error.trim() }}</pre>
+          </div>
+        }
+        <button
+          mat-mini-fab
+          (click)="clearErrors(element.name)"
+          color="warn"
+          matTooltip="Clear Errors"
+          class="mb-3"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </td>
   </ng-container>
 
   <!-- Files Column -->

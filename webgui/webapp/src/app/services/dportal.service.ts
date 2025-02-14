@@ -100,6 +100,17 @@ export class DportalService {
     );
   }
 
+  clearAdminProjectErrors(project: string) {
+    console.log('clear project errors');
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/admin/projects/${project}/errors`,
+        {},
+      ),
+    );
+  }
+
   // data portal admin notebook actions
   getAdminNotebooks() {
     console.log('get my notebooks');
