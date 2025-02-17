@@ -155,6 +155,12 @@ export class ProjectsListComponent {
   }
 
   list(page: number, search: string) {
+    // not the first page but the page token is not set
+    if (!this.pageTokens.get(page) && page > 0) {
+      this.paginator.pageIndex--;
+      this.sb.open('No more items to show', 'Okay', { duration: 60000 });
+      return;
+    }
     this.loading = true;
     this.dps
       .getAdminProjects(this.pageSize, this.pageTokens.get(page), search)
