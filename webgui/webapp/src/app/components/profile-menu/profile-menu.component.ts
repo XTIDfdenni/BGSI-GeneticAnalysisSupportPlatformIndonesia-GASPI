@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { SpinnerService } from 'src/app/services/spinner.service';
 
 @Component({
   selector: 'app-profile-menu',
@@ -23,9 +24,13 @@ import { AuthService } from 'src/app/services/auth.service';
 export class ProfileMenuComponent {
   @Input() userName!: string;
 
-  constructor(protected auth: AuthService) {}
+  constructor(
+    protected auth: AuthService,
+    private ss: SpinnerService,
+  ) {}
 
   onLogout() {
+    this.ss.start();
     this.auth.signOut();
   }
 }
