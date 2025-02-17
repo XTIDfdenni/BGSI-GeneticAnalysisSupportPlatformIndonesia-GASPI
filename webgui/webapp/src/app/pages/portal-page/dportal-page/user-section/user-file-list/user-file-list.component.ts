@@ -116,4 +116,9 @@ export class UserFileListComponent implements OnInit {
       }
     });
   }
+
+  getFilename(str: string | null) {
+    const match = str?.match(/\/([^\/]+)/);
+    return match ? match[1] : '-';
+  }
 }

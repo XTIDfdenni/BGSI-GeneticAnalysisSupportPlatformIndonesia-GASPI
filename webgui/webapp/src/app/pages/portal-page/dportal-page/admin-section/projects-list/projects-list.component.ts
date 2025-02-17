@@ -10,10 +10,20 @@ import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Subject, catchError, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+} from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+
 import {
   MatPaginator,
   MatPaginatorIntl,
@@ -21,6 +31,7 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import * as _ from 'lodash';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 export interface Project {
   name: string;
@@ -28,6 +39,7 @@ export interface Project {
   files: string[];
   totalSamples: number;
   ingestedDatasets: string[];
+  errorMessages: { file: string; error: string }[];
 }
 
 @Injectable()
@@ -62,6 +74,9 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatDialogModule,
     MatTooltipModule,
     MatPaginatorModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
@@ -76,9 +91,10 @@ export class ProjectsListComponent {
     'indexed',
     'actions',
   ];
-  active: Project | null = null;
-
   protected pageSize = 5;
+  searchControl = new FormControl('');
+  private searchSubject = new BehaviorSubject<string>(''); // Stores latest search value
+
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
@@ -92,7 +108,7 @@ export class ProjectsListComponent {
   ) {}
 
   ngOnInit(): void {
-    this.list(0);
+    this.list(0, '');
     this.cd.detectChanges();
 
     this.paginator.page.subscribe((event: PageEvent) => {
@@ -100,9 +116,18 @@ export class ProjectsListComponent {
         this.resetPagination();
         this.refresh();
       } else {
-        this.list(event.pageIndex);
+        this.list(event.pageIndex, this.searchSubject.value);
       }
     });
+
+    // Detect changes on search input
+    this.searchControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((value) => {
+        this.resetPagination();
+        this.setSearchInput(value as string);
+        this.list(this.paginator.pageIndex, value as string);
+      });
   }
 
   resetPagination() {
@@ -111,17 +136,11 @@ export class ProjectsListComponent {
     this.pageSize = this.paginator.pageSize;
   }
 
-  setActive(project: Project) {
-    this.active = project;
-    this.cd.detectChanges();
-
-    const element = document.getElementById('addRemoveUsers');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
+  setSearchInput(query: string) {
+    this.searchSubject.next(query);
   }
 
-  list(page: number) {
+  list(page: number, search: string) {
     // not the first page but the page token is not set
     if (!this.pageTokens.get(page) && page > 0) {
       this.paginator.pageIndex--;
@@ -130,7 +149,7 @@ export class ProjectsListComponent {
     }
     this.loading = true;
     this.dps
-      .getAdminProjects(this.pageSize, this.pageTokens.get(page))
+      .getAdminProjects(this.pageSize, this.pageTokens.get(page), search)
       .pipe(catchError(() => of(null)))
       .subscribe((data: any) => {
         if (!data) {
@@ -151,6 +170,7 @@ export class ProjectsListComponent {
             files: project.files,
             totalSamples: project.total_samples,
             ingestedDatasets: project.ingested_datasets,
+            errorMessages: project.error_messages,
           }));
 
           // set next page token
@@ -163,7 +183,7 @@ export class ProjectsListComponent {
   refresh() {
     try {
       this.resetPagination();
-      this.list(0);
+      this.list(0, this.searchSubject.value);
     } catch (error) {
       console.log(error);
     }
@@ -181,7 +201,7 @@ export class ProjectsListComponent {
     });
 
     dialog.afterClosed().subscribe((result) => {
-      this.list(this.paginator.pageIndex);
+      this.list(this.paginator.pageIndex, '');
     });
   }
 
@@ -214,6 +234,36 @@ export class ProjectsListComponent {
               );
             }
             this.ss.end();
+          });
+      }
+    });
+  }
+
+  async clearErrors(name: string) {
+    const { ActionConfirmationDialogComponent } = await import(
+      '../../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Clear Errors',
+        message: 'Are you sure you want to clear errors from this project?',
+      },
+    });
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.dps
+          .clearAdminProjectErrors(name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res: any) => {
+            if (!res) {
+              this.sb.open('Unable to clear errors.', 'Close', {
+                duration: 60000,
+              });
+            } else {
+              this.sb.open('Errors cleared.', 'Okay', { duration: 60000 });
+            }
+            this.list(this.paginator.pageIndex, '');
           });
       }
     });
@@ -296,7 +346,7 @@ export class ProjectsListComponent {
       },
     });
     dialog.afterClosed().subscribe((result) => {
-      this.list(this.paginator.pageIndex);
+      this.list(this.paginator.pageIndex, '');
     });
   }
 }
