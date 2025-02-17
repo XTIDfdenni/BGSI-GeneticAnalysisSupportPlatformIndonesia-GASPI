@@ -50,10 +50,10 @@ resource "aws_cognito_user_pool" "gaspi_user_pool" {
   }
 
   email_configuration {
-    configuration_set     = var.ses-configuration-set
+    configuration_set     = aws_ses_configuration_set.ses_feedback_config.name
     email_sending_account = "DEVELOPER"
     from_email_address    = var.ses-source-email
-    source_arn            = var.ses-source-email-arn
+    source_arn            = data.aws_ses_email_identity.ses_source_email.arn
   }
 
   lambda_config {

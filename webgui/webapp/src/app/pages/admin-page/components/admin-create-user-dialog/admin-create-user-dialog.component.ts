@@ -53,10 +53,6 @@ import { UserQuotaService } from 'src/app/services/userquota.service';
   providers: [AdminService],
 })
 export class AdminCreateUserComponent implements OnInit {
-  protected initialGroups: any = {
-    administrators: false,
-  };
-
   protected loading = false;
   protected newUserForm: FormGroup;
   protected costEstimation: number | null = 0;
@@ -68,7 +64,6 @@ export class AdminCreateUserComponent implements OnInit {
     private dg: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private ss: SpinnerService,
-    private adminServ: AdminService,
     private sb: MatSnackBar,
     private aws: AwsService,
     private uq: UserQuotaService,
@@ -78,6 +73,7 @@ export class AdminCreateUserComponent implements OnInit {
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       administrators: [false],
+      managers: [false],
       // Quota
       quotaSize: ['', [Validators.required, Validators.min(0)]],
       quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
@@ -112,31 +108,18 @@ export class AdminCreateUserComponent implements OnInit {
 
   createUser(): void {
     const form = this.newUserForm.value;
+    const groups = _.pick(form, ['administrators', 'managers'])
     this.ss.start();
-    this.adminServ
-      .createUser(form.firstName, form.lastName, form.email)
+    this.as
+      .createUser(form.firstName, form.lastName, form.email, groups)
       .pipe(
         catchError((e) => {
           if (
             _.get(e, 'response.data.error', '') === 'UsernameExistsException'
           ) {
-            this.sb.open('This user already exist in the system!', 'Okay', {
+            this.sb.open('This user already exists!', 'Okay', {
               duration: 60000,
             });
-            //temp handling because all return from BE always false and the second one always success with error user exist
-            //or change parameter in BE when adding user include role
-            //change soon, after discuss with BE
-            if (form.administrators) {
-              this.updateUserRole(form.email, form.administrators);
-            } else {
-              this.newUserForm.reset();
-              this.dialogRef.close({ reload: true });
-              this.sb.open('User created successfully!', 'Okay', {
-                duration: 60000,
-              });
-            }
-            //end of temp
-            this.newUserForm.reset();
           } else {
             this.sb.open(
               e.response?.data?.message ?? 'Please Try Again Later',
@@ -150,19 +133,16 @@ export class AdminCreateUserComponent implements OnInit {
         }),
       )
       .subscribe((response) => {
-        //api response always null
         this.ss.end();
-        if (response) {
-          this.addUserQuota(response.uid);
-
-          this.newUserForm.reset();
-          this.sb.open('User created successfully!', 'Okay', {
-            duration: 60000,
-          });
-          this.dialogRef.close({ reload: true });
-        }
+        this.addUserQuota(response?.uid ?? form.email);
+  
+        this.newUserForm.reset();
+        this.dialogRef.close({ reload: true });
+        this.sb.open('User created successfully!', 'Okay', {
+          duration: 60000,
+        });
       });
-  }
+  }  
 
   addUserQuota(sub: string): void {
     this.uq
@@ -175,13 +155,4 @@ export class AdminCreateUserComponent implements OnInit {
       .pipe(catchError(() => of(null)));
   }
 
-  updateUserRole(email: string, isAdmin: boolean): void {
-    this.as
-      .updateUsersGroups(email, { administrators: isAdmin })
-      .pipe(catchError(() => of(null)))
-      .subscribe(() => {
-        this.loading = false;
-        this.dialogRef.close({ reload: true });
-      });
-  }
 }

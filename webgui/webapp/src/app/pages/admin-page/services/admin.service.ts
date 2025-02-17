@@ -8,13 +8,14 @@ export class AdminService {
   constructor() {}
 
   // TODO: Add quota
-  createUser(firstName: string, lastName: string, email: string) {
+  createUser(firstName: string, lastName: string, email: string, groups: any) {
     return from(
       API.post(environment.api_endpoint_sbeacon.name, 'admin/users', {
         body: {
           first_name: firstName,
           last_name: lastName,
           email,
+          groups,
         },
       }),
     );

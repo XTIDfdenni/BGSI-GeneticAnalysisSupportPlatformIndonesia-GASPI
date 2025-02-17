@@ -40,13 +40,14 @@
       </table>
       <br />
     </div>
-    <mat-paginator
-      [style.display]="dataSourceFilters.data.length ? '' : 'none'"
-      #paginatorFilters
-      [pageSizeOptions]="[100, 200]"
-      [length]="total"
-      page
-    ></mat-paginator>
+    @if (dataSourceFilters.data.length && !loading) {
+      <mat-paginator
+        #paginatorFilters
+        [pageSizeOptions]="[100, 200]"
+        [length]="total"
+        page
+      ></mat-paginator>
+    }
     @if (!dataSourceFilters.data.length && !loading) {
       <p>No filters available in the selected scope</p>
     }
@@ -55,7 +56,7 @@
         mat-raised-button
         color="primary"
         (click)="cancel()"
-        style="margin-right: 10px"
+        class="mr-2.5"
       >
         Cancel
       </button>
@@ -69,7 +70,7 @@
       mat-raised-button
       color="primary"
       (click)="cancel()"
-      style="margin-right: 10px"
+      class="mr-2.5"
     >
       Cancel
     </button>

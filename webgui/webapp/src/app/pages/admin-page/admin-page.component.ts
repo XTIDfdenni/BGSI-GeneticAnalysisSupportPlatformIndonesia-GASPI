@@ -199,36 +199,6 @@ export class AdminPageComponent implements OnInit {
     });
   }
 
-  createUser() {
-    const form = this.newUserForm.value;
-    this.ss.start();
-    this.adminServ
-      .createUser(form.firstName, form.lastName, form.email)
-      .pipe(
-        catchError((e) => {
-          if (
-            _.get(e, 'response.data.error', '') === 'UsernameExistsException'
-          ) {
-            this.sb.open('This user already exist in the system!', 'Okay', {
-              duration: 60000,
-            });
-            this.newUserForm.reset();
-          }
-          return of(null);
-        }),
-      )
-      .subscribe((response) => {
-        this.ss.end();
-
-        if (response) {
-          this.newUserForm.reset();
-          this.sb.open('User created successfully!', 'Okay', {
-            duration: 60000,
-          });
-        }
-      });
-  }
-
   resetPagination() {
     this.pageTokens = [];
     this.lastPage = 0;

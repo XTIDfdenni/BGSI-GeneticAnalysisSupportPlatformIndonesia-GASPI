@@ -4,6 +4,8 @@ import {
   Input,
   OnDestroy,
   OnInit,
+  Sanitizer,
+  SecurityContext,
 } from '@angular/core';
 import {
   FormArray,
@@ -51,6 +53,7 @@ import {
 import { customQueries } from './custom-queries';
 import { AuthService } from 'src/app/services/auth.service';
 import { UserQuotaService } from 'src/app/services/userquota.service';
+import { DomSanitizer } from '@angular/platform-browser';
 // import { result, query, endpoint } from './test_responses/individuals';
 // import { result, query } from './test_responses/biosamples';
 
@@ -155,6 +158,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     private sb: MatSnackBar,
     private ss: SpinnerService,
     private uq: UserQuotaService,
+    private sanitizer: DomSanitizer
   ) {
     this.form = this.fb.group({
       projects: [[], Validators.required],
@@ -263,6 +267,10 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
           this.savedQueries = queries;
         }
       });
+  }
+  
+  getSafeHtml(html: string) {
+    return this.sanitizer.sanitize(SecurityContext.HTML, html)
   }
 
   openPanel(index: number) {

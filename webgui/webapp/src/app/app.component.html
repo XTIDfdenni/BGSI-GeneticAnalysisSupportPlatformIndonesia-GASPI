@@ -9,13 +9,13 @@
   @if (auth.user | async) {
     <div class="bui-header">
       <div class="bui-welcome-wrapper">
-        <h1><a href="#">WELCOME TO DATA PORTAL</a></h1>
+        <h1><a [routerLink]="['/']">WELCOME TO DATA PORTAL</a></h1>
       </div>
     </div>
   } @else {
     <div class="bui-header">
       <div class="bui-logo">
-        <h1><a href="/login">DATA PORTAL</a></h1>
+        <h1><a [routerLink]="['/login']">DATA PORTAL</a></h1>
       </div>
     </div>
   }
@@ -65,7 +65,7 @@
   </div>
 </div>
 <div class="bui-footer">
-  <p class="bui-byline font-bold text-primary-60" style="font-weight: 700">
+  <p class="bui-byline text-primary-60">
     BGSi Data Portal &#64;2024 | Kementerian Kesehatan Indonesia
   </p>
 </div>

@@ -1,8 +1,8 @@
 <mat-card>
-  <mat-card-content style="margin-bottom: 10px">
+  <mat-card-content class="mb-2.5">
     <h2>Select on from saved queries</h2>
   </mat-card-content>
-  <mat-card-content style="margin-bottom: 10px" [@.disabled]="disableAnimation">
+  <mat-card-content class="mb-2.5" [@.disabled]="disableAnimation">
     <mat-accordion>
       <mat-expansion-panel
         [expanded]="openPanels[0]"
@@ -20,24 +20,10 @@
         <div>
           @for (example of examples; track example) {
             <div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: left;
-                  gap: 10px;
-                  margin-bottom: 5px;
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
-                >
+              <div class="flex flex-row justify-start gap-2.5 mb-1.5">
+                <div class="flex flex-col justify-center">
                   <button
-                    style="transform: scale(0.7)"
+                    class="scale-70"
                     mat-mini-fab
                     [routerLink]="[]"
                     color="primary"
@@ -52,7 +38,7 @@
                   [routerLink]="[]"
                 >
                   <div class="font-semibold">{{ example.name }}:</div>
-                  <div [innerHTML]="example.description"></div>
+                  <div [innerHTML]="getSafeHtml(example.description)"></div>
                 </div>
               </div>
             </div>
@@ -78,24 +64,10 @@
           }
           @for (savedQuery of savedQueries; track savedQuery; let i = $index) {
             <div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: left;
-                  gap: 10px;
-                  margin-bottom: 5px;
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
-                >
+              <div class="flex flex-row justify-start gap-2.5 mb-1.5">
+                <div class="flex flex-col justify-center">
                   <button
-                    style="transform: scale(0.7)"
+                    class="scale-70"
                     mat-mini-fab
                     [routerLink]="[]"
                     color="primary"
@@ -104,15 +76,9 @@
                     <mat-icon>double_arrow</mat-icon>
                   </button>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
-                >
+                <div class="flex flex-col justify-center">
                   <button
-                    style="transform: scale(0.7)"
+                    class="scale-70"
                     mat-mini-fab
                     [routerLink]="[]"
                     color="warn"
@@ -127,86 +93,17 @@
                   [routerLink]="[]"
                 >
                   <div class="font-semibold">{{ savedQuery.name }}:</div>
-                  <div [innerHTML]="savedQuery.description"></div>
+                  <div [innerHTML]="getSafeHtml(savedQuery.description)"></div>
                 </div>
               </div>
             </div>
           }
         </div>
       </mat-expansion-panel>
-      <!-- <mat-expansion-panel
-        [expanded]="openPanels[2]"
-        (opened)="openPanel(2)"
-        (closed)="closePanel(2)"
-      >
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            {{ openPanels[2] ? "Hide" : "View" }} specialised queries
-          </mat-panel-title>
-          <mat-panel-description>
-            Specialised queries combine multi step "and" queries for a
-            pre-defined workflow
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <div>
-          @if (!customQueries.length) {
-            <span>No custom queries</span>
-          }
-          @for (
-            customQuery of customQueries;
-            track customQuery;
-            let i = $index
-          ) {
-            <div>
-              <div
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: left;
-                  gap: 10px;
-                  margin-bottom: 5px;
-                "
-              >
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
-                >
-                  <button
-                    style="transform: scale(0.7)"
-                    mat-mini-fab
-                    [routerLink]="[]"
-                    color="primary"
-                    (click)="runCustomQuery(customQuery)"
-                  >
-                    <mat-icon>double_arrow</mat-icon>
-                  </button>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                  "
-                >
-                  <div
-                    style="cursor: pointer"
-                    [routerLink]="[]"
-                    (click)="runCustomQuery(customQuery)"
-                    [innerHTML]="customQuery.text"
-                  ></div>
-                </div>
-              </div>
-            </div>
-          }
-        </div>
-      </mat-expansion-panel> -->
     </mat-accordion>
   </mat-card-content>
   @if (!customQuery) {
-    <mat-card-content style="margin-bottom: 10px">
+    <mat-card-content class="mb-2.5">
       <h2>Choose query parameters</h2>
     </mat-card-content>
     <mat-card-content>
@@ -366,7 +263,7 @@
             (click)="addFilter($any(form).get('filters'))"
             mat-raised-button
             color="primary"
-            style="margin-bottom: 10px; width: 120px"
+            class="mb-2.5 w-[120px]"
           >
             Add Filter
           </button>
@@ -381,7 +278,7 @@
       (click)="reset()"
       mat-raised-button
       color="primary"
-      style="margin-bottom: 10px; margin-right: 10px; width: 120px"
+      class="mb-2.5 mr-2.5 w-[120px]"
     >
       Reset All
     </button>
@@ -392,7 +289,7 @@
         (click)="saveQuery()"
         mat-raised-button
         color="primary"
-        style="margin-bottom: 10px; margin-right: 10px; width: 120px"
+        class="mb-2.5 mr-2.5 w-[120px]"
       >
         Save Query
       </button>
@@ -402,7 +299,7 @@
         [disabled]="form.invalid"
         mat-raised-button
         color="primary"
-        style="margin-bottom: 10px; width: 120px"
+        class="!mb-2.5 w-[120px]"
       >
         Run Query
       </button>
