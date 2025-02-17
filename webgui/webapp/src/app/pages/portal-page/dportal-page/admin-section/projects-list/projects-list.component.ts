@@ -91,13 +91,9 @@ export class ProjectsListComponent {
     'indexed',
     'actions',
   ];
-  active: Project | null = null;
-
   protected pageSize = 5;
-
   searchControl = new FormControl('');
   private searchSubject = new BehaviorSubject<string>(''); // Stores latest search value
-  disabledNextPage = false;
 
   @ViewChild('paginator')
   paginator!: MatPaginator;
@@ -142,16 +138,6 @@ export class ProjectsListComponent {
 
   setSearchInput(query: string) {
     this.searchSubject.next(query);
-  }
-
-  setActive(project: Project) {
-    this.active = project;
-    this.cd.detectChanges();
-
-    const element = document.getElementById('addRemoveUsers');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
   }
 
   list(page: number, search: string) {
