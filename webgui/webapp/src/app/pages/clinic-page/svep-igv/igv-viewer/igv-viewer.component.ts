@@ -21,7 +21,7 @@ export class IgvViewerComponent {
   constructor(private el: ElementRef) {}
 
   ngAfterViewInit(): void {
-    this.loadScript('https://cdn.jsdelivr.net/npm/igv@3.1.2/dist/igv.min.js')
+    this.loadScript('assets/js/igv.min.js')
       .then(() => {
         this.renderIGV();
       })
