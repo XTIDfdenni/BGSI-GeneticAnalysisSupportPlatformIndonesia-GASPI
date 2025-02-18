@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import igv from 'igv';
+import * as igv from 'igv';
 
 @Component({
   selector: 'app-igv-viewer',
@@ -45,7 +45,7 @@ export class IgvViewerComponent {
     };
 
     try {
-      this.igvBrowser = await igv.createBrowser(igvContainer, options);
+      this.igvBrowser = await igv.default?.createBrowser(igvContainer, options);
     } catch (error) {
       console.error('Error initializing IGV.js:', error);
     }
