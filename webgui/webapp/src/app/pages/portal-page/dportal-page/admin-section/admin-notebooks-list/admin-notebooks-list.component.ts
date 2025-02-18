@@ -93,7 +93,7 @@ export class NotebooksComponent {
   searchControl = new FormControl('');
   private searchSubject = new BehaviorSubject<string>(''); // Stores latest search value
 
-  protected pageSize = 5;
+  protected pageSize = 3;
   @ViewChild('paginator')
   paginator!: MatPaginator;
 
