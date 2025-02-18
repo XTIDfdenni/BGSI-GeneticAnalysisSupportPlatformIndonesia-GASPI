@@ -33,7 +33,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { bytesToGigabytes, formatBytes } from 'src/app/utils/file';
-import { MatIconModule } from '@angular/material/icon';
 // import { testUsers } from './test_responses/test_users';
 
 // Docs: https://material.angular.io/components/paginator/examples
@@ -79,7 +78,6 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatOptionModule,
     MatTableModule,
     MatPaginatorModule,
-    MatIconModule,
   ],
 })
 export class AdminPageComponent implements OnInit {
