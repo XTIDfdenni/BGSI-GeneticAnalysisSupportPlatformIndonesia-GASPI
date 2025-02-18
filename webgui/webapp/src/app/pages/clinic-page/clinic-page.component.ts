@@ -26,8 +26,10 @@ export class ClinicPageComponent implements OnInit {
     const path = urlTree.root.children['primary'].segments.join('/');
     if (path.startsWith('clinic/svep-submit')) {
       this.selectedIndex = 0;
-    } else if (path.startsWith('clinic/svep-results')) {
+    } else if (path.startsWith('clinic/svep-igv')) {
       this.selectedIndex = 1;
+    } else if (path.startsWith('clinic/svep-results')) {
+      this.selectedIndex = 2;
     }
   }
 
@@ -38,7 +40,7 @@ export class ClinicPageComponent implements OnInit {
   }
 
   onTabChange(index: number) {
-    const routes = ['svep-submit', 'svep-results'];
+    const routes = ['svep-submit', 'svep-igv', 'svep-results'];
     this.router.navigate([routes[index]], { relativeTo: this.route });
   }
 }
