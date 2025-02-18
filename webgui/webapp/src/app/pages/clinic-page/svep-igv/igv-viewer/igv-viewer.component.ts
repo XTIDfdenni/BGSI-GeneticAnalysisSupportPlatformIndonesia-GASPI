@@ -21,7 +21,25 @@ export class IgvViewerComponent {
   constructor(private el: ElementRef) {}
 
   ngAfterViewInit(): void {
-    this.renderIGV();
+    this.loadScript('https://cdn.jsdelivr.net/npm/igv@3.1.2/dist/igv.min.js')
+      .then(() => {
+        this.renderIGV();
+      })
+      .catch((error) => {
+        console.error('Error loading IGV script:', error);
+      });
+  }
+
+  loadScript(src: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+
+      script.onload = () => resolve(); // Correctly assign a void function
+      script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+      document.body.appendChild(script);
+    });
   }
 
   async renderIGV() {
