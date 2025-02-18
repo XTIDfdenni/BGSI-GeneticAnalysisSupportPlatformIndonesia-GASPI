@@ -53,7 +53,6 @@ export class IgvViewerComponent {
 
   ngOnDestroy(): void {
     if (this.igvBrowser) {
-      console.log(this.igvBrowser);
       this.igvBrowser.removeAllTracks();
       this.igvBrowser = null;
     }
