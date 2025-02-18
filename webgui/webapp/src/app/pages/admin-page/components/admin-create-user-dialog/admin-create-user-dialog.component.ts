@@ -108,7 +108,7 @@ export class AdminCreateUserComponent implements OnInit {
 
   createUser(): void {
     const form = this.newUserForm.value;
-    const groups = _.pick(form, ['administrators', 'managers'])
+    const groups = _.pick(form, ['administrators', 'managers']);
     this.ss.start();
     this.as
       .createUser(form.firstName, form.lastName, form.email, groups)
@@ -135,14 +135,14 @@ export class AdminCreateUserComponent implements OnInit {
       .subscribe((response) => {
         this.ss.end();
         this.addUserQuota(response?.uid ?? form.email);
-  
+
         this.newUserForm.reset();
         this.dialogRef.close({ reload: true });
         this.sb.open('User created successfully!', 'Okay', {
           duration: 60000,
         });
       });
-  }  
+  }
 
   addUserQuota(sub: string): void {
     this.uq
@@ -154,5 +154,4 @@ export class AdminCreateUserComponent implements OnInit {
       })
       .pipe(catchError(() => of(null)));
   }
-
 }
