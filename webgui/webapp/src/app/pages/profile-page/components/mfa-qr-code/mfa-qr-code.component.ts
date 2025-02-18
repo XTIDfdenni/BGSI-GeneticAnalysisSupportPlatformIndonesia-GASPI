@@ -15,6 +15,7 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { QRCodeModule } from 'angularx-qrcode';
 
 @Component({
@@ -30,6 +31,7 @@ import { QRCodeModule } from 'angularx-qrcode';
     MatInputModule,
     ClipboardModule,
     MatIconModule,
+    MatTooltipModule,
   ],
   templateUrl: './mfa-qr-code.component.html',
   styleUrl: './mfa-qr-code.component.scss',
