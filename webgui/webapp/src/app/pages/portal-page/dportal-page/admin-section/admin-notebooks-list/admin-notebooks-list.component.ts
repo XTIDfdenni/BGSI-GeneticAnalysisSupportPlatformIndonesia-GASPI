@@ -148,6 +148,14 @@ export class NotebooksComponent {
     this.searchSubject.next(query);
   }
 
+  sliceNotebooks(
+    notebooks: InstanceInfo[],
+    pageIndex: number,
+    pageSize: number,
+  ) {
+    return notebooks.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+  }
+
   filterNotebooks(
     notebooks: InstanceInfo[],
     query: string = '',
@@ -156,7 +164,7 @@ export class NotebooksComponent {
   ): InstanceInfo[] {
     if (!query) {
       this.notebookCount = this.notebooksDataSource.length;
-      return notebooks.slice(pageIndex * pageSize, (pageIndex + 1) * pageSize);
+      return this.sliceNotebooks(notebooks, pageIndex, pageSize);
     }
 
     const lowerCaseQuery = query.toLowerCase();
@@ -174,10 +182,7 @@ export class NotebooksComponent {
 
     this.notebookCount = filteredNotebooks.length;
 
-    return filteredNotebooks.slice(
-      pageIndex * pageSize,
-      (pageIndex + 1) * pageSize,
-    );
+    return this.sliceNotebooks(filteredNotebooks, pageIndex, pageSize);
   }
 
   list(pageIndex: number, pageSize: number) {
@@ -193,9 +198,10 @@ export class NotebooksComponent {
       .subscribe((notebooksWithCost) => {
         this.notebookCount = notebooksWithCost.length;
         this.notebooksDataSource = notebooksWithCost; // Store original list
-        this.notebooks = notebooksWithCost.slice(
-          pageIndex * pageSize,
-          (pageIndex + 1) * pageSize,
+        this.notebooks = this.sliceNotebooks(
+          notebooksWithCost,
+          pageIndex,
+          pageSize,
         );
         this.loading = false;
       });
