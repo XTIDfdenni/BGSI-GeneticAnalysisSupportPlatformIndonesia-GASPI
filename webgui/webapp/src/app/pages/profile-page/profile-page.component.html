@@ -71,7 +71,11 @@
 <mat-card>
   <mat-card-content>
     <h3>Update password</h3>
-    <form action="" [formGroup]="userPasswordForm">
+    <form
+      action=""
+      [formGroup]="userPasswordForm"
+      class="flex flex-col space-y-[10px]"
+    >
       <div class="flex space-x-[10px]">
         <h4 class="w-[200px]">Old password:</h4>
         <mat-form-field class="w-[250px]">
@@ -105,12 +109,28 @@
           <mat-error>Confirmation mismatch</mat-error>
         </mat-form-field>
       </div>
+      @if (userPasswordForm.value.newPassword.length > 0) {
+        <div class="flex space-x-[10px] items-center">
+          <h4 class="w-[200px]">Password strength:</h4>
+          <div class="w-[250px]">
+            <app-password-strength-bar
+              #passwordStrengthBar
+              [password]="userPasswordForm.value.newPassword"
+            />
+          </div>
+        </div>
+      }
     </form>
     <div class="flex space-x-[10px]">
       <button
         class="w-[100px]"
         (click)="updatePassword()"
-        [disabled]="userPasswordForm.invalid"
+        [disabled]="
+          userPasswordForm.invalid ||
+          !passwordStrengthBar?.isStrongPassword(
+            userPasswordForm.value.newPassword
+          )
+        "
         form="filters"
         mat-raised-button
         color="primary"
