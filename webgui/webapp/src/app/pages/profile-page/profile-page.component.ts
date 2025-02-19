@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { Auth } from 'aws-amplify';
+import { PasswordStrengthBarComponent } from 'src/app/components/password-strength-bar/password-strength-bar.component';
 
 /**
  * A validator function that checks if the 'confirmPassword' and 'newPassword' fields of a form match.
@@ -81,6 +82,7 @@ const mustNotMatch = (): ValidatorFn => {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    PasswordStrengthBarComponent,
   ],
   providers: [UserService],
 })
@@ -89,6 +91,8 @@ export class ProfilePageComponent {
   protected userDetailsForm: FormGroup;
   protected userPasswordForm: FormGroup;
   protected mfaActivated = false;
+  @ViewChild('passwordStrengthBar')
+  passwordStrengthBar?: PasswordStrengthBarComponent;
 
   constructor(
     private auth: AuthService,
