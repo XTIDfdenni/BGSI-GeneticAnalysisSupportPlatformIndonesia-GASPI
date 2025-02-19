@@ -16,7 +16,24 @@ resource "aws_cloudfront_response_headers_policy" "bui-security-headers-policy" 
   security_headers_config {
     content_security_policy {
       override = true
-      content_security_policy = "default-src 'none'; script-src 'self' 'sha256-2P8mXF+NOGY5a6oJ1jDjLINrckn9RgJYdEesn+Qf4rQ='; style-src 'self' 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: content:; form-action 'self'; connect-src 'self' ${var.api_endpoint_sbeacon} ${var.api_endpoint_svep}/ https://cognito-identity.${var.region}.amazonaws.com https://cognito-idp.${var.region}.amazonaws.com https://${var.data_portal_bucket}.s3.${var.region}.amazonaws.com https://api.pricing.us-east-1.amazonaws.com; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; manifest-src 'self';"
+      content_security_policy = join(" ", [
+        "default-src 'none';",
+        "script-src 'self' 'sha256-2P8mXF+NOGY5a6oJ1jDjLINrckn9RgJYdEesn+Qf4rQ=' https://cdn.jsdelivr.net/npm/igv@3.1.2/dist/igv.min.js;",
+        "style-src 'self' 'unsafe-inline';",
+        "font-src 'self' https://fonts.gstatic.com;",
+        "img-src 'self' data: content: blob:;",
+        "form-action 'self';",
+
+        "connect-src 'self' ${var.api_endpoint_sbeacon} ${var.api_endpoint_svep}/",
+        "https://cognito-identity.${var.region}.amazonaws.com https://cognito-idp.${var.region}.amazonaws.com",
+        "https://${var.data_portal_bucket}.s3.${var.region}.amazonaws.com https://api.pricing.us-east-1.amazonaws.com",
+        "https://igv.org/genomes/ https://hgdownload.soe.ucsc.edu/goldenPath/hg38/;",
+
+        "frame-ancestors 'none';",
+        "base-uri 'self';",
+        "object-src 'none';",
+        "manifest-src 'self';",
+      ])
     }
 
     content_type_options {
