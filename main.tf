@@ -14,6 +14,16 @@ module "cognito" {
   })
 }
 
+module "security" {
+  source = "./security"
+  region = var.region
+  ses-source-email = var.ses-source-email
+  
+  common-tags = merge(var.common-tags, {
+    "NAME" = "security-infrastructure"
+  })
+}
+
 module "sbeacon" {
   source                                 = "./sbeacon"
   region                                 = var.region
@@ -59,3 +69,4 @@ module "webgui" {
     "NAME" = "portal-frontend"
   })
 }
+
