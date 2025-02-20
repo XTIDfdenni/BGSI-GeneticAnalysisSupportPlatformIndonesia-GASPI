@@ -1,10 +1,6 @@
 <mat-card>
   <mat-card-content>
-    <h2
-      class="text-primary-60 text-center uppercase"
-    >
-      Login
-    </h2>
+    <h2 class="text-primary-60 text-center uppercase">Login</h2>
     <form [formGroup]="loginForm" (ngSubmit)="login()" class="bui-login-form">
       <mat-form-field class="bui-login-input-field">
         <mat-label>Email</mat-label>
@@ -69,7 +65,7 @@
               {{ loginForm.controls.newPassword.errors!["error"] }}
               {{
                 loginForm.controls.newPassword.errors!["minlength"] &&
-                  "Passwords must be at least 6 characters."
+                  "Passwords must be at least 8 characters."
               }}
               @if (loginForm.controls.newPassword.errors!["required"]) {
                 A new password is <strong>required</strong>
@@ -77,6 +73,11 @@
             </mat-error>
           }
         </mat-form-field>
+        <div class="bui-login-input-field">
+          <app-password-strength-bar
+            [password]="loginForm.value.newPassword || ''"
+          />
+        </div>
       }
       @if (state == StateTypes.ORDINARY_LOGIN) {
         <a

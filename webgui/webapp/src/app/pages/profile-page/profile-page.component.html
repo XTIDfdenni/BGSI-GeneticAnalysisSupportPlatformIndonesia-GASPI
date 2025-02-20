@@ -82,7 +82,7 @@
           <mat-label>Old password</mat-label>
           <input formControlName="oldPassword" matInput type="password" />
           @if (userPasswordForm.controls["oldPassword"].hasError("minlength")) {
-            <mat-error>Must be longer than 6 characters</mat-error>
+            <mat-error>Must be at least 8 characters</mat-error>
           }
         </mat-form-field>
       </div>
@@ -114,7 +114,6 @@
           <h4 class="w-[200px]">Password strength:</h4>
           <div class="w-[250px]">
             <app-password-strength-bar
-              #passwordStrengthBar
               [password]="userPasswordForm.value.newPassword"
             />
           </div>
@@ -127,9 +126,7 @@
         (click)="updatePassword()"
         [disabled]="
           userPasswordForm.invalid ||
-          !passwordStrengthBar?.isStrongPassword(
-            userPasswordForm.value.newPassword
-          )
+          !isStrongPassword(userPasswordForm.value.newPassword)
         "
         form="filters"
         mat-raised-button

@@ -22,7 +22,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { Auth } from 'aws-amplify';
-import { PasswordStrengthBarComponent } from 'src/app/components/password-strength-bar/password-strength-bar.component';
+import {
+  isStrongPassword,
+  PasswordStrengthBarComponent,
+} from 'src/app/components/password-strength-bar/password-strength-bar.component';
 
 /**
  * A validator function that checks if the 'confirmPassword' and 'newPassword' fields of a form match.
@@ -91,8 +94,7 @@ export class ProfilePageComponent {
   protected userDetailsForm: FormGroup;
   protected userPasswordForm: FormGroup;
   protected mfaActivated = false;
-  @ViewChild('passwordStrengthBar')
-  passwordStrengthBar?: PasswordStrengthBarComponent;
+  isStrongPassword = isStrongPassword;
 
   constructor(
     private auth: AuthService,
@@ -108,9 +110,10 @@ export class ProfilePageComponent {
     });
     this.userPasswordForm = this.fb.group(
       {
+        // old password could be shorter (terraform user for dev work)
         oldPassword: ['', [Validators.required, Validators.minLength(6)]],
-        newPassword: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+        newPassword: ['', [Validators.required, Validators.minLength(8)]],
+        confirmPassword: ['', [Validators.required, Validators.minLength(8)]],
       },
       { validators: [mustMatch(), mustNotMatch()] },
     );

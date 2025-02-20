@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
   FormGroup,
   FormControl,
@@ -17,6 +17,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import {
+  isStrongPassword,
+  PasswordStrengthBarComponent,
+} from 'src/app/components/password-strength-bar/password-strength-bar.component';
 
 const passwordsValidator = (): ValidatorFn => {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -58,6 +62,7 @@ enum StateTypes {
     MatInputModule,
     RouterLink,
     MatButtonModule,
+    PasswordStrengthBarComponent,
   ],
 })
 export class LoginPageComponent {
@@ -71,7 +76,7 @@ export class LoginPageComponent {
       password: new FormControl('', [Validators.required]),
       newPassword: new FormControl(
         { value: '', disabled: this.state !== StateTypes.FIRST_LOGIN },
-        [Validators.required, Validators.minLength(6)],
+        [Validators.required, Validators.minLength(8)],
       ),
       resetCode: new FormControl(
         { value: '', disabled: this.state !== StateTypes.PASSWORD_RESET },
@@ -84,6 +89,7 @@ export class LoginPageComponent {
     },
     { validators: passwordsValidator() },
   );
+  isStrongPassword = isStrongPassword;
 
   constructor(
     private auth: AuthService,
@@ -234,15 +240,20 @@ export class LoginPageComponent {
     const newPassword = this.loginForm.controls.newPassword.value;
     const resetCode = this.loginForm.controls.resetCode.value;
 
-    // Disable button if using first login and no new password
-    if (this.state === StateTypes.FIRST_LOGIN && !newPassword) {
+    // Disable button if using first login and no new password or new password is weak
+    if (
+      this.state === StateTypes.FIRST_LOGIN &&
+      (!newPassword || (newPassword && !isStrongPassword(newPassword)))
+    ) {
       return true;
     }
 
-    // Disable button if using password reset and no reset code or new password
+    // Disable button if using password reset and no reset code or new password or weak new password
     if (
       this.state === StateTypes.PASSWORD_RESET &&
-      (!resetCode || !newPassword)
+      (!resetCode ||
+        !newPassword ||
+        (newPassword && !isStrongPassword(newPassword)))
     ) {
       return true;
     }
