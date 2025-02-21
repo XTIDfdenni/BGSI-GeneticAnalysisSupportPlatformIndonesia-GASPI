@@ -10,7 +10,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { instanceTypes, volumeSizes } from './data';
+import { instanceGroups, volumeSizes } from './data';
 import {
   FormBuilder,
   FormGroup,
@@ -61,7 +61,7 @@ export interface InstanceStartInfo {
 export class UserNotebookListComponent implements OnInit {
   @ViewChildren('notebook') notebookItems?: NotebookItemComponent[];
   notebooks: InstanceName[] = [];
-  instanceTypes = instanceTypes;
+  instanceGroups = instanceGroups;
   volumeSizes = volumeSizes;
   instanceForm: FormGroup;
   loading = false;

@@ -48,11 +48,19 @@
         <mat-form-field class="w-full">
           <mat-label>Instance Type</mat-label>
           <mat-select formControlName="instanceType">
-            @for (instance of instanceTypes; track instance) {
-              <mat-option [value]="instance.name">
-                {{ instance.name }} (RAM: {{ instance.ram }} CPU:
-                {{ instance.cpu }})
-              </mat-option>
+            @for (group of instanceGroups; track group) {
+              <mat-optgroup [label]="group.name">
+                @for (instance of group.instances; track instance) {
+                  <mat-option [value]="instance.name">
+                    {{ instance.name }} ( RAM: {{ instance.ram }} CPU:
+                    {{ instance.cpu }}
+                    @if (group.gpu) {
+                      GPU: {{ instance.gpu }} VRAM: {{ instance.vram }}
+                    }
+                    )
+                  </mat-option>
+                }
+              </mat-optgroup>
             }
           </mat-select>
           <mat-error>Please select a type</mat-error>
