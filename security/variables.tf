@@ -1,4 +1,3 @@
-
 # AWS region variable
 variable "region" {
   type        = string
@@ -15,7 +14,7 @@ variable "common-tags" {
 variable "inspector-enabled-resource-types" {
     description = "List of resource types to enable Inspector on"
     type        = list(string)
-    default     = ["ECR", "LAMBDA", "LAMBDA_CODE"]
+    default     = ["ECR", "LAMBDA"]
 }
 
 # SES variables
@@ -24,7 +23,7 @@ variable "ses-source-email" {
   description = "Address from which to send emails"
 }
 
-variable "gaspi-administrator-email" {
+variable "gaspi-admin-email" {
   type = string
-  description = "Email address of the administrator to send security alerts."
+  description = "Email address of the administrator to send security alerts"
 }

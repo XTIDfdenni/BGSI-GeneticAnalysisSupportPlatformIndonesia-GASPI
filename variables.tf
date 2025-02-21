@@ -57,8 +57,20 @@ variable "ses-source-email" {
   description = "Address from which to send SES emails"
 }
 
+variable "gaspi-admin-email" {
+  type = string
+  description = "Email address of the administrator to send security alerts"
+}
+
+# Will be removed when DNS records are available for use
 variable "bui-ssm-parameter-name" {
   type        = string 
   description = "Name of the SSM parameter storing the Beacon UI URL"
   default     = "bui-ssm-beacon-ui-url"
+}
+
+variable "enable-security-module" {
+  description = "Enables the security module"
+  type        = bool
+  default     = true
 }
