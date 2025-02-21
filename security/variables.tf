@@ -10,6 +10,12 @@ variable "common-tags" {
   description = "A set of tags to attach to every created resource."
 }
 
+# Conditionally enable AWS Inspector - required for environments where this is externally managed
+variable "enable-inspector" {
+  type        = bool
+  description = "Enables AWS Inspector."
+}
+
 # Inspector variables
 variable "inspector-enabled-resource-types" {
     description = "List of resource types to enable Inspector on"

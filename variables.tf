@@ -69,8 +69,8 @@ variable "bui-ssm-parameter-name" {
   default     = "bui-ssm-beacon-ui-url"
 }
 
-variable "enable-security-module" {
-  description = "Enables the security module"
+variable "enable-inspector" {
+  description = "Enables inspector scanning"
   type        = bool
   default     = true
 }

@@ -15,11 +15,11 @@ module "cognito" {
 }
 
 module "security" {
-  for_each = var.enable-security-module ? toset(["enabled"]) : toset([]) 
   source = "./security"
   region = var.region
   ses-source-email = var.ses-source-email
   gaspi-admin-email = var.gaspi-admin-email
+  enable-inspector = var.enable-inspector
   
   common-tags = merge(var.common-tags, {
     "NAME" = "security-infrastructure"
