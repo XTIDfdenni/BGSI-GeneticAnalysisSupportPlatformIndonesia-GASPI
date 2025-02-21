@@ -63,7 +63,7 @@ module "webgui" {
   identity_pool_id        = module.cognito.cognito_identity_pool_id
   user_pool_web_client_id = module.cognito.cognito_client_id
   data_portal_bucket      = module.sbeacon.data-portal-bucket
-  api_endpoint_sbeacon    = "${module.sbeacon.api_url}${module.sbeacon.api_stage}/"
+  api_endpoint_sbeacon    = module.sbeacon.api_url
   api_endpoint_svep       = module.svep.api_url
   bui-ssm-parameter-name  = var.bui-ssm-parameter-name
 
