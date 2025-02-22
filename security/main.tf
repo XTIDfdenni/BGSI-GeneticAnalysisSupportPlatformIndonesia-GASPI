@@ -5,6 +5,14 @@ provider "aws" {
     }
 }
 
+provider "aws" {
+    region = "us-east-1"
+    alias  = "us-east-1"
+    default_tags {
+        tags = var.common-tags
+    }
+}
+
 data "aws_caller_identity" "this" {}
 
 resource "aws_inspector2_enabler" "gaspi-inspector-enabler" {

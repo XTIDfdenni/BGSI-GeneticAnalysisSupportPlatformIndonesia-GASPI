@@ -20,6 +20,7 @@ module "security" {
   ses-source-email = var.ses-source-email
   gaspi-admin-email = var.gaspi-admin-email
   enable-inspector = var.enable-inspector
+  max-request-rate-per-5mins = var.max-request-rate-per-5mins
   
   common-tags = merge(var.common-tags, {
     "NAME" = "security-infrastructure"
@@ -40,6 +41,7 @@ module "sbeacon" {
   registration-email-lambda-function-arn = module.cognito.registration_email_lambda_function_arn
   method-max-request-rate                = var.sbeacon-method-max-request-rate
   method-queue-size                      = var.sbeacon-method-queue-size
+  web_acl_arn                            = module.security.web_acl_arn
 
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
@@ -53,6 +55,7 @@ module "svep" {
   data_portal_bucket_arn  = module.sbeacon.data-portal-bucket-arn
   method-max-request-rate = var.svep-method-max-request-rate
   method-queue-size       = var.svep-method-queue-size
+  web_acl_arn             = module.security.web_acl_arn
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"
@@ -70,6 +73,7 @@ module "webgui" {
   api_endpoint_sbeacon    = module.sbeacon.api_url
   api_endpoint_svep       = module.svep.api_url
   bui-ssm-parameter-name  = var.bui-ssm-parameter-name
+  web_acl_arn             = module.security.web_acl_arn
 
   common-tags = merge(var.common-tags, {
     "NAME" = "portal-frontend"

@@ -99,3 +99,9 @@ variable "svep-method-queue-size" {
   description = "Number of requests allowed to be queued per method for svep API."
   default     = 1000
 }
+
+variable "max-request-rate-per-5mins" {
+  type        = number
+  description = "Maximum number of requests allowed per IP address per 5 minutes"
+  default     = 10000
+}

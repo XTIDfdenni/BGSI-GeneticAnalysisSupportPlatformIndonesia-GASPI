@@ -33,3 +33,8 @@ variable "gaspi-admin-email" {
   type = string
   description = "Email address of the administrator to send security alerts"
 }
+
+variable "max-request-rate-per-5mins" {
+  type        = number
+  description = "Maximum number of requests allowed per IP address per 5 minutes"
+}

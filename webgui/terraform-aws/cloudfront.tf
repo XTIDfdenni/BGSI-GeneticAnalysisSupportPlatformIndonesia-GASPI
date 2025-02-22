@@ -85,6 +85,7 @@ resource "aws_cloudfront_distribution" "bui-s3-distribution" {
   is_ipv6_enabled     = true
   http_version        = "http2and3"
   default_root_object = "index.html"
+  web_acl_id          = var.web_acl_arn
 
   custom_error_response {
     response_code      = 200

@@ -74,3 +74,9 @@ variable "bui-ssm-parameter-name" {
   type = string
   description = "Name of the SSM parameter storing the Beacon UI URL"
 }
+
+variable "web_acl_arn" {
+  type        = string
+  description = "arn of the WAF Web ACL to associate with the website's cloudfront distribution"
+  default     = null
+}
