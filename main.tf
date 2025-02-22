@@ -38,6 +38,8 @@ module "sbeacon" {
   cognito-admin-group-name               = module.cognito.cognito_admin_group_name
   cognito-manager-group-name             = module.cognito.cognito_manager_group_name
   registration-email-lambda-function-arn = module.cognito.registration_email_lambda_function_arn
+  method-max-request-rate                = var.sbeacon-method-max-request-rate
+  method-queue-size                      = var.sbeacon-method-queue-size
 
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
@@ -49,6 +51,8 @@ module "svep" {
   region                  = var.region
   data_portal_bucket_name = module.sbeacon.data-portal-bucket
   data_portal_bucket_arn  = module.sbeacon.data-portal-bucket-arn
+  method-max-request-rate = var.svep-method-max-request-rate
+  method-queue-size       = var.svep-method-queue-size
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"

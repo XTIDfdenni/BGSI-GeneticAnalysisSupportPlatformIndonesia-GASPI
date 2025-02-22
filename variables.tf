@@ -74,3 +74,28 @@ variable "enable-inspector" {
   type        = bool
   default     = true
 }
+
+# Throttling variables
+variable "sbeacon-method-max-request-rate" {
+  type        = number
+  description = "Number of requests allowed per second per method for sbeacon API."
+  default     = 100
+}
+
+variable "sbeacon-method-queue-size" {
+  type        = number
+  description = "Number of requests allowed to be queued per method for sbeacon API."
+  default     = 1000
+}
+
+variable "svep-method-max-request-rate" {
+  type        = number
+  description = "Number of requests allowed per second per method for svep API."
+  default     = 100
+}
+
+variable "svep-method-queue-size" {
+  type        = number
+  description = "Number of requests allowed to be queued per method for svep API."
+  default     = 1000
+}
