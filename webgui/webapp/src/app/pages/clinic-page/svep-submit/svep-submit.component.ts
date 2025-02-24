@@ -72,18 +72,19 @@ export class SvepSubmitComponent {
 
       this.cs
         .submitSvepJob(s3URI)
-        .pipe(catchError(() => of(null)))
+        .pipe(
+          catchError((e) => {
+            const errorMessage = e.response?.data?.error?.errorMessage || "An error occurred please, check your input and try again later";
+            this.sb.open(errorMessage, 'Okay', { duration: 60000 });
+            this.submissionStarted = false;
+            return of(null);
+          }),
+        )
         .subscribe((response: any) => {
-          if (!response) {
-            this.sb.open(
-              'An error occurred please check your input and try again later',
-              'Okay',
-              { duration: 60000 },
-            );
-            return;
+          if (response) {
+            this.results = response.RequestId ?? null;
+            this.reset();
           }
-          this.results = response.RequestId ?? null;
-          this.reset();
         });
     } else {
       this.sb.open('No file selected', 'Okay', { duration: 5000 });
