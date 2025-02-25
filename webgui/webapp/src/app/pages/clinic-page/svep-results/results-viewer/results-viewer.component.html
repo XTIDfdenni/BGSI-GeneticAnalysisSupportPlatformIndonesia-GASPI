@@ -130,9 +130,21 @@
   </table>
 </div>
 <h2>Results Table</h2>
-<strong>Click on table headers to sort</strong>
+<mat-form-field class="w-[200px]">
+  <mat-label>Choose the chromosome</mat-label>
+  <mat-select [formControl]="viewChromosome">
+    @for (chromosome of results.pages | keyvalue; track chromosome.key) {
+      <mat-option [value]="chromosome.key">
+        {{ chromosome.key }}
+      </mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+<div>
+  <strong>Click on table headers to sort</strong>
+</div>
 <div
-  class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700"
+  class="overflow-auto border-solid border-1 rounded-[4px] border-cyan-700 h-[600px]"
 >
   <table mat-table [dataSource]="data" matSort>
     @for (column of columns; track $index) {
@@ -151,9 +163,9 @@
       </ng-container>
     }
 
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: columns"></tr>
   </table>
 </div>
-<mat-paginator [pageSizeOptions]="[50, 100]" showFirstLastButtons #paginator>
+<mat-paginator showFirstLastButtons #paginator hidePageSize pageSize="1">
 </mat-paginator>

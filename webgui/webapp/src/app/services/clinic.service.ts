@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';
-import { from, Observable, switchMap } from 'rxjs';
+import { from, map, Observable, of, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -23,21 +23,39 @@ export class ClinicService {
     );
   }
 
-  getSvepResults(requestId: string): Observable<any> {
+  getSvepResults(
+    requestId: string,
+    chromosome: string | null = null,
+    page: number | null = null,
+    position: number | null = null,
+  ): Observable<any> {
     return from(Auth.currentCredentials()).pipe(
       switchMap((credentials) => {
         const userId = credentials.identityId;
+        const params = {
+          ...(chromosome && { chromosome }),
+          ...(page && { page }),
+          ...(position && { position }),
+        };
+
         return from(
           API.get(environment.api_endpoint_svep.name, 'results', {
             queryStringParameters: {
               request_id: requestId,
               user_id: userId,
+              ...params,
             },
           }),
         ).pipe(
-          switchMap((res: any) =>
-            this.http.get(res.ResultUrl, { responseType: 'text' }),
-          ),
+          switchMap((res: any) => {
+            if (res.url) {
+              return this.http
+                .get(res.url, { responseType: 'text' })
+                .pipe(map((res) => ({ pages: [], content: res, page: 1 })));
+            } else {
+              return of(res);
+            }
+          }),
         );
       }),
     );

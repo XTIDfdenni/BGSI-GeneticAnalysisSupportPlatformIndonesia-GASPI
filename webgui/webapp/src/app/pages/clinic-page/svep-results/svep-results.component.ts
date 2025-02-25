@@ -43,6 +43,7 @@ import { MatCardModule } from '@angular/material/card';
 export class SvepResultsComponent implements OnInit {
   protected requestIdFormControl: FormControl;
   protected results: any = null;
+  protected requestId: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -73,6 +74,7 @@ export class SvepResultsComponent implements OnInit {
       .subscribe((data) => {
         if (data) {
           this.results = data;
+          this.requestId = this.requestIdFormControl.value;
         }
         this.ss.end();
       });
