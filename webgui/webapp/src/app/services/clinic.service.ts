@@ -28,7 +28,7 @@ export class ClinicService {
       switchMap((credentials) => {
         const userId = credentials.identityId;
         return from(
-          API.get(environment.api_endpoint_svep.name, 'results_url', {
+          API.get(environment.api_endpoint_svep.name, 'results', {
             queryStringParameters: {
               request_id: requestId,
               user_id: userId,
