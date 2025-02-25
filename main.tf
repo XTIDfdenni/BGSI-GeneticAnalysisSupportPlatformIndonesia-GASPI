@@ -6,7 +6,7 @@ module "cognito" {
   gaspi-admin-username     = var.gaspi-admin-username
   gaspi-admin-password     = var.gaspi-admin-password
   dataportal-bucket-prefix = var.dataportal-bucket-prefix
-  bui-ssm-parameter-name   = var.bui-ssm-parameter-name 
+  bui-ssm-parameter-name   = var.bui-ssm-parameter-name
   ses-source-email         = var.ses-source-email
 
   common-tags = merge(var.common-tags, {
@@ -15,13 +15,13 @@ module "cognito" {
 }
 
 module "security" {
-  source = "./security"
-  region = var.region
-  ses-source-email = var.ses-source-email
-  gaspi-admin-email = var.gaspi-admin-email
-  enable-inspector = var.enable-inspector
+  source                     = "./security"
+  region                     = var.region
+  ses-source-email           = var.ses-source-email
+  gaspi-admin-email          = var.gaspi-admin-email
+  enable-inspector           = var.enable-inspector
   max-request-rate-per-5mins = var.max-request-rate-per-5mins
-  
+
   common-tags = merge(var.common-tags, {
     "NAME" = "security-infrastructure"
   })
@@ -56,6 +56,7 @@ module "svep" {
   method-max-request-rate = var.svep-method-max-request-rate
   method-queue-size       = var.svep-method-queue-size
   web_acl_arn             = module.security.web_acl_arn
+  cognito-user-pool-arn   = module.cognito.cognito_user_pool_arn
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"
