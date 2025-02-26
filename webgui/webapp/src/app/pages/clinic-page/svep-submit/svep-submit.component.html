@@ -36,13 +36,13 @@
           <mat-spinner class="flex !h-[36px] !w-[36px]"></mat-spinner>
         }
       </div>
-      @if (results) {
+      @if (results.RequestId && results.ProjectName) {
         <a
           class="w-[224px] mr-1 mt-1"
           mat-raised-button
           color="primary"
           [routerLink]="['/clinic', 'svep-results']"
-          [queryParams]="{ jobId: results }"
+          [queryParams]="{ jobId: results.RequestId, projectName: results.ProjectName}"
           >View Results</a
         >
         <p>
@@ -53,8 +53,8 @@
           class="text-cyan-950 decoration-transparent"
           class="break-all"
           [routerLink]="['/clinic', 'svep-results']"
-          [queryParams]="{ jobId: results }"
-          >{{ results }}</a
+          [queryParams]="{ jobId: results.RequestId, projectName: results.ProjectName }"
+          >{{ results.RequestId }}</a
         >
       }
     </div>

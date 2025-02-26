@@ -44,7 +44,10 @@ export class SvepSubmitComponent {
   protected vcfFile: string | null = null;
   protected valid = false;
   protected submissionStarted = false;
-  protected results = null;
+  protected results = {
+    RequestId: null,
+    ProjectName: null,
+  };
 
   constructor(
     private cs: ClinicService,
@@ -68,10 +71,10 @@ export class SvepSubmitComponent {
     this.submissionStarted = true;
 
     if (this.vcfFile) {
-      const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${this.projectName}/${this.vcfFile}`;
+      const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${this.projectName}/project-files/${this.vcfFile}`;
 
       this.cs
-        .submitSvepJob(s3URI)
+        .submitSvepJob(s3URI, this.projectName!)
         .pipe(
           catchError((e) => {
             const errorMessage = e.response?.data?.error?.errorMessage || "An error occurred please, check your input and try again later";
@@ -82,7 +85,8 @@ export class SvepSubmitComponent {
         )
         .subscribe((response: any) => {
           if (response) {
-            this.results = response.RequestId ?? null;
+            this.results.RequestId = response.RequestId ?? null;
+            this.results.ProjectName = response.ProjectName ?? null;
             this.reset();
           }
         });

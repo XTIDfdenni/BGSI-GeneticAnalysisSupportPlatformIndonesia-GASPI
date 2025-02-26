@@ -10,36 +10,31 @@ import { environment } from 'src/environments/environment';
 export class ClinicService {
   constructor(private http: HttpClient) {}
 
-  submitSvepJob(location: string) {
+  submitSvepJob(location: string, projectName: string) {
     return from(Auth.currentCredentials()).pipe(
       switchMap((credentials) => {
         const userId = credentials.identityId;
         return from(
           API.post(environment.api_endpoint_svep.name, 'submit', {
-            body: { location, userId },
+            body: { location, projectName, userId },
           }),
         );
       }),
     );
   }
-
-  getSvepResults(requestId: string): Observable<any> {
-    return from(Auth.currentCredentials()).pipe(
-      switchMap((credentials) => {
-        const userId = credentials.identityId;
-        return from(
-          API.get(environment.api_endpoint_svep.name, 'results', {
-            queryStringParameters: {
-              request_id: requestId,
-              user_id: userId,
-            },
-          }),
-        ).pipe(
-          switchMap((res: any) =>
-            this.http.get(res.ResultUrl, { responseType: 'text' }),
-          ),
-        );
-      }),
+  
+  getSvepResults(requestId: string, projectName: string): Observable<any> {
+    return from(
+      API.get(environment.api_endpoint_svep.name, 'results', {
+        queryStringParameters: {
+          request_id: requestId,
+          project_name: projectName,
+        },
+      })
+    ).pipe(
+      switchMap((res: any) =>
+        this.http.get(res.ResultUrl, { responseType: 'text' })
+      )
     );
   }
 }
