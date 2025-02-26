@@ -23,6 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { HelpTextComponent } from '../help-text/help-text.component';
 
 type SVEPResult = {
   url?: string;
@@ -64,6 +65,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
+    HelpTextComponent,
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl }],
   templateUrl: './results-viewer.component.html',
