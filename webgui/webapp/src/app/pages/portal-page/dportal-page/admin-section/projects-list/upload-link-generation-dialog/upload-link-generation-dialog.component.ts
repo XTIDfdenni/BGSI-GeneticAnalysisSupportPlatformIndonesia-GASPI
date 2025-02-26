@@ -79,7 +79,7 @@ export class UploadLinkGenerationDialogComponent {
       const res = s3.createPresignedPost({
         Bucket: environment.storage.dataPortalBucket,
         Fields: {
-          key: `staging/projects/${this.project}/${filename}`,
+          key: `staging/projects/${this.project}/project-files/${filename}`,
         },
         Expires: 60 * 60,
       });

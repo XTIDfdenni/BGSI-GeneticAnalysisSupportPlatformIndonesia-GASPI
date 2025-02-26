@@ -172,7 +172,7 @@ export class ProjectUpdateDialogComponent {
   async uploadFile(path: string, file: File): Promise<string> {
     this.fileProgress.set(file.name, 0);
     try {
-      await Storage.put(`staging/projects/${path}/${file.name}`, file, {
+      await Storage.put(`staging/projects/${path}/project-files/${file.name}`, file, {
         customPrefix: { public: '' },
         progressCallback: (progress: { loaded: number; total: number }) => {
           this.fileProgress.set(file.name, progress.loaded);
@@ -186,7 +186,7 @@ export class ProjectUpdateDialogComponent {
       console.error('Error uploading file', error);
       throw error;
     }
-    return `projects/${path}/${file.name}`;
+    return `projects/${path}/project-files/${file.name}`;
   }
 
   async onSubmit(entry: any) {
