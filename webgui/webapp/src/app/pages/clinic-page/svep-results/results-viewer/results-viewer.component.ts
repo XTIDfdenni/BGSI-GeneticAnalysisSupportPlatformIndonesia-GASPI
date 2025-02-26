@@ -1,11 +1,9 @@
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   Injectable,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -22,13 +20,7 @@ import { catchError, of, Subject } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  FormBuilder,
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 
@@ -77,13 +69,11 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   templateUrl: './results-viewer.component.html',
   styleUrl: './results-viewer.component.scss',
 })
-export class ResultsViewerComponent
-  implements OnChanges, AfterViewInit, OnInit
-{
-  @Input({ required: true }) results!: SVEPResult;
-  @Input({ required: true }) requestId!: any;
+export class ResultsViewerComponent implements OnChanges, AfterViewInit {
+  @Input({ required: true }) requestId!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  protected results: SVEPResult | null = null;
   protected columns: string[] = [
     'Rank',
     '.',
@@ -102,69 +92,58 @@ export class ResultsViewerComponent
     'Transcript Support Level',
   ];
   protected data = new MatTableDataSource<any>([]);
-  protected viewChromosome: FormControl = new FormControl('');
+  protected chromosomeField: FormControl = new FormControl('');
 
   constructor(
-    private cd: ChangeDetectorRef,
     private cs: ClinicService,
     private ss: SpinnerService,
     private sb: MatSnackBar,
   ) {}
 
   ngAfterViewInit(): void {
-    this.data.sort = this.sort;
-  }
-
-  ngOnInit(): void {
     this.paginator.page.subscribe((event: PageEvent) => {
-      this.ss.start();
-      this.cs
-        .getSvepResults(
-          this.requestId,
-          this.viewChromosome.value,
-          event.pageIndex + 1,
-        )
-        .pipe(catchError(() => of(null)))
-        .subscribe((data) => {
-          if (!data) {
-            this.sb.open('Failed to load data', 'Dismiss', {
-              duration: 5000,
-            });
-          } else {
-            this.updateTable(data);
-          }
-          this.ss.end();
-        });
+      console.log('Page event', event);
+      this.refetch(
+        this.requestId,
+        this.chromosomeField.value,
+        event.pageIndex + 1,
+      );
     });
-    this.viewChromosome.valueChanges.subscribe((chromosome) => {
-      this.ss.start();
-      this.cs
-        .getSvepResults(this.requestId, chromosome)
-        .pipe(catchError(() => of(null)))
-        .subscribe((data) => {
-          if (!data) {
-            this.sb.open('Failed to load data', 'Dismiss', {
-              duration: 5000,
-            });
-          } else {
-            this.updateTable(data);
-          }
-          this.ss.end();
-        });
+    this.chromosomeField.valueChanges.subscribe((chromosome) => {
+      this.refetch(this.requestId, chromosome);
     });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const result: SVEPResult = changes['results'].currentValue;
-    this.viewChromosome.patchValue(result.chromosome);
-    this.cd.detectChanges();
+    const requestId: string = changes['requestId'].currentValue;
+    this.refetch(requestId);
+  }
 
-    if (result.content) {
-      this.updateTable(result);
-    }
+  refetch(
+    requestId: string,
+    chromosome: string | null = null,
+    page: number | null = null,
+    position: number | null = null,
+  ) {
+    this.ss.start();
+    this.cs
+      .getSvepResults(requestId, chromosome, page, position)
+      .pipe(catchError(() => of(null)))
+      .subscribe((data) => {
+        if (!data) {
+          this.sb.open('Failed to load data', 'Dismiss', {
+            duration: 5000,
+          });
+        } else {
+          this.results = data;
+          this.updateTable(data);
+        }
+        this.ss.end();
+      });
   }
 
   updateTable(result: SVEPResult): void {
+    this.results = result;
     this.paginator.length = result.pages[result.chromosome];
     const lines = result.content.split('\n');
     this.data = new MatTableDataSource<any>(
@@ -178,6 +157,7 @@ export class ResultsViewerComponent
           return row;
         }),
     );
+    this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.paginator.pageIndex = result.page - 1;
     this.data.sort = this.sort;
   }

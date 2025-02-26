@@ -131,9 +131,9 @@
 </div>
 <h2>Results Table</h2>
 <mat-form-field class="w-[200px]">
-  <mat-label>Choose the chromosome</mat-label>
-  <mat-select [formControl]="viewChromosome">
-    @for (chromosome of results.pages | keyvalue; track chromosome.key) {
+  <mat-label>Chromosome</mat-label>
+  <mat-select [formControl]="chromosomeField">
+    @for (chromosome of results?.pages | keyvalue; track chromosome.key) {
       <mat-option [value]="chromosome.key">
         {{ chromosome.key }}
       </mat-option>

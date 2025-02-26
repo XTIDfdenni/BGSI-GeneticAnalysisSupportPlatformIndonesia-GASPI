@@ -21,8 +21,8 @@
         >Load</a
       >
 
-      @if (results) {
-        <app-results-viewer [results]="results" [requestId]="requestId" />
+      @if (requestId) {
+        <app-results-viewer [requestId]="requestId" />
       }
     </div>
   </mat-card-content>
