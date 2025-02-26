@@ -1,159 +1,64 @@
-<h2>Column Definitions</h2>
-<div class="overflow-x-auto">
-  <table class="min-w-[800px]">
-    <thead>
-      <tr>
-        <th>Column</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="w-[200px]"><strong>Rank</strong></td>
-        <td>Ranks or order number</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>.</strong></td>
-        <td>Undefined</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Region</strong></td>
-        <td>Genomic region with chromosome, start, and end positions</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Alt Allele</strong></td>
-        <td>The altered allele</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Consequence</strong></td>
-        <td>The outcome or result of a genetic variation</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Gene Name</strong></td>
-        <td>The name of the gene</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Gene ID</strong></td>
-        <td>The identifier for the gene</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Feature</strong></td>
-        <td>Feature as reported by GTF file (column 3)</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Transcript ID & Version</strong></td>
-        <td>The identifier for the transcript along with its version</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Transcript Biotype</strong></td>
-        <td>The biotype of the transcript</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Exon Number</strong></td>
-        <td>The number of the exon</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Amino Acid Change</strong></td>
-        <td>The change in amino acid if any</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Codon Change</strong></td>
-        <td>The change in codon if any</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Strand</strong></td>
-        <td>Which DNA strand (+/-)</td>
-      </tr>
-      <tr>
-        <td class="w-[200px]"><strong>Transcript Support Level</strong></td>
-        <td>
-          The support level for the transcript, indicating the quality of the
-          evidence supporting the existence of the transcript.
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<h2>Consequence Explanations</h2>
-<div class="overflow-x-auto">
-  <table class="min-w-[800px]">
-    <thead>
-      <tr>
-        <th>Term</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="w-[300px]"><strong>missense_variant</strong></td>
-        <td>
-          A type of genetic mutation where one DNA base pair is changed,
-          resulting in the replacement of one amino acid with another in the
-          produced protein.
-        </td>
-      </tr>
-      <tr>
-        <td class="w-[300px]"><strong>splice_region_variant</strong></td>
-        <td>
-          A variation in the DNA sequence near or within the splicing regions of
-          the gene which may affect the accuracy of splicing and thus lead to an
-          altered gene product.
-        </td>
-      </tr>
-      <tr>
-        <td class="w-[300px]">
-          <strong>non_coding_transcript_exon_variant</strong>
-        </td>
-        <td>
-          A variation occurring within non-coding exons of a transcribed gene.
-          Non-coding exons may contain regulatory regions critical for protein
-          synthesis.
-        </td>
-      </tr>
-      <tr>
-        <td class="w-[300px]"><strong>upstream_gene_variant</strong></td>
-        <td>
-          A variation located upstream (5 prime direction) of the transcription
-          start site of a gene, this could have potential impacts on gene
-          regulation and expression.
-        </td>
-      </tr>
-      <tr>
-        <td class="w-[300px]"><strong>NMD_transcript_variant</strong></td>
-        <td>
-          A variant which is predicted to undergo nonsense-mediated mRNA decay
-          (NMD). When such a variant occurs in a coding sequence, it can prevent
-          the production of functional proteins.
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<h2>Definitions</h2>
+<app-help-text />
 <h2>Results Table</h2>
-<strong>Click on table headers to sort</strong>
-<div
-  class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700"
->
-  <table mat-table [dataSource]="data" matSort>
-    @for (column of columns; track $index) {
-      <ng-container [matColumnDef]="column">
-        <th
-          mat-header-cell
-          *matHeaderCellDef
-          class="whitespace-nowrap"
-          mat-sort-header
-        >
-          {{ column }}
-        </th>
-        <td mat-cell *matCellDef="let element" class="whitespace-nowrap">
-          {{ element[column] }}
-        </td>
-      </ng-container>
-    }
-
-    <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns"></tr>
-  </table>
+<div class="flex flex-row space-x-1 items-center mb-2">
+  <mat-form-field class="w-[200px]" [subscriptSizing]="'dynamic'">
+    <mat-label>Chromosome</mat-label>
+    <mat-select [formControl]="chromosomeField">
+      @for (chromosome of results?.pages | keyvalue; track chromosome.key) {
+        <mat-option [value]="chromosome.key">
+          {{ chromosome.key }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="w-[200px]" [subscriptSizing]="'dynamic'">
+    <mat-label>Base position</mat-label>
+    <input matInput type="number" [formControl]="basePositionField" min="1" />
+  </mat-form-field>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="search()"
+    class="w-[110px]"
+  >
+    Search
+  </button>
 </div>
-<mat-paginator [pageSizeOptions]="[50, 100]" showFirstLastButtons #paginator>
+@if (data.data.length > 0) {
+  <div class="mb-2">
+    <strong>Click on table headers to sort</strong>
+  </div>
+  <div
+    class="overflow-auto border-solid border-1 rounded-[4px] border-cyan-700 h-[600px]"
+  >
+    <table mat-table [dataSource]="data" matSort>
+      @for (column of columns; track $index) {
+        <ng-container [matColumnDef]="column">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            class="whitespace-nowrap"
+            mat-sort-header
+          >
+            {{ column }}
+          </th>
+          <td mat-cell *matCellDef="let element" class="whitespace-nowrap">
+            {{ element[column] }}
+          </td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns"></tr>
+    </table>
+  </div>
+}
+<mat-paginator
+  [hidden]="data.data.length == 0"
+  showFirstLastButtons
+  #paginator
+  hidePageSize
+  pageSize="1"
+>
 </mat-paginator>
