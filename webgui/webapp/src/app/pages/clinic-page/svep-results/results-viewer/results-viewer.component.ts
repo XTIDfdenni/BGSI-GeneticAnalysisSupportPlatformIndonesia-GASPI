@@ -24,6 +24,8 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { HelpTextComponent } from '../help-text/help-text.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 type SVEPResult = {
   url?: string;
@@ -66,6 +68,8 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatSelectModule,
     MatFormFieldModule,
     HelpTextComponent,
+    MatInputModule,
+    MatButtonModule,
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl }],
   templateUrl: './results-viewer.component.html',
@@ -95,6 +99,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   ];
   protected data = new MatTableDataSource<any>([]);
   protected chromosomeField: FormControl = new FormControl('');
+  protected basePositionField: FormControl = new FormControl('');
 
   constructor(
     private cs: ClinicService,
@@ -104,16 +109,26 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.paginator.page.subscribe((event: PageEvent) => {
-      console.log('Page event', event);
       this.refetch(
         this.requestId,
         this.chromosomeField.value,
         event.pageIndex + 1,
       );
+      // if chromosome or page change we clear position
+      this.basePositionField.setValue('');
     });
     this.chromosomeField.valueChanges.subscribe((chromosome) => {
       this.refetch(this.requestId, chromosome);
+      // if chromosome or page change we clear position
+      this.basePositionField.setValue('');
     });
+  }
+
+  search() {
+    const position = this.basePositionField.value;
+    if (position) {
+      this.refetch(this.requestId, this.chromosomeField.value, null, position);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {

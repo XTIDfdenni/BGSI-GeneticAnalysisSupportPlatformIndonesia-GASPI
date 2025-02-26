@@ -1,18 +1,32 @@
 <h2>Definitions</h2>
 <app-help-text />
 <h2>Results Table</h2>
-<mat-form-field class="w-[200px]">
-  <mat-label>Chromosome</mat-label>
-  <mat-select [formControl]="chromosomeField">
-    @for (chromosome of results?.pages | keyvalue; track chromosome.key) {
-      <mat-option [value]="chromosome.key">
-        {{ chromosome.key }}
-      </mat-option>
-    }
-  </mat-select>
-</mat-form-field>
+<div class="flex flex-row space-x-1 items-center mb-2">
+  <mat-form-field class="w-[200px]" [subscriptSizing]="'dynamic'">
+    <mat-label>Chromosome</mat-label>
+    <mat-select [formControl]="chromosomeField">
+      @for (chromosome of results?.pages | keyvalue; track chromosome.key) {
+        <mat-option [value]="chromosome.key">
+          {{ chromosome.key }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="w-[200px]" [subscriptSizing]="'dynamic'">
+    <mat-label>Base position</mat-label>
+    <input matInput type="number" [formControl]="basePositionField" min="1" />
+  </mat-form-field>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="search()"
+    class="w-[110px]"
+  >
+    Search
+  </button>
+</div>
 @if (data.data.length > 0) {
-  <div>
+  <div class="mb-2">
     <strong>Click on table headers to sort</strong>
   </div>
   <div
