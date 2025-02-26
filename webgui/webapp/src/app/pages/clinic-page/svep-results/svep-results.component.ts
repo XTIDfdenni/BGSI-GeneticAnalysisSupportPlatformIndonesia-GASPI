@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { catchError, of } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import {
   FormBuilder,
@@ -11,8 +13,15 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
 import { ResultsViewerComponent } from './results-viewer/results-viewer.component';
 import { MatCardModule } from '@angular/material/card';
+import { DportalService } from 'src/app/services/dportal.service';
+
+interface Project {
+  name: string;
+}
 
 @Component({
   selector: 'app-results-page',
@@ -27,30 +36,77 @@ import { MatCardModule } from '@angular/material/card';
     MatInputModule,
     ResultsViewerComponent,
     MatCardModule,
+    MatOptionModule,
+    MatSelectModule,
   ],
   providers: [],
   templateUrl: './svep-results.component.html',
   styleUrl: './svep-results.component.scss',
 })
 export class SvepResultsComponent implements OnInit {
-  protected requestIdFormControl: FormControl;
+  protected requestIdFormControl: FormControl<string>;
+  protected projectNameFormControl: FormControl<string>;
   protected requestId: string | null = null;
+  protected projectName: string | null = null;
+  protected myProjects: Project[] = [];
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private dps: DportalService,
+    private sb: MatSnackBar
   ) {
-    this.requestIdFormControl = this.fb.control('', [Validators.required]);
+    this.requestIdFormControl = this.fb.control('', {
+      validators: [Validators.required],
+      nonNullable: true
+    });
+    this.projectNameFormControl = this.fb.control('', {
+      validators: [Validators.required],
+      nonNullable: true
+    });
+  }
+
+  list() {
+    this.dps
+      .getMyProjects()
+      .pipe(catchError(() => of(null)))
+      .subscribe((projects: any) => {
+        if (!projects?.data || !Array.isArray(projects.data)) {
+          this.sb.open('Unable to get projects.', 'Close', { duration: 60000 });
+        } else {
+          this.myProjects = projects.data
+            .map((p: Project) => ({
+              ...p,
+              expanded: false,
+            }));
+        }
+      });
   }
 
   ngOnInit(): void {
+    this.list();
+    
     this.route.queryParams.subscribe((params) => {
-      if (params['jobId']) {
+      if (params['jobId'] && params['projectName']) {
+        this.requestIdFormControl.setValue(params['jobId']);
+        this.projectNameFormControl.setValue(params['projectName']);
+        this.requestId = params['jobId'];
+        this.projectName = params['projectName'];
+      } else if (params['jobId']) {
         this.requestIdFormControl.setValue(params['jobId']);
         this.requestId = params['jobId'];
+        this.projectNameFormControl.setValue('');
+        this.projectName = null;
+      } else if (params['projectName']) {
+        this.projectNameFormControl.setValue(params['projectName']);
+        this.projectName = params['projectName'];
+        this.requestIdFormControl.setValue('');
+        this.requestId = null;
       } else {
         this.requestIdFormControl.setValue('');
         this.requestId = null;
+        this.projectNameFormControl.setValue('');
+        this.projectName = null;
       }
     });
   }

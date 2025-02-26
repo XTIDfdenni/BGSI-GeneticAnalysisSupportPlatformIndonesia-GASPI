@@ -11,19 +11,26 @@
           placeholder="377bc6ee-20c1-4ba3-8efe-0bdcf6865c9f"
         />
       </mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Projects</mat-label>
+        <mat-select [formControl]="projectNameFormControl">
+          @for (project of myProjects; track project) {
+            <mat-option [value]="project.name">
+              {{ project.name }}
+            </mat-option>
+          }
+        </mat-select>
+        <mat-hint>Temporary - to be replaced with selection from table</mat-hint>
+      </mat-form-field>
       <a
-        [disabled]="requestIdFormControl.invalid"
+        [disabled]="requestIdFormControl.invalid || projectNameFormControl.invalid"
         class="w-[110px] mr-1"
         mat-raised-button
         color="primary"
         [routerLink]="[]"
-        [queryParams]="{ jobId: requestIdFormControl.value }"
-        >Load</a
-      >
-
-      @if (requestId) {
-        <app-results-viewer [requestId]="requestId" />
-      }
+        [queryParams]="{ jobId: requestIdFormControl.value, projectName: projectNameFormControl.value }"
+        >Load</a>
+      <app-results-viewer *ngIf="requestId && projectName" [requestId]="requestId" [projectName]="projectName"></app-results-viewer>
     </div>
   </mat-card-content>
 </mat-card>
