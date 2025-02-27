@@ -18,6 +18,7 @@ import {
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { catchError, of, Subject } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
+import { DportalService } from 'src/app/services/dportal.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -77,6 +78,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
 })
 export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   @Input({ required: true }) requestId!: string;
+  @Input({ required: true }) projectName!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   protected results: SVEPResult | null = null;
@@ -111,6 +113,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     this.paginator.page.subscribe((event: PageEvent) => {
       this.refetch(
         this.requestId,
+        this.projectName,
         this.chromosomeField.value,
         event.pageIndex + 1,
       );
@@ -118,7 +121,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       this.basePositionField.setValue('');
     });
     this.chromosomeField.valueChanges.subscribe((chromosome) => {
-      this.refetch(this.requestId, chromosome);
+      this.refetch(this.requestId, this.projectName, chromosome);
       // if chromosome or page change we clear position
       this.basePositionField.setValue('');
     });
@@ -132,19 +135,26 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    const requestId: string = changes['requestId'].currentValue;
-    this.refetch(requestId);
+    if (changes['requestId']) {
+      const requestId: string = changes['requestId'].currentValue;
+      this.refetch(requestId, this.projectName); 
+    }
+    if (changes['projectName']) {
+      const projectName: string = changes['projectName'].currentValue;
+      this.refetch(this.requestId, projectName);
+    }
   }
 
   refetch(
     requestId: string,
+    projectName: string,
     chromosome: string | null = null,
     page: number | null = null,
     position: number | null = null,
   ) {
     this.ss.start();
     this.cs
-      .getSvepResults(requestId, chromosome, page, position)
+      .getSvepResults(requestId, projectName, chromosome, page, position)
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
         if (!data) {

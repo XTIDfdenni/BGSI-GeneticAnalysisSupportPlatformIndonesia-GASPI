@@ -188,16 +188,16 @@ export class BeaconIngestDialogComponent {
       .filter((v: any) => v.checked)
       .map(
         (v: any) =>
-          `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${v.name}`,
+          `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${v.name}`,
       );
     console.log(this.ingestionForm.value);
     const metadataPayload: string | { [key: string]: string } =
       value.fileType === 'json'
-        ? `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.jsons}`
+        ? `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${value.jsons}`
         : Object.keys(value.tabularFiles).reduce(
             (acc: { [key: string]: string }, key) => {
               acc[key] =
-                `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/${value.tabularFiles[key]}`;
+                `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${value.tabularFiles[key]}`;
               return acc;
             },
             {},
