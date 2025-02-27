@@ -54,15 +54,15 @@ export class SvepResultsComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private dps: DportalService,
-    private sb: MatSnackBar
+    private sb: MatSnackBar,
   ) {
     this.requestIdFormControl = this.fb.control('', {
       validators: [Validators.required],
-      nonNullable: true
+      nonNullable: true,
     });
     this.projectNameFormControl = this.fb.control('', {
       validators: [Validators.required],
-      nonNullable: true
+      nonNullable: true,
     });
   }
 
@@ -74,40 +74,22 @@ export class SvepResultsComponent implements OnInit {
         if (!projects?.data || !Array.isArray(projects.data)) {
           this.sb.open('Unable to get projects.', 'Close', { duration: 60000 });
         } else {
-          this.myProjects = projects.data
-            .map((p: Project) => ({
-              ...p,
-              expanded: false,
-            }));
+          this.myProjects = projects.data.map((p: Project) => ({
+            ...p,
+            expanded: false,
+          }));
         }
       });
   }
 
   ngOnInit(): void {
     this.list();
-    
+
     this.route.queryParams.subscribe((params) => {
-      if (params['jobId'] && params['projectName']) {
-        this.requestIdFormControl.setValue(params['jobId']);
-        this.projectNameFormControl.setValue(params['projectName']);
-        this.requestId = params['jobId'];
-        this.projectName = params['projectName'];
-      } else if (params['jobId']) {
-        this.requestIdFormControl.setValue(params['jobId']);
-        this.requestId = params['jobId'];
-        this.projectNameFormControl.setValue('');
-        this.projectName = null;
-      } else if (params['projectName']) {
-        this.projectNameFormControl.setValue(params['projectName']);
-        this.projectName = params['projectName'];
-        this.requestIdFormControl.setValue('');
-        this.requestId = null;
-      } else {
-        this.requestIdFormControl.setValue('');
-        this.requestId = null;
-        this.projectNameFormControl.setValue('');
-        this.projectName = null;
-      }
+      this.requestId = params['jobId'] ?? null;
+      this.projectName = params['projectName'] ?? null;
+      this.requestIdFormControl.setValue(this.requestId ?? '');
+      this.projectNameFormControl.setValue(this.projectName ?? '');
     });
   }
 }
