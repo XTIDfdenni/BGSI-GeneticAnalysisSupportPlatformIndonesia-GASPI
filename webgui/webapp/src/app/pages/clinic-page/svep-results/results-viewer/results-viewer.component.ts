@@ -21,12 +21,22 @@ import { ClinicService } from 'src/app/services/clinic.service';
 import { DportalService } from 'src/app/services/dportal.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { HelpTextComponent } from '../help-text/help-text.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import {
+  MatCheckboxChange,
+  MatCheckboxModule,
+} from '@angular/material/checkbox';
 
 type SVEPResult = {
   url?: string;
@@ -34,6 +44,11 @@ type SVEPResult = {
   content: string;
   page: number;
   chromosome: string;
+};
+
+// { hash: row }
+type SelectedVariants = {
+  [key: string]: any;
 };
 
 @Injectable()
@@ -71,6 +86,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     HelpTextComponent,
     MatInputModule,
     MatButtonModule,
+    MatCheckboxModule,
   ],
   providers: [{ provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl }],
   templateUrl: './results-viewer.component.html',
@@ -83,6 +99,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   protected results: SVEPResult | null = null;
   protected columns: string[] = [
+    'selected',
     'Rank',
     '.',
     'Region',
@@ -102,6 +119,16 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   protected data = new MatTableDataSource<any>([]);
   protected chromosomeField: FormControl = new FormControl('');
   protected basePositionField: FormControl = new FormControl('');
+  protected annotationForm: FormGroup = new FormGroup({
+    name: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(64),
+    ]),
+    annotation: new FormControl('', [Validators.required]),
+  });
+  protected selectedVariants: SelectedVariants = {};
+  protected Object = Object;
 
   constructor(
     private cs: ClinicService,
@@ -137,12 +164,41 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['requestId']) {
       const requestId: string = changes['requestId'].currentValue;
-      this.refetch(requestId, this.projectName); 
+      this.refetch(requestId, this.projectName);
     }
     if (changes['projectName']) {
       const projectName: string = changes['projectName'].currentValue;
       this.refetch(this.requestId, projectName);
     }
+  }
+
+  saveAnnotations() {
+    const variants = Object.keys(this.selectedVariants).map(
+      (key) => this.selectedVariants[key],
+    );
+
+    this.ss.start();
+    this.cs
+      .saveAnnotations(
+        this.projectName,
+        this.requestId,
+        this.annotationForm.get('name')?.value,
+        this.annotationForm.get('annotation')?.value,
+        variants,
+      )
+      .pipe(catchError(() => of(null)))
+      .subscribe((data) => {
+        if (!data) {
+          this.sb.open('Failed to save annotations', 'Okay', {
+            duration: 5000,
+          });
+        } else {
+          this.sb.open('Annotations saved', 'Okay', {
+            duration: 5000,
+          });
+        }
+        this.ss.end();
+      });
   }
 
   refetch(
@@ -178,14 +234,33 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
         .filter((l) => l.length > 0)
         .map((l) => {
           const row: any = {};
-          l.split('\t').forEach((v, i) => {
-            row[this.columns[i]] = v;
-          });
+          l.trim()
+            .split('\t')
+            .forEach((v, i) => {
+              row[this.columns[i + 1]] = v;
+            });
           return row;
         }),
     );
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.paginator.pageIndex = result.page - 1;
     this.data.sort = this.sort;
+  }
+
+  selection(row: any, checked: boolean): void {
+    if (checked) {
+      this.selectedVariants[this.hashRow(row)] = row;
+    } else {
+      delete this.selectedVariants[this.hashRow(row)];
+    }
+  }
+
+  hashRow(row: { [key: string]: string }): string {
+    let hash = '';
+    // TODO compress more
+    for (let key of Object.keys(row)) {
+      hash += `${key}:${row[key]}`;
+    }
+    return hash;
   }
 }

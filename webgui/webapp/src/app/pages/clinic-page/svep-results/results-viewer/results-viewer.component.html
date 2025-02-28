@@ -33,20 +33,32 @@
     class="overflow-auto border-solid border-1 rounded-[4px] border-cyan-700 h-[600px]"
   >
     <table mat-table [dataSource]="data" matSort>
-      @for (column of columns; track $index) {
-        <ng-container [matColumnDef]="column">
-          <th
-            mat-header-cell
-            *matHeaderCellDef
-            class="whitespace-nowrap"
-            mat-sort-header
+      <ng-container matColumnDef="selected">
+        <th mat-header-cell *matHeaderCellDef class="!text-center">#</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (change)="selection(row, $event.checked)"
+            [checked]="!!selectedVariants[hashRow(row)]"
           >
-            {{ column }}
-          </th>
-          <td mat-cell *matCellDef="let element" class="whitespace-nowrap">
-            {{ element[column] }}
-          </td>
-        </ng-container>
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      @for (column of columns; track $index) {
+        @if (column !== "selected") {
+          <ng-container [matColumnDef]="column">
+            <th
+              mat-header-cell
+              *matHeaderCellDef
+              class="whitespace-nowrap"
+              mat-sort-header
+            >
+              {{ column }}
+            </th>
+            <td mat-cell *matCellDef="let element" class="whitespace-nowrap">
+              {{ element[column] }}
+            </td>
+          </ng-container>
+        }
       }
 
       <tr mat-header-row *matHeaderRowDef="columns; sticky: true"></tr>
@@ -62,3 +74,55 @@
   pageSize="1"
 >
 </mat-paginator>
+
+@if (Object.keys(selectedVariants).length > 0) {
+  <div
+    class="flex flex-col border-solid border-1 rounded-[4px] border-cyan-700 p-2 mt-2"
+  >
+    @for (selectedItem of selectedVariants | keyvalue; track $index) {
+      <div>
+        <strong
+          class="cursor-pointer"
+          (click)="selection(selectedItem.value, false)"
+          >[ <span class="text-red-500">X</span> ]</strong
+        >
+        @for (item of selectedItem.value | keyvalue; track $index) {
+          {{ item.key }}: {{ item.value }}
+          @if (!$last) {
+            |
+          }
+        }
+      </div>
+      <div class="w-full h-1 bg-primary-60 my-1"></div>
+    }
+    <form [formGroup]="annotationForm">
+      <mat-form-field class="w-full my-1">
+        <mat-label>Name</mat-label>
+        <input
+          formControlName="name"
+          matInput
+          placeholder="Enter annotation name"
+        />
+        <mat-error>Name needed (10-50 characters)</mat-error>
+      </mat-form-field>
+      <mat-form-field class="w-full my-1">
+        <mat-label>Comments</mat-label>
+        <textarea
+          formControlName="annotation"
+          matInput
+          placeholder="Enter your comments here"
+        ></textarea>
+        <mat-error>Comments are needed</mat-error>
+      </mat-form-field>
+    </form>
+    <button
+      mat-raised-button
+      color="primary"
+      class="w-[110px] my-1"
+      [disabled]="annotationForm.invalid"
+      (click)="saveAnnotations()"
+    >
+      Save
+    </button>
+  </div>
+}

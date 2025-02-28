@@ -20,17 +20,34 @@
             </mat-option>
           }
         </mat-select>
-        <mat-hint>Temporary - to be replaced with selection from table</mat-hint>
+        <mat-hint
+          >Temporary - to be replaced with selection from table</mat-hint
+        >
       </mat-form-field>
       <a
-        [disabled]="requestIdFormControl.invalid || projectNameFormControl.invalid"
+        [disabled]="
+          requestIdFormControl.invalid || projectNameFormControl.invalid
+        "
         class="w-[110px] mr-1"
         mat-raised-button
         color="primary"
         [routerLink]="[]"
-        [queryParams]="{ jobId: requestIdFormControl.value, projectName: projectNameFormControl.value }"
-        >Load</a>
-      <app-results-viewer *ngIf="requestId && projectName" [requestId]="requestId" [projectName]="projectName"></app-results-viewer>
+        [queryParams]="{
+          jobId: requestIdFormControl.value,
+          projectName: projectNameFormControl.value
+        }"
+        >Load</a
+      >
+      @if (requestId && projectName) {
+        <app-results-viewer
+          [requestId]="requestId"
+          [projectName]="projectName"
+        />
+        <app-annotation-viewer
+          [requestId]="requestId"
+          [projectName]="projectName"
+        />
+      }
     </div>
   </mat-card-content>
 </mat-card>

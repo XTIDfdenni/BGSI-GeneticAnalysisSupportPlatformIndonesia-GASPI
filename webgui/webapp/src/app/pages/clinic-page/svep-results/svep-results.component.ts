@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ResultsViewerComponent } from './results-viewer/results-viewer.component';
 import { MatCardModule } from '@angular/material/card';
 import { DportalService } from 'src/app/services/dportal.service';
+import { AnnotationViewerComponent } from './annotation-viewer/annotation-viewer.component';
 
 interface Project {
   name: string;
@@ -35,6 +36,7 @@ interface Project {
     ReactiveFormsModule,
     MatInputModule,
     ResultsViewerComponent,
+    AnnotationViewerComponent,
     MatCardModule,
     MatOptionModule,
     MatSelectModule,
