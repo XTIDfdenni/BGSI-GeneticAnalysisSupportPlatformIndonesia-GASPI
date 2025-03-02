@@ -60,7 +60,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   templateUrl: './annotation-viewer.component.html',
   styleUrl: './annotation-viewer.component.scss',
 })
-export class AnnotationViewerComponent implements OnChanges, AfterViewInit {
+export class AnnotationViewerComponent implements OnChanges {
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator')
@@ -73,17 +73,6 @@ export class AnnotationViewerComponent implements OnChanges, AfterViewInit {
     private cs: ClinicService,
     private sb: MatSnackBar,
   ) {}
-
-  ngAfterViewInit(): void {
-    this.paginator.page.subscribe((event: PageEvent) => {
-      if (this.pageSize != this.paginator.pageSize) {
-        this.resetPagination();
-        this.refresh();
-      } else {
-        this.list(event.pageIndex);
-      }
-    });
-  }
 
   resetPagination() {
     this.pageTokens = new Map<number, string>();
@@ -102,6 +91,15 @@ export class AnnotationViewerComponent implements OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.list(0);
+  }
+
+  pageChange(event: PageEvent) {
+    if (this.pageSize != this.paginator.pageSize) {
+      this.resetPagination();
+      this.refresh();
+    } else {
+      this.list(event.pageIndex);
+    }
   }
 
   list(page: number) {
