@@ -18,7 +18,6 @@ import {
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { catchError, of, Subject } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
-import { DportalService } from 'src/app/services/dportal.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -129,6 +128,8 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   });
   protected selectedVariants: SelectedVariants = {};
   protected Object = Object;
+  protected resultsLength = 0;
+  protected pageIndex = 0;
 
   constructor(
     private cs: ClinicService,
@@ -137,21 +138,22 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.paginator.page.subscribe((event: PageEvent) => {
-      this.refetch(
-        this.requestId,
-        this.projectName,
-        this.chromosomeField.value,
-        event.pageIndex + 1,
-      );
-      // if chromosome or page change we clear position
-      this.basePositionField.setValue('');
-    });
     this.chromosomeField.valueChanges.subscribe((chromosome) => {
       this.refetch(this.requestId, this.projectName, chromosome);
       // if chromosome or page change we clear position
       this.basePositionField.setValue('');
     });
+  }
+
+  pageChange(event: PageEvent) {
+    this.refetch(
+      this.requestId,
+      this.projectName,
+      this.chromosomeField.value,
+      event.pageIndex + 1,
+    );
+    // if chromosome or page change we clear position
+    this.basePositionField.setValue('');
   }
 
   search() {
@@ -227,7 +229,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
 
   updateTable(result: SVEPResult): void {
     this.results = result;
-    this.paginator.length = result.pages[result.chromosome];
+    this.resultsLength = result.pages[result.chromosome];
     const lines = result.content.split('\n');
     this.data = new MatTableDataSource<any>(
       lines
@@ -243,7 +245,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
         }),
     );
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
-    this.paginator.pageIndex = result.page - 1;
+    this.pageIndex = result.page - 1;
     this.data.sort = this.sort;
   }
 

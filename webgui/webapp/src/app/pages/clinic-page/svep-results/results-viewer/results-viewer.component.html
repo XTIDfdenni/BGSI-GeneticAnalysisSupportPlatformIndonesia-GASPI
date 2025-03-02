@@ -65,15 +65,17 @@
       <tr mat-row *matRowDef="let row; columns: columns"></tr>
     </table>
   </div>
+  <mat-paginator
+    showFirstLastButtons
+    #paginator
+    hidePageSize
+    pageSize="1"
+    [length]="resultsLength"
+    [pageIndex]="pageIndex"
+    (page)="pageChange($event)"
+  >
+  </mat-paginator>
 }
-<mat-paginator
-  [hidden]="data.data.length == 0"
-  showFirstLastButtons
-  #paginator
-  hidePageSize
-  pageSize="1"
->
-</mat-paginator>
 
 @if (Object.keys(selectedVariants).length > 0) {
   <div
