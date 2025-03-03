@@ -41,6 +41,14 @@ export class ClinicPageComponent implements OnInit {
 
   onTabChange(index: number) {
     const routes = ['svep-submit', 'svep-igv', 'svep-results'];
+    // if directed to correct tab from same page, do nothing
+    const urlTree = this.router.parseUrl(this.router.url);
+    const path = urlTree.root.children['primary'].segments.at(-1)?.path;
+
+    if (path === routes[index]) {
+      return;
+    }
+
     this.router.navigate([routes[index]], { relativeTo: this.route });
   }
 }
