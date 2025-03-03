@@ -24,7 +24,7 @@
           >Temporary - to be replaced with selection from table</mat-hint
         >
       </mat-form-field>
-      <a
+      <button
         [disabled]="
           requestIdFormControl.invalid || projectNameFormControl.invalid
         "
@@ -32,8 +32,20 @@
         mat-raised-button
         color="primary"
         (click)="load()"
-        >Load</a
       >
+        Load
+      </button>
+      <button
+        [disabled]="
+          requestIdFormControl.invalid || projectNameFormControl.invalid
+        "
+        class="w-[110px]"
+        mat-raised-button
+        color="primary"
+        (click)="reset()"
+      >
+        Reset
+      </button>
       @if (requestId && projectName) {
         <app-results-viewer
           [requestId]="requestId"

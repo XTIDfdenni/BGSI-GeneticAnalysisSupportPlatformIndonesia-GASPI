@@ -102,6 +102,14 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
       });
     }
   }
+  reset() {
+    this.requestIdFormControl.setValue('');
+    this.projectNameFormControl.setValue('');
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {},
+    });
+  }
 
   list() {
     this.dps
@@ -122,7 +130,6 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.list();
     this.paramSubscription = this.route.queryParams.subscribe((params) => {
-      console.log(params);
       this.requestId = params['jobId'] ?? null;
       this.projectName = params['projectName'] ?? null;
       this.requestIdFormControl.setValue(this.requestId ?? '');
