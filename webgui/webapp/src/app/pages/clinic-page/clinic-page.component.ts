@@ -13,6 +13,7 @@ import { ActivatedRoute, Router, RouterOutlet, UrlTree } from '@angular/router';
 })
 export class ClinicPageComponent implements OnInit {
   protected selectedIndex = 0;
+  private paramChache: Map<string, any> = new Map();
 
   constructor(
     private router: Router,
@@ -24,11 +25,16 @@ export class ClinicPageComponent implements OnInit {
   setTabIndex() {
     const urlTree = this.router.parseUrl(this.router.url);
     const path = urlTree.root.children['primary'].segments.join('/');
+    const queryParams = urlTree.queryParams;
+
     if (path.startsWith('clinic/svep-submit')) {
+      this.paramChache.set('svep-submit', queryParams);
       this.selectedIndex = 0;
     } else if (path.startsWith('clinic/svep-igv')) {
+      this.paramChache.set('svep-igv', queryParams);
       this.selectedIndex = 1;
     } else if (path.startsWith('clinic/svep-results')) {
+      this.paramChache.set('svep-results', queryParams);
       this.selectedIndex = 2;
     }
   }
@@ -49,6 +55,13 @@ export class ClinicPageComponent implements OnInit {
       return;
     }
 
-    this.router.navigate([routes[index]], { relativeTo: this.route });
+    const params = {
+      ...(this.paramChache.get(routes[index]) || {}),
+    };
+
+    this.router.navigate([routes[index]], {
+      relativeTo: this.route,
+      queryParams: params,
+    });
   }
 }
