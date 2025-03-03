@@ -10,9 +10,15 @@
     >
       <mat-icon>refresh</mat-icon>
     </button>
+    <br />
     @for (annot of annotations; track $index) {
       <div>
-        <strong>{{ annot.name }}</strong>
+        <strong class="cursor-pointer"
+          >[<span class="text-red-500" (click)="deleteAnnotation(annot.name)"
+            >X</span
+          >]</strong
+        >
+        <strong> {{ annot.name }}</strong>
         <p>{{ annot.annotation }}</p>
         @for (info of annot.variants; track $index) {
           @for (item of info | keyvalue; track $index) {
@@ -21,6 +27,7 @@
               |
             }
           }
+          <br />
         }
       </div>
       @if (!$last) {

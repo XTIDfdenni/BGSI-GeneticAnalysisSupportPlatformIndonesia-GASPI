@@ -9,6 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import {
   MatPaginator,
@@ -19,6 +20,7 @@ import {
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { catchError, of, Subject } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
+import { SpinnerService } from 'src/app/services/spinner.service';
 
 type ClinicalAnnotation = {
   name: string;
@@ -72,6 +74,8 @@ export class AnnotationViewerComponent implements OnChanges {
   constructor(
     private cs: ClinicService,
     private sb: MatSnackBar,
+    private dg: MatDialog,
+    private ss: SpinnerService,
   ) {}
 
   resetPagination() {
@@ -89,7 +93,7 @@ export class AnnotationViewerComponent implements OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(_: SimpleChanges): void {
     this.list(0);
   }
 
@@ -100,6 +104,42 @@ export class AnnotationViewerComponent implements OnChanges {
     } else {
       this.list(event.pageIndex);
     }
+  }
+
+  async deleteAnnotation(name: string) {
+    const { ActionConfirmationDialogComponent } = await import(
+      '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialogRef = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Annotation',
+        message: `Are you sure you want to delete the annotation ${name}?`,
+        confirmText: 'Delete',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.ss.start();
+        this.cs
+          .deleteAnnotation(this.projectName, this.requestId, name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res) => {
+            if (res) {
+              this.sb.open('Annotation deleted', 'Okay', {
+                duration: 5000,
+              });
+              this.refresh();
+            } else {
+              this.sb.open('Failed to delete annotation', 'Dismiss', {
+                duration: 5000,
+              });
+            }
+            this.ss.end();
+          });
+      }
+    });
   }
 
   list(page: number) {
