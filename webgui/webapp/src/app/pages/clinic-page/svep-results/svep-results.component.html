@@ -31,11 +31,7 @@
         class="w-[110px] mr-1"
         mat-raised-button
         color="primary"
-        [routerLink]="[]"
-        [queryParams]="{
-          jobId: requestIdFormControl.value,
-          projectName: projectNameFormControl.value
-        }"
+        (click)="load()"
         >Load</a
       >
       @if (requestId && projectName) {
