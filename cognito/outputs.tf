@@ -43,6 +43,16 @@ output "registration_email_lambda_function_arn" {
   description = "Lambda function ARN for sending registration emails"
 }
 
+output "svep_success_email_lambda_function_arn" {
+  value       = module.lambda-submitSvepSuccessEmail.lambda_function_arn
+  description = "Lambda function ARN for sending submit svep success emails"
+}
+
+output "svep_failed_email_lambda_function_arn" {
+  value       = module.lambda-submitSvepFailEmail.lambda_function_arn
+  description = "Lambda function ARN for sending submit svep success emails"
+}
+
 output "admin_login_command" {
   value       = "aws cognito-idp admin-initiate-auth --user-pool-id ${aws_cognito_user_pool.gaspi_user_pool.id} --region ${var.region} --client-id ${aws_cognito_user_pool_client.gaspi_user_pool_client.id} --auth-flow ADMIN_USER_PASSWORD_AUTH --auth-parameters USERNAME=${var.gaspi-admin-username},PASSWORD=${var.gaspi-admin-password} --output json --query AuthenticationResult.IdToken"
   description = "Command to sign in an admin"
