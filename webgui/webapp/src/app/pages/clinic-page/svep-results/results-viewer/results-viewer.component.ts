@@ -5,12 +5,11 @@ import {
   Injectable,
   Input,
   OnChanges,
-  OnInit,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableModule } from '@angular/material/table';
 import {
   MatPaginator,
   MatPaginatorIntl,
@@ -107,9 +106,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   templateUrl: './results-viewer.component.html',
   styleUrl: './results-viewer.component.scss',
 })
-export class ResultsViewerComponent
-  implements OnChanges, AfterViewInit, OnInit
-{
+export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
@@ -138,6 +135,7 @@ export class ResultsViewerComponent
   protected dataView = new Observable<any[]>();
   protected chromosomeField: FormControl = new FormControl('');
   protected basePositionField: FormControl = new FormControl('');
+  protected filterField: FormControl = new FormControl('');
   protected annotationForm: FormGroup = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -158,8 +156,6 @@ export class ResultsViewerComponent
     @Inject(VIRTUAL_SCROLL_STRATEGY)
     private readonly scrollStrategy: TableVirtualScrollStrategy,
   ) {}
-
-  ngOnInit(): void {}
 
   resort(sort: Sort) {
     const snapshot = [...this.originalRows];
@@ -223,6 +219,21 @@ export class ResultsViewerComponent
         null,
         position,
       );
+    }
+  }
+
+  filter() {
+    const term = this.filterField.value;
+
+    if (term) {
+      const filtered = this.originalRows.filter((row) => {
+        return Object.values(row).some((v: any) => {
+          return v.toString().includes(term);
+        });
+      });
+      this.dataRows.next(filtered);
+    } else {
+      this.dataRows.next(this.originalRows);
     }
   }
 
@@ -293,5 +304,6 @@ export class ResultsViewerComponent
     this.dataRows.next(this.originalRows);
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.pageIndex = result.page - 1;
+    this.cs.selectedVariants = [];
   }
 }
