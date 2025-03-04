@@ -152,7 +152,13 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   search() {
     const position = this.basePositionField.value;
     if (position) {
-      this.refetch(this.requestId, this.chromosomeField.value, null, position);
+      this.refetch(
+        this.requestId,
+        this.projectName,
+        this.chromosomeField.value,
+        null,
+        position,
+      );
     }
   }
 
