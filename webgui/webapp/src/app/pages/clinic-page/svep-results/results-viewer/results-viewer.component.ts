@@ -187,7 +187,6 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
         const end = Math.min(value[0].length, value[1] + 100);
 
         // Update the datasource for the rendered range of data
-        console.log(start, end);
         return value[0].slice(start, end);
       }),
     );
