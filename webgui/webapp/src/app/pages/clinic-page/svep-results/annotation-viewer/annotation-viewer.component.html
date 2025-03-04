@@ -1,4 +1,5 @@
 @if (annotations.length > 0) {
+  <h2>Clinical Annotations</h2>
   <div
     class="flex flex-col border-solid border-1 rounded-[4px] border-cyan-700 p-2 mt-2"
   >
@@ -16,10 +17,9 @@
         <strong class="cursor-pointer"
           >[<span class="text-red-500" (click)="deleteAnnotation(annot.name)"
             >X</span
-          >]</strong
+          >] {{ annot.annotation }}</strong
         >
-        <strong> {{ annot.name }}</strong>
-        <p>{{ annot.annotation }}</p>
+        <br />
         @for (info of annot.variants; track $index) {
           @for (item of info | keyvalue; track $index) {
             {{ item.key }}: {{ item.value }}
