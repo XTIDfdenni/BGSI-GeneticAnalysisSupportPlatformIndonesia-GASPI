@@ -59,6 +59,9 @@ module "svep" {
   cognito-user-pool-arn                 = module.cognito.cognito_user_pool_arn
   dynamo-project-users-table            = module.sbeacon.dynamo-project-users-table
   dynamo-project-users-table-arn        = module.sbeacon.dynamo-project-users-table-arn
+  dynamo-clinic-jobs-table              = module.sbeacon.dynamo-clinic-jobs-table
+  dynamo-clinic-jobs-table-arn          = module.sbeacon.dynamo-clinic-jobs-table-arn
+  dynamo-clinic-jobs-stream-arn         = module.sbeacon.dynamo-clinic-jobs-stream-arn
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"
