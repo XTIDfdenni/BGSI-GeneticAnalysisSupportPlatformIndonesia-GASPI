@@ -18,14 +18,26 @@ def lambda_handler(event, context):
         email = body_dict["email"]
         first_name = body_dict["first_name"]
         last_name = body_dict["last_name"]
-        file = body_dict["file"]
         project_name = body_dict["project_name"]
+        input_vcf = body_dict["input_vcf"]
+        body_message = body_dict["body_message"]
+        job_status = body_dict["job_status"]
 
         response = ssm_client.get_parameter(Name=BUI_SSM_PARAM_NAME)
         beacon_ui_url = response.get("Parameter", {}).get("Value", "")
-        beacon_ui_url = f"{beacon_ui_url}/login"
+        beacon_ui_url = f"{beacon_ui_url}"
         beacon_img_url = f"{beacon_ui_url}/assets/images/sbeacon.png"
-        subject = "SVEP Job Success Notification"
+
+        subject = "Clinical Result of"
+        body_message = f"<p>Thank you for your patience waiting for us to generate the results of {input_vcf} files from project {project_name}.</p>"
+
+        if job_status == "failed":
+            body_message += f"<p><b>Please load the results on the VEP Results page </b> or click the link <a href='{beacon_ui_url}'>here</a>.</p>"
+            subject += f" {project_name} has failed"
+        elif job_status == "completed":
+            body_message += "<p><b>We are sorry that the result generated failed</b>, please check your VCF file again.</p>"
+            subject += f" {project_name} is completed"
+
         body_html = f"""
 <html>
   <head>
@@ -53,8 +65,7 @@ def lambda_handler(event, context):
   <body>
     <div class="container">
       <h1>Hello {escape(first_name)} {escape(last_name)},</h1>
-      <p>Thank you for your patience waiting for us to generate the results of {file} files from project {project_name}.</p>
-      <p><b>Please load the results on the VEP Results page</b> or click the <a href="{beacon_ui_url}">link here</a>.</p>
+      {body_message}
       <div style="max-width:80;">
         <img src="{beacon_img_url}" alt="sBeacon Logo" style="max-width:80%; width:80%; margin-top:20px;">
       </div>
