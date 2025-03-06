@@ -25,7 +25,6 @@ def lambda_handler(event, context):
 
         response = ssm_client.get_parameter(Name=BUI_SSM_PARAM_NAME)
         beacon_ui_url = response.get("Parameter", {}).get("Value", "")
-        beacon_ui_url = f"{beacon_ui_url}"
         beacon_img_url = f"{beacon_ui_url}/assets/images/sbeacon.png"
 
         subject = "Clinical Result of"
