@@ -18,6 +18,7 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
 import { catchError, of, Subject } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
@@ -64,6 +65,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
+    MatCardModule,
   ],
   templateUrl: './annotation-viewer.component.html',
   styleUrl: './annotation-viewer.component.scss',
