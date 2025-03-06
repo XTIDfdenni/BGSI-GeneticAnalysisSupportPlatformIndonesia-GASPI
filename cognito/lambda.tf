@@ -45,10 +45,10 @@ module "lambda-sendRegistrationEmail" {
 #
 # submit svep email Lambda function
 #
-module "lambda-submitSvepSuccessEmail" {
+module "lambda-sendSvepJobEmail" {
   source = "terraform-aws-modules/lambda/aws"
 
-  function_name       = "cognito-submitSvepSuccessEmail"
+  function_name       = "cognito-sendSvepJobEmail"
   description         = "Sends svep success email on submit execution"
   runtime             = "python3.12"
   handler             = "lambda_function.lambda_handler"
@@ -56,38 +56,10 @@ module "lambda-submitSvepSuccessEmail" {
   timeout             = 60
   attach_policy_jsons = true
   policy_jsons = [
-    data.aws_iam_policy_document.lambda-submitSvepSuccessEmail.json,
+    data.aws_iam_policy_document.lambda-sendSvepJobEmail.json,
   ]
   number_of_policy_jsons = 1
-  source_path            = "${path.module}/lambda/submitSvepSuccessEmail"
-
-  environment_variables = {
-    BUI_SSM_PARAM_NAME  = var.bui-ssm-parameter-name
-    SES_SOURCE_EMAIL    = var.ses-source-email
-    SES_CONFIG_SET_NAME = aws_ses_configuration_set.ses_feedback_config.name
-  }
-
-  tags = var.common-tags
-}
-
-#
-# submit svep email Lambda function
-#
-module "lambda-submitSvepFailEmail" {
-  source = "terraform-aws-modules/lambda/aws"
-
-  function_name       = "cognito-submitSvepFailEmail"
-  description         = "Sends svep failed email on submit execution"
-  runtime             = "python3.12"
-  handler             = "lambda_function.lambda_handler"
-  memory_size         = 512
-  timeout             = 60
-  attach_policy_jsons = true
-  policy_jsons = [
-    data.aws_iam_policy_document.lambda-submitSvepFailEmail.json,
-  ]
-  number_of_policy_jsons = 1
-  source_path            = "${path.module}/lambda/submitSvepFailEmail"
+  source_path            = "${path.module}/lambda/sendSvepJobEmail"
 
   environment_variables = {
     BUI_SSM_PARAM_NAME  = var.bui-ssm-parameter-name

@@ -43,14 +43,9 @@ output "registration_email_lambda_function_arn" {
   description = "Lambda function ARN for sending registration emails"
 }
 
-output "svep_success_email_lambda_function_arn" {
-  value       = module.lambda-submitSvepSuccessEmail.lambda_function_arn
-  description = "Lambda function ARN for sending submit svep success emails"
-}
-
-output "svep_failed_email_lambda_function_arn" {
-  value       = module.lambda-submitSvepFailEmail.lambda_function_arn
-  description = "Lambda function ARN for sending submit svep success emails"
+output "svep_job_email_lambda_function_arn" {
+  value       = module.lambda-sendSvepJobEmail.lambda_function_arn
+  description = "Lambda function ARN for sending Jobs email"
 }
 
 output "admin_login_command" {
