@@ -49,16 +49,19 @@ module "sbeacon" {
 }
 
 module "svep" {
-  source                                 = "./svep"
-  region                                 = var.region
-  data_portal_bucket_name                = module.sbeacon.data-portal-bucket
-  data_portal_bucket_arn                 = module.sbeacon.data-portal-bucket-arn
-  method-max-request-rate                = var.svep-method-max-request-rate
-  method-queue-size                      = var.svep-method-queue-size
-  web_acl_arn                            = module.security.web_acl_arn
-  cognito-user-pool-arn                  = module.cognito.cognito_user_pool_arn
-  dynamo-project-users-table             = module.sbeacon.dynamo-project-users-table
-  dynamo-project-users-table-arn         = module.sbeacon.dynamo-project-users-table-arn
+  source                                = "./svep"
+  region                                = var.region
+  data_portal_bucket_name               = module.sbeacon.data-portal-bucket
+  data_portal_bucket_arn                = module.sbeacon.data-portal-bucket-arn
+  method-max-request-rate               = var.svep-method-max-request-rate
+  method-queue-size                     = var.svep-method-queue-size
+  web_acl_arn                           = module.security.web_acl_arn
+  cognito-user-pool-arn                 = module.cognito.cognito_user_pool_arn
+  dynamo-project-users-table            = module.sbeacon.dynamo-project-users-table
+  dynamo-project-users-table-arn        = module.sbeacon.dynamo-project-users-table-arn
+  dynamo-clinic-jobs-table              = module.sbeacon.dynamo-clinic-jobs-table
+  dynamo-clinic-jobs-table-arn          = module.sbeacon.dynamo-clinic-jobs-table-arn
+  dynamo-clinic-jobs-stream-arn         = module.sbeacon.dynamo-clinic-jobs-stream-arn
   svep-success-email-lambda-function-arn = module.cognito.svep_success_email_lambda_function_arn
   svep-failed-email-lambda-function-arn  = module.cognito.svep_failed_email_lambda_function_arn
 
