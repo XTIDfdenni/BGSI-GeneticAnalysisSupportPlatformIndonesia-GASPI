@@ -29,6 +29,16 @@
           }
           <br />
         }
+        <span class="text-xs"
+          >Annotated by: {{ annot.user?.firstName }}
+          {{ annot.user?.lastName }} ({{ annot.user?.email }})</span
+        >
+        <br />
+        <span class="text-xs"
+          >Annotated at:
+          {{ annot.createdAt | date: "yyyy-MM-dd HH:mm:ss" }}</span
+        >
+        <br />
       </div>
       @if (!$last) {
         <div class="w-full h-1 bg-primary-60 my-1"></div>

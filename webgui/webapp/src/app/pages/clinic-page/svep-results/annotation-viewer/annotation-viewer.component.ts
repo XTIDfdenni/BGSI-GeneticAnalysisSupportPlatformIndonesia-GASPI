@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -26,6 +26,12 @@ type ClinicalAnnotation = {
   name: string;
   annotation: string;
   variants: any[];
+  createdAt: string;
+  user?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
 };
 
 @Injectable()
