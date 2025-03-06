@@ -31,10 +31,10 @@ def lambda_handler(event, context):
 
         if job_status == "completed":
             body_message += f"<p><b>Please load the results on the VEP Results page </b> or click the link <a href='{beacon_ui_url}'>here</a>.</p>"
-            subject += f" {project_name} has failed"
+            subject += f" {project_name} has completed"
         elif job_status == "failed":
             body_message += "<p><b>We are sorry that the result generated failed</b>, please check your VCF file again.</p>"
-            subject += f" {project_name} is completed"
+            subject += f" {project_name} is failed"
 
         body_html = f"""
 <html>
