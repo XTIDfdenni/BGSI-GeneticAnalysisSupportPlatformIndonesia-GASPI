@@ -20,7 +20,6 @@ def lambda_handler(event, context):
         last_name = body_dict["last_name"]
         project_name = body_dict["project_name"]
         input_vcf = body_dict["input_vcf"]
-        body_message = body_dict["body_message"]
         job_status = body_dict["job_status"]
 
         response = ssm_client.get_parameter(Name=BUI_SSM_PARAM_NAME)
@@ -30,10 +29,10 @@ def lambda_handler(event, context):
         subject = "Clinical Result of"
         body_message = f"<p>Thank you for your patience waiting for us to generate the results of {input_vcf} files from project {project_name}.</p>"
 
-        if job_status == "failed":
+        if job_status == "completed":
             body_message += f"<p><b>Please load the results on the VEP Results page </b> or click the link <a href='{beacon_ui_url}'>here</a>.</p>"
             subject += f" {project_name} has failed"
-        elif job_status == "completed":
+        elif job_status == "failed":
             body_message += "<p><b>We are sorry that the result generated failed</b>, please check your VCF file again.</p>"
             subject += f" {project_name} is completed"
 
@@ -84,7 +83,7 @@ def lambda_handler(event, context):
                     },
                     "Text": {
                         "Charset": "UTF-8",
-                        "Data": f"Hello {first_name} {last_name},\n\ Thank you for your patience waiting for us to generate the results of {file} files from project {project_name}.\n\ Please load the results on the VEP Results page or click the link here: {beacon_ui_url}",
+                        "Data": f"Hello {escape(first_name)} {escape(last_name)}, \\n\\n{subject}",
                     },
                 },
                 "Subject": {
