@@ -82,7 +82,7 @@ export class ListJobComponent implements OnChanges, OnInit {
   loading = true;
   dataSource = new MatTableDataSource<Project>();
   displayedColumns: string[] = ['input_vcf', 'job_status', 'job_id'];
-
+  JobStatus = JobStatus;
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
@@ -182,15 +182,17 @@ export class ListJobComponent implements OnChanges, OnInit {
     }
   }
 
-  tooltipMessage(status: string) {
-    if (status.toLowerCase() === 'completed') {
-      return `Load the result`;
-    } else if (status.toLowerCase() === 'failed') {
-      return `Failed to process`;
-    } else if (status.toLowerCase() === 'expired') {
-      return `Job ID is no longer work`;
+  tooltipMessage(status: JobStatus) {
+    switch (status) {
+      case JobStatus.COMPLETED:
+        return 'Load the result';
+      case JobStatus.FAILED:
+        return 'Failed to process';
+      case JobStatus.EXPIRED:
+        return 'Job ID is no longer work';
+      default:
+        return 'Job ID is processing result';
     }
-    return 'Job ID is processing result';
   }
 
   async handleError(failedStep: any, error: any) {
