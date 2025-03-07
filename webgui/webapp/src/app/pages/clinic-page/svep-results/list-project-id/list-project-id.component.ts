@@ -22,17 +22,23 @@ import { isEmpty } from 'lodash';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatCardModule } from '@angular/material/card';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
-
-import { DportalService } from 'src/app/services/dportal.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { ClinicService } from 'src/app/services/clinic.service';
 
 interface Project {
   job_id: string;
   input_vcf: string;
-  job_status: string;
+  job_status: JobStatus;
   error_message: string;
   failed_step: string;
+}
+
+enum JobStatus {
+  COMPLETED = 'completed',
+  FAILED = 'failed',
+  EXPIRED = 'expired',
+  PENDING = 'pending',
 }
 
 @Injectable()
@@ -85,7 +91,7 @@ export class ListJobComponent implements OnChanges, OnInit {
   private paramSubscription: Subscription | null = null;
 
   constructor(
-    private dps: DportalService,
+    private cs: ClinicService,
     private sb: MatSnackBar,
     private cd: ChangeDetectorRef,
     private route: ActivatedRoute,
@@ -138,7 +144,7 @@ export class ListJobComponent implements OnChanges, OnInit {
       return;
     }
 
-    this.dps
+    this.cs
       .getMyJobsID(this.pageSize, this.pageTokens.get(page), this.projectName)
       .pipe(
         catchError((error) => {

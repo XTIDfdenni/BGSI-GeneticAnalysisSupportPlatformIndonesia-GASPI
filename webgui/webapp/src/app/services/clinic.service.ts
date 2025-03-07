@@ -39,6 +39,26 @@ export class ClinicService {
     return this.selectedVariants[this.hashRow(row)] !== undefined;
   }
 
+  getMyJobsID(
+    limit?: number,
+    last_evaluated_key?: string | null,
+    project?: string,
+  ) {
+    console.log('get list jobs id');
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows`,
+        {
+          queryStringParameters: {
+            ...(limit !== undefined && limit !== null ? { limit } : {}),
+            ...(last_evaluated_key ? { last_evaluated_key } : {}),
+          },
+        },
+      ),
+    );
+  }
+
   submitSvepJob(location: string, projectName: string) {
     return from(Auth.currentCredentials()).pipe(
       switchMap((credentials) => {
