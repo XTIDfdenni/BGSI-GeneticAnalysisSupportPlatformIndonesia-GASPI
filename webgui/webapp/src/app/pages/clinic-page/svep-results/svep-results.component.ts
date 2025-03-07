@@ -19,7 +19,6 @@ import { ResultsViewerComponent } from './results-viewer/results-viewer.componen
 import { MatCardModule } from '@angular/material/card';
 import { DportalService } from 'src/app/services/dportal.service';
 import { AnnotationViewerComponent } from './annotation-viewer/annotation-viewer.component';
-import { ClinicService } from 'src/app/services/clinic.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ListJobComponent } from './list-project-id/list-project-id.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -60,10 +59,6 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
   protected myProjects: Project[] = [];
   private paramSubscription: Subscription | null = null;
   filteredOptions: Observable<Project[]> | undefined;
-
-  @ViewChild(ResultsViewerComponent) resultsViewer!: ResultsViewerComponent;
-  @ViewChild(AnnotationViewerComponent)
-  annotationViewer!: AnnotationViewerComponent;
   @ViewChild(ListJobComponent) svepIGVComponent!: ListJobComponent;
 
   constructor(
@@ -72,7 +67,6 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
     private router: Router,
     private dps: DportalService,
     private sb: MatSnackBar,
-    private cs: ClinicService,
   ) {
     this.requestIdFormControl = this.fb.control('', {
       validators: [Validators.required],
@@ -81,11 +75,6 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
     this.projectNameFormControl = this.fb.control('', {
       validators: [Validators.required],
       nonNullable: true,
-    });
-    this.cs.annotionsChanged.subscribe(() => {
-      if (this.annotationViewer) {
-        this.annotationViewer.refresh();
-      }
     });
   }
 

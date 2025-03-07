@@ -243,12 +243,8 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       '../add-annotation-dialog/add-annotation-dialog.component'
     );
 
-    const dialogRef = this.dg.open(AddAnnotationDialogComponent, {
+    this.dg.open(AddAnnotationDialogComponent, {
       data: { projectName: this.projectName, requestId: this.requestId },
-    });
-
-    dialogRef.afterClosed().subscribe(() => {
-      this.refetch(this.requestId, this.projectName);
     });
   }
 
