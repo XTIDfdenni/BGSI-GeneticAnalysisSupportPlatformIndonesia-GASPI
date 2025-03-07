@@ -43,6 +43,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { TableVirtualScrollStrategy } from './scroll-strategy.service';
 import {
   ScrollingModule,
@@ -94,6 +95,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatButtonModule,
     MatCheckboxModule,
     ScrollingModule,
+    MatCardModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },

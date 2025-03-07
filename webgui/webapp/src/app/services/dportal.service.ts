@@ -287,6 +287,26 @@ export class DportalService {
     );
   }
 
+  getMyJobsID(
+    limit?: number,
+    last_evaluated_key?: string | null,
+    project?: string,
+  ) {
+    console.log('get list jobs id');
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/jobs`,
+        {
+          queryStringParameters: {
+            ...(limit !== undefined && limit !== null ? { limit } : {}),
+            ...(last_evaluated_key ? { last_evaluated_key } : {}),
+          },
+        },
+      ),
+    );
+  }
+
   getMyProjectFile(project: string, prefix: string) {
     console.log('get my project file');
     return from(
