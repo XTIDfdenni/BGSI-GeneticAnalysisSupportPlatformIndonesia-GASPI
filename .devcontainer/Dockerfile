@@ -1,7 +1,7 @@
 FROM --platform=x86_64 public.ecr.aws/sam/build-python3.12:latest-x86_64
 
 RUN dnf update -y
-RUN dnf install -y git tar make openssl-devel libcurl-devel wget bzip2-devel xz-devel libffi-devel zlib-devel autoconf intltool 
+RUN dnf install -y which git tar make openssl-devel libcurl-devel wget bzip2-devel xz-devel libffi-devel zlib-devel autoconf intltool 
 RUN dnf install -y gcc gcc-c++ cmake
 RUN dnf install -y docker
 
