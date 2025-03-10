@@ -95,7 +95,7 @@ def lambda_handler(event, context):
             ReturnPath=SES_SOURCE_EMAIL,
             ConfigurationSetName=SES_CONFIG_SET_NAME,
         )
-        print(f"Email sent with message ID: {response["MessageId"]}")
+        print(f"Email sent with message ID: {response["MessageId"]} - {email}")
         return {
             "statusCode": 200,
             "success": True,
