@@ -13,17 +13,27 @@
       <app-projects-list #projects (filesSelected)="filesSelected($event)" />
       <br />
       <div class="flex flex-row">
-        <button [disabled]="submissionStarted" class="w-[110px] mr-1" mat-raised-button color="primary"
-          (click)="reset()">
+        <button
+          [disabled]="submissionStarted"
+          class="w-[110px] mr-1"
+          mat-raised-button
+          color="primary"
+          (click)="reset()"
+        >
           Reset
         </button>
-        <button class="w-[110px] mr-1" mat-raised-button color="primary" (click)="submit()"
-          [disabled]="!valid || submissionStarted">
+        <button
+          class="w-[110px] mr-1"
+          mat-raised-button
+          color="primary"
+          (click)="submit()"
+          [disabled]="!valid || submissionStarted"
+        >
           Submit
         </button>
         <!--[disabled]="!(valid || vcfFileInputControl.valid) || submissionStarted"-->
         @if (submissionStarted) {
-        <mat-spinner class="flex !h-[36px] !w-[36px]"></mat-spinner>
+          <mat-spinner class="flex !h-[36px] !w-[36px]"></mat-spinner>
         }
       </div>
       <!-- @if (results.RequestId && results.ProjectName) {
