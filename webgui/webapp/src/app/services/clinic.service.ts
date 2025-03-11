@@ -5,15 +5,13 @@ import { API, Auth } from 'aws-amplify';
 import { from, map, Observable, of, Subject, switchMap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-export type SelectedVariants = {
-  [key: string]: any;
-};
+export type SelectedVariants = Map<string, string[]>;
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClinicService {
-  public selectedVariants: SelectedVariants = {};
+  public selectedVariants = new Map<string, string[]>();
   public annotionsChanged: Subject<void> = new Subject<void>();
 
   constructor(private http: HttpClient) {}
@@ -28,15 +26,20 @@ export class ClinicService {
   }
 
   selection(row: any, checked: boolean): void {
+    const rowHash = this.hashRow(row);
     if (checked) {
-      this.selectedVariants[this.hashRow(row)] = row;
+      this.selectedVariants.set(rowHash, row);
     } else {
-      delete this.selectedVariants[this.hashRow(row)];
+      this.selectedVariants.delete(rowHash);
     }
   }
 
-  selected(row: any): boolean {
-    return this.selectedVariants[this.hashRow(row)] !== undefined;
+  isRowSelected(row: any): boolean {
+    return this.selectedVariants.has(this.hashRow(row));
+  }
+
+  isAnyRowSelected(): boolean {
+    return this.selectedVariants.size > 0;
   }
 
   getMyJobsID(

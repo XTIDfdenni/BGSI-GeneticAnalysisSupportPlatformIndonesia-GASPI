@@ -301,6 +301,6 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     this.dataRows.next(this.originalRows);
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.pageIndex = result.page - 1;
-    this.cs.selectedVariants = [];
+    this.cs.selectedVariants = new Map();
   }
 }

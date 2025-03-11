@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Annotate the selected variants</h1>
 <div mat-dialog-content>
-  @if (Object.keys(cs.selectedVariants).length > 0) {
+  @if (cs.isAnyRowSelected()) {
     <div
       class="flex flex-col border-solid border-1 rounded-[4px] border-cyan-700 p-2 mt-2"
     >
@@ -48,9 +48,7 @@
       mat-raised-button
       color="primary"
       class="w-[110px]"
-      [disabled]="
-        annotationForm.invalid || Object.keys(cs.selectedVariants).length === 0
-      "
+      [disabled]="annotationForm.invalid || !cs.isAnyRowSelected()"
       (click)="saveAnnotations()"
     >
       Save
