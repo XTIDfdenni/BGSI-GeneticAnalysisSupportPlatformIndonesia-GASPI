@@ -111,7 +111,18 @@
                     *matCellDef="let element"
                     class="whitespace-nowrap"
                   >
-                    {{ element[column] }}
+                    @if (column === "Region") {
+                      <a
+                        class="no-underline text-blue-500"
+                        href="https://asia.ensembl.org/Homo_sapiens/Location/View?r={{
+                          element[column]
+                        }}"
+                        target="_blank"
+                        >{{ element[column] }}</a
+                      >
+                    } @else {
+                      {{ element[column] }}
+                    }
                   </td>
                 </ng-container>
               }
