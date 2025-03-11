@@ -1,10 +1,13 @@
 <h1 mat-dialog-title>Annotate the selected variants</h1>
 <div mat-dialog-content>
-  @if (cs.isAnyRowSelected()) {
+  @if ((cs.selectedVariants | async)!.size > 0) {
     <div
       class="flex flex-col border-solid border-1 rounded-[4px] border-cyan-700 p-2 mt-2"
     >
-      @for (selectedItem of cs.selectedVariants | keyvalue; track $index) {
+      @for (
+        selectedItem of cs.selectedVariants | async | keyvalue;
+        track $index
+      ) {
         <div>
           <strong
             class="cursor-pointer"
@@ -48,7 +51,9 @@
       mat-raised-button
       color="primary"
       class="w-[110px]"
-      [disabled]="annotationForm.invalid || !cs.isAnyRowSelected()"
+      [disabled]="
+        annotationForm.invalid || !((cs.selectedVariants | async)!.size > 0)
+      "
       (click)="saveAnnotations()"
     >
       Save

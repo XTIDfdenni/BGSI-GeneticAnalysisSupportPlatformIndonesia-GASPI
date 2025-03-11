@@ -58,7 +58,7 @@
           Search
         </button>
       }
-      @if (cs.isAnyRowSelected()) {
+      @if ((cs.selectedVariants | async)!.size > 0) {
         <button
           mat-raised-button
           color="primary"
@@ -88,7 +88,7 @@
               <td mat-cell *matCellDef="let row">
                 <mat-checkbox
                   (change)="cs.selection(row, $event.checked)"
-                  [checked]="cs.isRowSelected(row)"
+                  [checked]="(cs.selectedVariants | async)!.has(row)"
                 >
                 </mat-checkbox>
               </td>

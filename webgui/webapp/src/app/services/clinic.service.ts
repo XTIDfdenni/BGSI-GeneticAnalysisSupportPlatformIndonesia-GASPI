@@ -2,7 +2,15 @@ import { query } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';
-import { from, map, Observable, of, Subject, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  from,
+  map,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { environment } from 'src/environments/environment';
 
 export type SelectedVariants = Map<string, string[]>;
@@ -11,7 +19,8 @@ export type SelectedVariants = Map<string, string[]>;
   providedIn: 'root',
 })
 export class ClinicService {
-  public selectedVariants = new Map<string, string[]>();
+  public selectedVariants: BehaviorSubject<Map<string, any[]>> =
+    new BehaviorSubject(new Map());
   public annotionsChanged: Subject<void> = new Subject<void>();
 
   constructor(private http: HttpClient) {}
@@ -27,19 +36,13 @@ export class ClinicService {
 
   selection(row: any, checked: boolean): void {
     const rowHash = this.hashRow(row);
+    const currentMap = this.selectedVariants.getValue();
     if (checked) {
-      this.selectedVariants.set(rowHash, row);
+      currentMap.set(rowHash, row);
     } else {
-      this.selectedVariants.delete(rowHash);
+      currentMap.delete(rowHash);
     }
-  }
-
-  isRowSelected(row: any): boolean {
-    return this.selectedVariants.has(this.hashRow(row));
-  }
-
-  isAnyRowSelected(): boolean {
-    return this.selectedVariants.size > 0;
+    this.selectedVariants.next(currentMap);
   }
 
   getMyJobsID(
