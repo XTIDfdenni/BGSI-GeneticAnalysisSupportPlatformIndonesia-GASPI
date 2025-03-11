@@ -1,4 +1,3 @@
-import { query } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';

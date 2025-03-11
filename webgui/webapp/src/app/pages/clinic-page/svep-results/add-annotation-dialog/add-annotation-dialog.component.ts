@@ -48,9 +48,7 @@ export class AddAnnotationDialogComponent {
     public dialogRef: MatDialogRef<AddAnnotationDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: { projectName: string; requestId: string },
-  ) {
-    console.log(this.cs.selectedVariants);
-  }
+  ) {}
 
   saveAnnotations() {
     const variants = [...this.cs.selectedVariants.getValue()];
