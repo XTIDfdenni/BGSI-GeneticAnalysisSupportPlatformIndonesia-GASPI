@@ -21,6 +21,7 @@ export class ClinicService {
   public selectedVariants: BehaviorSubject<Map<string, any[]>> =
     new BehaviorSubject(new Map());
   public annotionsChanged: Subject<void> = new Subject<void>();
+  public savedVariantsChanged: Subject<void> = new Subject<void>();
 
   constructor(private http: HttpClient) {}
 
@@ -153,6 +154,57 @@ export class ClinicService {
       API.del(
         environment.api_endpoint_sbeacon.name,
         `dportal/projects/${project}/clinical-workflows/${jobId}/annotations/${annotationName}`,
+        {},
+      ),
+    );
+  }
+
+  saveVariants(
+    project: string,
+    jobId: string,
+    comment: string,
+    variants: any[],
+  ) {
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants`,
+        {
+          body: { comment, variants },
+        },
+      ),
+    );
+  }
+
+  getSavedVariants(
+    project: string,
+    jobId: string,
+    limit: number = 5,
+    last_evaluated_key: any = null,
+  ) {
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants`,
+        {
+          queryStringParameters: {
+            limit,
+            last_evaluated_key: last_evaluated_key,
+          },
+        },
+      ),
+    );
+  }
+
+  deleteSavedVariants(
+    project: string,
+    jobId: string,
+    savedVariantCollectionName: string,
+  ) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants/${savedVariantCollectionName}`,
         {},
       ),
     );

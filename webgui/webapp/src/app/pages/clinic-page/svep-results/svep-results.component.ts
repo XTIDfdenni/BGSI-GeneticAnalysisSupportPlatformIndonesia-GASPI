@@ -22,6 +22,7 @@ import { AnnotationViewerComponent } from './annotation-viewer/annotation-viewer
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { ListJobComponent } from './list-project-id/list-project-id.component';
 import { MatIconModule } from '@angular/material/icon';
+import { SavedForReportingViewerComponent } from './saved-for-reporting-viewer/saved-for-reporting-viewer.component';
 
 interface Project {
   name: string;
@@ -45,6 +46,7 @@ interface Project {
     MatAutocompleteModule,
     ListJobComponent,
     MatIconModule,
+    SavedForReportingViewerComponent,
   ],
   providers: [],
   templateUrl: './svep-results.component.html',

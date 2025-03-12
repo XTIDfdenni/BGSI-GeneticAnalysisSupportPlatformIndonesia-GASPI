@@ -24,10 +24,11 @@ import { catchError, of, Subject, Subscription } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 
-type ClinicalAnnotation = {
+type SavedVariants = {
   name: string;
-  annotation: string;
+  comment: string;
   variants: any[];
+  annotations: string[];
   createdAt: string;
   user?: {
     email: string;
@@ -55,9 +56,8 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     return $localize`Page ${page + 1}`;
   }
 }
-
 @Component({
-  selector: 'app-annotation-viewer',
+  selector: 'app-saved-for-reporting-viewer',
   providers: [{ provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl }],
   standalone: true,
   imports: [
@@ -68,18 +68,20 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatIconModule,
     MatCardModule,
   ],
-  templateUrl: './annotation-viewer.component.html',
-  styleUrl: './annotation-viewer.component.scss',
+  templateUrl: './saved-for-reporting-viewer.component.html',
+  styleUrl: './saved-for-reporting-viewer.component.scss',
 })
-export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
+export class SavedForReportingViewerComponent
+  implements OnInit, OnChanges, OnDestroy
+{
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator')
   paginator!: MatPaginator;
-  protected annotations: ClinicalAnnotation[] = [];
+  protected variants: SavedVariants[] = [];
   protected pageSize = 5;
   private pageTokens = new Map<number, any>();
-  private annotationChangedSubscription: Subscription | null = null;
+  private savedVariantsChangedSubscription: Subscription | null = null;
 
   constructor(
     private cs: ClinicService,
@@ -89,16 +91,15 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.annotationChangedSubscription = this.cs.annotionsChanged.subscribe(
-      () => {
+    this.savedVariantsChangedSubscription =
+      this.cs.savedVariantsChanged.subscribe(() => {
         this.refresh();
-      },
-    );
+      });
   }
 
   ngOnDestroy(): void {
-    if (this.annotationChangedSubscription) {
-      this.annotationChangedSubscription.unsubscribe();
+    if (this.savedVariantsChangedSubscription) {
+      this.savedVariantsChangedSubscription.unsubscribe();
     }
   }
 
@@ -129,15 +130,15 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  async deleteAnnotation(name: string) {
+  async deleteSavedVariants(name: string) {
     const { ActionConfirmationDialogComponent } = await import(
       '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialogRef = this.dg.open(ActionConfirmationDialogComponent, {
       data: {
-        title: 'Delete Annotation',
-        message: `Are you sure you want to delete the annotation?`,
+        title: 'Delete Variants',
+        message: `Are you sure you want to delete these variants?`,
         confirmText: 'Delete',
       },
     });
@@ -146,14 +147,14 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
       if (result) {
         this.ss.start();
         this.cs
-          .deleteAnnotation(this.projectName, this.requestId, name)
+          .deleteSavedVariants(this.projectName, this.requestId, name)
           .pipe(catchError(() => of(null)))
           .subscribe((res) => {
             if (res) {
               this.sb.open('Annotation deleted', 'Okay', {
                 duration: 5000,
               });
-              this.cs.annotionsChanged.next();
+              this.cs.savedVariantsChanged.next();
             } else {
               this.sb.open('Failed to delete annotation', 'Dismiss', {
                 duration: 5000,
@@ -174,7 +175,7 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
     }
 
     this.cs
-      .getAnnotations(
+      .getSavedVariants(
         this.projectName,
         this.requestId,
         this.pageSize,
@@ -188,12 +189,12 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
           });
         } else {
           //handle if there no data on next page (set page index and last page to prev value)
-          if (res.annotations.length <= 0 && this.paginator.pageIndex > 0) {
+          if (res.variants.length <= 0 && this.paginator.pageIndex > 0) {
             this.paginator.pageIndex--;
             this.sb.open('No more items to show', 'Okay', { duration: 60000 });
             return;
           }
-          this.annotations = res.annotations;
+          this.variants = res.variants;
           // set next page token
           this.pageTokens.set(page + 1, res.last_evaluated_key);
         }
