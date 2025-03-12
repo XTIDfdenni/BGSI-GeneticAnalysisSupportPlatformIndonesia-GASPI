@@ -1,10 +1,11 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
-  AfterViewInit,
   Component,
   Injectable,
   Input,
   OnChanges,
+  OnDestroy,
+  OnInit,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -18,7 +19,8 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { catchError, of, Subject } from 'rxjs';
+import { MatCardModule } from '@angular/material/card';
+import { catchError, of, Subject, Subscription } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 
@@ -64,11 +66,12 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
+    MatCardModule,
   ],
   templateUrl: './annotation-viewer.component.html',
   styleUrl: './annotation-viewer.component.scss',
 })
-export class AnnotationViewerComponent implements OnChanges {
+export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator')
@@ -77,6 +80,7 @@ export class AnnotationViewerComponent implements OnChanges {
   protected pageSize = 5;
   private pageTokens = new Map<number, any>();
   protected pageIndex = 0;
+  private annotationChangedSubscription: Subscription | null = null;
 
   constructor(
     private cs: ClinicService,
@@ -84,6 +88,20 @@ export class AnnotationViewerComponent implements OnChanges {
     private dg: MatDialog,
     private ss: SpinnerService,
   ) {}
+
+  ngOnInit(): void {
+    this.annotationChangedSubscription = this.cs.annotionsChanged.subscribe(
+      () => {
+        this.refresh();
+      },
+    );
+  }
+
+  ngOnDestroy(): void {
+    if (this.annotationChangedSubscription) {
+      this.annotationChangedSubscription.unsubscribe();
+    }
+  }
 
   resetPagination() {
     this.pageTokens = new Map<number, string>();
@@ -137,7 +155,7 @@ export class AnnotationViewerComponent implements OnChanges {
               this.sb.open('Annotation deleted', 'Okay', {
                 duration: 5000,
               });
-              this.refresh();
+              this.cs.annotionsChanged.next();
             } else {
               this.sb.open('Failed to delete annotation', 'Dismiss', {
                 duration: 5000,

@@ -51,10 +51,7 @@ export class AddAnnotationDialogComponent {
   ) {}
 
   saveAnnotations() {
-    const variants = Object.keys(this.cs.selectedVariants).map(
-      (key) => this.cs.selectedVariants[key],
-    );
-
+    const variants = [...this.cs.selectedVariants.getValue()];
     this.ss.start();
     this.cs
       .saveAnnotations(
@@ -73,7 +70,7 @@ export class AddAnnotationDialogComponent {
           this.sb.open('Annotations saved', 'Okay', {
             duration: 5000,
           });
-          this.cs.selectedVariants = {};
+          this.cs.selectedVariants.next(new Map());
           this.cs.annotionsChanged.next();
           this.dialogRef.close();
         }
