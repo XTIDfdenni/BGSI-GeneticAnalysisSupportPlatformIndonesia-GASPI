@@ -53,8 +53,9 @@ export class DataSubmissionFormComponent {
     this.dataSubmissionForm = this.fb.group({
       projectName: fb.control('', [
         Validators.required,
-        Validators.pattern(/^\S.*\S$/),
-        Validators.pattern(/^[^,.:;/\\]+$/),
+        Validators.pattern(/^[^\s][A-Za-z0-9\s_-]*[^\s]$/),
+        Validators.minLength(6),
+        Validators.maxLength(64),
       ]),
       projectDescription: fb.control('', Validators.required),
     });
@@ -63,16 +64,20 @@ export class DataSubmissionFormComponent {
   async uploadFile(path: string, file: File): Promise<string> {
     this.fileProgress.set(file.name, 0);
     try {
-      await Storage.put(`staging/projects/${path}/project-files/${file.name}`, file, {
-        customPrefix: { public: '' },
-        progressCallback: (progress: { loaded: number; total: number }) => {
-          this.fileProgress.set(file.name, progress.loaded);
-          this.progress = Array.from(this.fileProgress.values()).reduce(
-            (acc, val) => acc + val,
-            0,
-          );
+      await Storage.put(
+        `staging/projects/${path}/project-files/${file.name}`,
+        file,
+        {
+          customPrefix: { public: '' },
+          progressCallback: (progress: { loaded: number; total: number }) => {
+            this.fileProgress.set(file.name, progress.loaded);
+            this.progress = Array.from(this.fileProgress.values()).reduce(
+              (acc, val) => acc + val,
+              0,
+            );
+          },
         },
-      });
+      );
     } catch (error) {
       console.error('Error uploading file', error);
       throw error;

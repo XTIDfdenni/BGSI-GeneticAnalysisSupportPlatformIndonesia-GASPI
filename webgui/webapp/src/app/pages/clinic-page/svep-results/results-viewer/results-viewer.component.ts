@@ -248,6 +248,16 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     });
   }
 
+  async openSaveForReportingDialog() {
+    const { SaveForReportingDialogComponent } = await import(
+      '../save-for-reporting-dialog/save-for-reporting-dialog.component'
+    );
+
+    this.dg.open(SaveForReportingDialogComponent, {
+      data: { projectName: this.projectName, requestId: this.requestId },
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     this.refetch(
       changes['requestId'] ? changes['requestId'].currentValue : this.requestId,

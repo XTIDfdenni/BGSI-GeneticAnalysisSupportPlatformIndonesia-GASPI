@@ -4,7 +4,6 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  Sanitizer,
   SecurityContext,
 } from '@angular/core';
 import {
@@ -26,10 +25,9 @@ import {
 } from 'src/app/utils/parsers';
 import { MatDialog } from '@angular/material/dialog';
 import { FilterTypes, ScopeTypes } from 'src/app/utils/interfaces';
-import { catchError, filter, firstValueFrom, of, Subscription } from 'rxjs';
+import { catchError, of, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import _ from 'lodash';
-import { AsyncPipe } from '@angular/common';
 import { QueryResultViewerContainerComponent } from '../query-result-viewer-container/query-result-viewer-container.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -38,7 +36,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCardModule } from '@angular/material/card';
@@ -51,7 +49,6 @@ import {
   twoRangesValidator,
 } from 'src/app/utils/validators';
 import { customQueries } from './custom-queries';
-import { AuthService } from 'src/app/services/auth.service';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 import { DomSanitizer } from '@angular/platform-browser';
 // import { result, query, endpoint } from './test_responses/individuals';
@@ -157,8 +154,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     public dg: MatDialog,
     private sb: MatSnackBar,
     private ss: SpinnerService,
-    private uq: UserQuotaService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
   ) {
     this.form = this.fb.group({
       projects: [[], Validators.required],
@@ -268,9 +264,9 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       });
   }
-  
+
   getSafeHtml(html: string) {
-    return this.sanitizer.sanitize(SecurityContext.HTML, html)
+    return this.sanitizer.sanitize(SecurityContext.HTML, html);
   }
 
   openPanel(index: number) {
@@ -320,22 +316,6 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   async run() {
     this.ss.start();
 
-    const { quotaQueryCount, usageCount, userSub } = await firstValueFrom(
-      this.uq.getCurrentUsage(),
-    );
-
-    if (usageCount >= quotaQueryCount) {
-      this.sb.open(
-        'Cannot run Query because Quota Limit reached. Please contact administrator to increase your quota.',
-        'Okay',
-        {
-          duration: 60000,
-        },
-      );
-      this.ss.end();
-      return;
-    }
-
     const form: any = this.form.value;
     const query = {
       projects: form.projects,
@@ -373,26 +353,40 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       result$ = this.qs.fetch(form.scope, query);
       endpoint = `${form.scope}/`;
     }
-    result$.pipe(catchError((err, res) => of(null))).subscribe((data) => {
-      if (data) {
-        this.results = data;
-        this.endpoint = endpoint;
-        this.scope = form.customReturn ? form.return : form.scope;
+    result$
+      .pipe(
+        catchError((err: any) => {
+          if (
+            err.response.status === 403 &&
+            err.response.data.code === 'QUOTA_EXCEEDED'
+          ) {
+            this.sb.open(
+              'Cannot run Query because Quota Limit reached. Please contact administrator to increase your quota.',
+              'Okay',
+              {
+                duration: 60000,
+              },
+            );
+          } else {
+            this.sb.open(
+              'API request failed. Please check your parameters.',
+              'Okay',
+              { duration: 60000 },
+            );
+          }
+          return of(null);
+        }),
+      )
+      .subscribe((data) => {
+        if (data) {
+          this.results = data;
+          this.endpoint = endpoint;
+          this.scope = form.customReturn ? form.return : form.scope;
+        }
+        this.query = query;
 
-        this.uq.incrementUsageCount(userSub).subscribe(() => {
-          console.log('usage count incremented');
-        });
-      } else {
-        this.sb.open(
-          'API request failed. Please check your parameters.',
-          'Okay',
-          { duration: 60000 },
-        );
-      }
-      this.query = query;
-
-      this.ss.end();
-    });
+        this.ss.end();
+      });
   }
 
   addFilter(filters: FormArray) {

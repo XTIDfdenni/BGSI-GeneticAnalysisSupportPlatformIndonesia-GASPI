@@ -67,6 +67,14 @@
         >
           Annotate
         </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="openSaveForReportingDialog()"
+          class="w-[175px]"
+        >
+          Save for Reporting
+        </button>
       }
     </div>
     @if (dataRows.value.length > 0) {
