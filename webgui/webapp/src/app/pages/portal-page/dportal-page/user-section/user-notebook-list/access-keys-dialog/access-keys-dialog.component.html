@@ -15,12 +15,11 @@
     export AWS_SESSION_TOKEN="{{ sessionToken }}"
   </div>
 
-  <div
-    class="whitespace-pre overflow-x-auto overflow-y-visible mt-2 mb-2 items-center"
-  >
+  <div class="overflow-x-auto overflow-y-hidden mt-2 mb-2">
     S3 URL is
+    <br />
     <button mat-button [cdkCopyToClipboard]="s3uri" matTooltip="Click to copy">
-      {{ s3uri }}
+      <pre class="text-black">{{ s3uri }}</pre>
     </button>
   </div>
 
