@@ -94,6 +94,7 @@ resource "aws_cognito_user_group" "admin_group" {
   user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
   description  = "Group of users who can has admin privileges"
   role_arn     = aws_iam_role.admin_group_role.arn
+  precedence   = 1
 }
 
 data "aws_iam_policy_document" "admin_group_assume_role_policy" {
@@ -202,6 +203,7 @@ resource "aws_cognito_user_group" "manager_group" {
   user_pool_id = aws_cognito_user_pool.gaspi_user_pool.id
   description  = "Group of users who can has management privileges"
   role_arn     = aws_iam_role.manager_group_role.arn
+  precedence   = 2
 }
 
 data "aws_iam_policy_document" "manager_group_assume_role_policy" {
