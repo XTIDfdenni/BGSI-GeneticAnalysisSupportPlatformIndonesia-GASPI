@@ -24,13 +24,14 @@ def lambda_handler(event, context):
 
         response = ssm_client.get_parameter(Name=BUI_SSM_PARAM_NAME)
         beacon_ui_url = response.get("Parameter", {}).get("Value", "")
+        svep_ui_url = f"{beacon_ui_url}/clinic/svep-results"
         beacon_img_url = f"{beacon_ui_url}/assets/images/sbeacon.png"
 
         subject = "Clinical Result of"
         body_message = f"<p>Thank you for your patience waiting for us to generate the results of {input_vcf} files from project {project_name}.</p>"
 
         if job_status == "completed":
-            body_message += f"<p><b>Please load the results on the VEP Results page </b> or click the link <a href='{beacon_ui_url}'>here</a>.</p>"
+            body_message += f"<p><b>Please load the results on the VEP Results page </b> or click the link <a href='{svep_ui_url}'>here</a>.</p>"
             subject += f" {project_name} has completed"
         elif job_status == "failed":
             body_message += "<p><b>We are sorry that the result generated failed</b>, please check your VCF file again.</p>"
