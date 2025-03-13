@@ -65,6 +65,8 @@ def lambda_handler(event, context):
     <div class="container">
       <h1>Hello {escape(first_name)} {escape(last_name)},</h1>
       {body_message}
+      <p>Thank you, </p>
+      <p>BGSi Data Portal </p>
       <div style="max-width:80;">
         <img src="{beacon_img_url}" alt="sBeacon Logo" style="max-width:80%; width:80%; margin-top:20px;">
       </div>
