@@ -1,20 +1,27 @@
-import { query } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';
-import { from, map, Observable, of, Subject, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  from,
+  map,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { environment } from 'src/environments/environment';
 
-export type SelectedVariants = {
-  [key: string]: any;
-};
+export type SelectedVariants = Map<string, string[]>;
 
 @Injectable({
   providedIn: 'root',
 })
 export class ClinicService {
-  public selectedVariants: SelectedVariants = {};
+  public selectedVariants: BehaviorSubject<Map<string, any[]>> =
+    new BehaviorSubject(new Map());
   public annotionsChanged: Subject<void> = new Subject<void>();
+  public savedVariantsChanged: Subject<void> = new Subject<void>();
 
   constructor(private http: HttpClient) {}
 
@@ -28,15 +35,34 @@ export class ClinicService {
   }
 
   selection(row: any, checked: boolean): void {
+    const rowHash = this.hashRow(row);
+    const currentMap = this.selectedVariants.getValue();
     if (checked) {
-      this.selectedVariants[this.hashRow(row)] = row;
+      currentMap.set(rowHash, row);
     } else {
-      delete this.selectedVariants[this.hashRow(row)];
+      currentMap.delete(rowHash);
     }
+    this.selectedVariants.next(currentMap);
   }
 
-  selected(row: any): boolean {
-    return this.selectedVariants[this.hashRow(row)] !== undefined;
+  getMyJobsID(
+    limit?: number,
+    last_evaluated_key?: string | null,
+    project?: string,
+  ) {
+    console.log('get list jobs id');
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows`,
+        {
+          queryStringParameters: {
+            ...(limit !== undefined && limit !== null ? { limit } : {}),
+            ...(last_evaluated_key ? { last_evaluated_key } : {}),
+          },
+        },
+      ),
+    );
   }
 
   submitSvepJob(location: string, projectName: string) {
@@ -128,6 +154,57 @@ export class ClinicService {
       API.del(
         environment.api_endpoint_sbeacon.name,
         `dportal/projects/${project}/clinical-workflows/${jobId}/annotations/${annotationName}`,
+        {},
+      ),
+    );
+  }
+
+  saveVariants(
+    project: string,
+    jobId: string,
+    comment: string,
+    variants: any[],
+  ) {
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants`,
+        {
+          body: { comment, variants },
+        },
+      ),
+    );
+  }
+
+  getSavedVariants(
+    project: string,
+    jobId: string,
+    limit: number = 5,
+    last_evaluated_key: any = null,
+  ) {
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants`,
+        {
+          queryStringParameters: {
+            limit,
+            last_evaluated_key: last_evaluated_key,
+          },
+        },
+      ),
+    );
+  }
+
+  deleteSavedVariants(
+    project: string,
+    jobId: string,
+    savedVariantCollectionName: string,
+  ) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants/${savedVariantCollectionName}`,
         {},
       ),
     );

@@ -40,7 +40,6 @@ import _ from 'lodash';
     MatSelectModule,
     MatOptionModule,
     MatInputModule,
-    RouterLink,
     MatCheckboxModule,
     MatButtonModule,
     MatIconModule,
@@ -193,12 +192,30 @@ export class AdvancedQueryResultsViewerComponent implements OnChanges {
     forkJoin(observables$)
       .pipe(
         takeUntil(this.destroy$),
-        catchError((_) => of(null)),
+        catchError((err: any) => {
+          if (
+            err.response.status === 403 &&
+            err.response.data.code === 'QUOTA_EXCEEDED'
+          ) {
+            this.sb.open(
+              'Cannot run Query because Quota Limit reached. Please contact administrator to increase your quota.',
+              'Okay',
+              {
+                duration: 60000,
+              },
+            );
+          } else {
+            this.sb.open(
+              'API request failed. Please check your parameters.',
+              'Okay',
+              { duration: 60000 },
+            );
+          }
+          return of(null);
+        }),
       )
       .subscribe((counts) => {
-        if (!counts) {
-          this.sb.open('Unable to fetch details', 'Okay', { duration: 60000 });
-        } else if (counts.length == this.terms.length) {
+        if (counts && counts.length === this.terms.length) {
           this.counts = _.reverse(_.sortBy(counts, (item) => item.count));
         }
         this.loading = false;

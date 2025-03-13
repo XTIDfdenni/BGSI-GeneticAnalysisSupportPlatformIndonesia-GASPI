@@ -21,7 +21,7 @@ import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 
 @Component({
-  selector: 'app-add-annotation-dialog',
+  selector: 'app-save-for-reporting-dialog',
   standalone: true,
   imports: [
     CommonModule,
@@ -32,45 +32,45 @@ import { SpinnerService } from 'src/app/services/spinner.service';
     MatInputModule,
     MatFormFieldModule,
   ],
-  templateUrl: './add-annotation-dialog.component.html',
-  styleUrl: './add-annotation-dialog.component.scss',
+  templateUrl: './save-for-reporting-dialog.component.html',
+  styleUrl: './save-for-reporting-dialog.component.scss',
 })
-export class AddAnnotationDialogComponent {
-  protected annotationForm: FormGroup = new FormGroup({
-    annotation: new FormControl('', [Validators.required]),
+export class SaveForReportingDialogComponent {
+  protected saveForm: FormGroup = new FormGroup({
+    comment: new FormControl('', [Validators.required]),
   });
 
   constructor(
     protected cs: ClinicService,
     private sb: MatSnackBar,
     private ss: SpinnerService,
-    public dialogRef: MatDialogRef<AddAnnotationDialogComponent>,
+    public dialogRef: MatDialogRef<SaveForReportingDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: { projectName: string; requestId: string },
   ) {}
 
-  saveAnnotations() {
+  saveForReporting() {
     const variants = [...this.cs.selectedVariants.getValue().values()];
     this.ss.start();
     this.cs
-      .saveAnnotations(
+      .saveVariants(
         this.data.projectName,
         this.data.requestId,
-        this.annotationForm.get('annotation')?.value,
+        this.saveForm.get('comment')?.value,
         variants,
       )
-      .pipe(catchError(() => of(null)))
+      .pipe(catchError((err) => of(err)))
       .subscribe((data) => {
         if (!data) {
-          this.sb.open('Failed to save annotations', 'Okay', {
+          this.sb.open('Failed to save variants', 'Okay', {
             duration: 5000,
           });
         } else {
-          this.sb.open('Annotations saved', 'Okay', {
+          this.sb.open('Variants saved', 'Okay', {
             duration: 5000,
           });
           this.cs.selectedVariants.next(new Map());
-          this.cs.annotionsChanged.next();
+          this.cs.savedVariantsChanged.next();
           this.dialogRef.close();
         }
         this.ss.end();

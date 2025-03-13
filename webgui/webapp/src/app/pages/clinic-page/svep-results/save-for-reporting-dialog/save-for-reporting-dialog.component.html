@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Annotate the selected variants</h1>
+<h1 mat-dialog-title>Save the selected variants</h1>
 <div mat-dialog-content>
   @if ((cs.selectedVariants | async)!.size > 0) {
     <div
@@ -23,11 +23,11 @@
         </div>
         <div class="w-full h-1 bg-primary-60 my-1"></div>
       }
-      <form [formGroup]="annotationForm">
+      <form [formGroup]="saveForm">
         <mat-form-field class="w-full my-1">
           <mat-label>Comments</mat-label>
           <textarea
-            formControlName="annotation"
+            formControlName="comment"
             matInput
             placeholder="Enter your comments here"
           ></textarea>
@@ -52,9 +52,9 @@
       color="primary"
       class="w-[110px]"
       [disabled]="
-        annotationForm.invalid || !((cs.selectedVariants | async)!.size > 0)
+        saveForm.invalid || !((cs.selectedVariants | async)!.size > 0)
       "
-      (click)="saveAnnotations()"
+      (click)="saveForReporting()"
     >
       Save
     </button>

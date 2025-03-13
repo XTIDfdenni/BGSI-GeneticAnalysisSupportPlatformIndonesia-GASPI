@@ -1,3 +1,10 @@
+provider "aws" {
+  region = var.region
+}
+
+data "aws_caller_identity" "this" {}
+
+
 module "cognito" {
   source                   = "./cognito"
   region                   = var.region
@@ -62,6 +69,8 @@ module "svep" {
   dynamo-clinic-jobs-table              = module.sbeacon.dynamo-clinic-jobs-table
   dynamo-clinic-jobs-table-arn          = module.sbeacon.dynamo-clinic-jobs-table-arn
   dynamo-clinic-jobs-stream-arn         = module.sbeacon.dynamo-clinic-jobs-stream-arn
+  svep-job-email-lambda-function-arn    = module.cognito.svep_job_email_lambda_function_arn
+  cognito-user-pool-id                  = module.cognito.cognito_user_pool_id
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"

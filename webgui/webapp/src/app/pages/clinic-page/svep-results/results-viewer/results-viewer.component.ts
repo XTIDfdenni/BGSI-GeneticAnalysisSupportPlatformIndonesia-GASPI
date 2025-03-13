@@ -43,6 +43,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { TableVirtualScrollStrategy } from './scroll-strategy.service';
 import {
   ScrollingModule,
@@ -94,6 +95,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatButtonModule,
     MatCheckboxModule,
     ScrollingModule,
+    MatCardModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -241,12 +243,18 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       '../add-annotation-dialog/add-annotation-dialog.component'
     );
 
-    const dialogRef = this.dg.open(AddAnnotationDialogComponent, {
+    this.dg.open(AddAnnotationDialogComponent, {
       data: { projectName: this.projectName, requestId: this.requestId },
     });
+  }
 
-    dialogRef.afterClosed().subscribe(() => {
-      this.refetch(this.requestId, this.projectName);
+  async openSaveForReportingDialog() {
+    const { SaveForReportingDialogComponent } = await import(
+      '../save-for-reporting-dialog/save-for-reporting-dialog.component'
+    );
+
+    this.dg.open(SaveForReportingDialogComponent, {
+      data: { projectName: this.projectName, requestId: this.requestId },
     });
   }
 
@@ -303,6 +311,6 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     this.dataRows.next(this.originalRows);
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.pageIndex = result.page - 1;
-    this.cs.selectedVariants = [];
+    this.cs.selectedVariants.next(new Map());
   }
 }

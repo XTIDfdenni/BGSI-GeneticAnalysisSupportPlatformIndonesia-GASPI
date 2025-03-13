@@ -18,6 +18,26 @@ data "aws_iam_policy_document" "lambda-sendRegistrationEmail" {
   }
 }
 
+data "aws_iam_policy_document" "lambda-sendSvepJobEmail" {
+  statement {
+    actions = [
+      "ses:SendEmail"
+    ]
+    resources = [
+      "arn:aws:ses:${var.region}:${data.aws_caller_identity.this.account_id}:identity/*",
+      aws_ses_configuration_set.ses_feedback_config.arn,
+    ]
+  }
+  statement {
+    actions = [
+      "ssm:GetParameter"
+    ]
+    resources = [
+      "arn:aws:ssm:${var.region}:${data.aws_caller_identity.this.account_id}:parameter/${var.bui-ssm-parameter-name}"
+    ]
+  }
+}
+
 # SES Email Notification Logging
 data "aws_iam_policy_document" "ses-sns-access" {
   statement {
