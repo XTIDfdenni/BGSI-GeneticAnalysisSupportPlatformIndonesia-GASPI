@@ -136,7 +136,7 @@ export class FilterSelectionDialogComponent implements AfterViewInit {
           _.isEmpty(_.get(results, 'response.filteringTerms', []))
         ) {
           this.paginatorFilters.pageIndex -= 1;
-          console.log('page out of bounds');
+          this.sb.open('No more items to load', 'Okay', { duration: 5000 });
         } else {
           this.dataSourceFilters = new MatTableDataSource(
             _.get(results, 'response.filteringTerms', []),
