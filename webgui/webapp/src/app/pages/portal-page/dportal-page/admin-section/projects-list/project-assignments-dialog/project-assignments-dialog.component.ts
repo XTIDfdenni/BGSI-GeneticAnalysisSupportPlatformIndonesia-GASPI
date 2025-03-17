@@ -111,7 +111,14 @@ export class ProjectAssignmentsDialogComponent {
 
   async csv(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) {
+    if (!file || file.type !== 'text/plain') {
+      this.sb.open(
+        'Invalid file format. Only .txt files are allowed.',
+        'Close',
+        {
+          duration: 30000,
+        },
+      );
       return;
     }
 
