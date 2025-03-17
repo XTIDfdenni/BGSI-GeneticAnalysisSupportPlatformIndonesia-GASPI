@@ -40,14 +40,13 @@
       </table>
       <br />
     </div>
-    @if (dataSourceFilters.data.length && !loading) {
-      <mat-paginator
-        #paginatorFilters
-        [pageSizeOptions]="[100, 200]"
-        [length]="total"
-        page
-      ></mat-paginator>
-    }
+    <mat-paginator
+      [class.hide]="!(dataSourceFilters.data.length && !loading)"
+      #paginatorFilters
+      [pageSizeOptions]="[100, 200]"
+      [length]="total"
+      page
+    ></mat-paginator>
     @if (!dataSourceFilters.data.length && !loading) {
       <p>No filters available in the selected scope</p>
     }
@@ -66,12 +65,7 @@
 } @else {
   <div mat-dialog-content>
     <p>Please select some projects.</p>
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="cancel()"
-      class="mr-2.5"
-    >
+    <button mat-raised-button color="primary" (click)="cancel()" class="mr-2.5">
       Cancel
     </button>
   </div>

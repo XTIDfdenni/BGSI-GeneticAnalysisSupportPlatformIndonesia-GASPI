@@ -2,6 +2,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
@@ -14,6 +15,7 @@ import { environment } from 'src/environments/environment';
     MatButtonModule,
     ClipboardModule,
     MatTooltipModule,
+    MatIconModule,
   ],
   templateUrl: './access-keys-dialog.component.html',
   styleUrl: './access-keys-dialog.component.scss',

@@ -2,7 +2,10 @@
 <div mat-dialog-content>
   You can use the following keys to access S3 to upload/download data.
   <br />
-  <span class="text-red-600 italic">Do not share following keys.</span>
+  <div class="text-red-600 flex flex-row justify-center items-center">
+    <mat-icon color="warn">warning</mat-icon>
+    <h2>Do not share following keys.</h2>
+  </div>
 
   <div class="whitespace-pre overflow-x-auto mt-2 mb-2">
     export AWS_ACCESS_KEY_ID="{{ accessKeyId }}"
@@ -12,12 +15,11 @@
     export AWS_SESSION_TOKEN="{{ sessionToken }}"
   </div>
 
-  <div
-    class="whitespace-pre overflow-x-auto overflow-y-visible mt-2 mb-2 items-center"
-  >
+  <div class="overflow-x-auto overflow-y-hidden mt-2 mb-2">
     S3 URL is
+    <br />
     <button mat-button [cdkCopyToClipboard]="s3uri" matTooltip="Click to copy">
-      {{ s3uri }}
+      <pre class="text-black">{{ s3uri }}</pre>
     </button>
   </div>
 
@@ -35,7 +37,7 @@
     To copy files from S3, run the following command:
     <br />
     <pre>
-        aws s3 cp {{ s3uri }}/file.txt .
+        aws s3 cp {{ s3uri }}file.txt .
     </pre>
   </div>
 
