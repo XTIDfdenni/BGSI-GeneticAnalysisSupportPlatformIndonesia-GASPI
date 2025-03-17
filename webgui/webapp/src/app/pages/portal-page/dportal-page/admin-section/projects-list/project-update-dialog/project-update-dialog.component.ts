@@ -153,7 +153,21 @@ export class ProjectUpdateDialogComponent {
       });
       return;
     }
-    this.addedFiles = [...this.addedFiles, ...Array.from(files)];
+
+    const newFiles = Array.from(files).filter((file) => {
+      if (
+        this.addedFiles.some((addedFile) => addedFile.name === file.name) ||
+        this.project.files.some((existingFile) => existingFile === file.name)
+      ) {
+        this.sb.open(`File with name ${file.name} already exists!`, 'Okay', {
+          duration: 60000,
+        });
+        return false;
+      }
+      return true;
+    });
+
+    this.addedFiles = [...this.addedFiles, ...newFiles];
   }
 
   reset() {
@@ -172,16 +186,20 @@ export class ProjectUpdateDialogComponent {
   async uploadFile(path: string, file: File): Promise<string> {
     this.fileProgress.set(file.name, 0);
     try {
-      await Storage.put(`staging/projects/${path}/project-files/${file.name}`, file, {
-        customPrefix: { public: '' },
-        progressCallback: (progress: { loaded: number; total: number }) => {
-          this.fileProgress.set(file.name, progress.loaded);
-          this.progress = Array.from(this.fileProgress.values()).reduce(
-            (acc, val) => acc + val,
-            0,
-          );
+      await Storage.put(
+        `staging/projects/${path}/project-files/${file.name}`,
+        file,
+        {
+          customPrefix: { public: '' },
+          progressCallback: (progress: { loaded: number; total: number }) => {
+            this.fileProgress.set(file.name, progress.loaded);
+            this.progress = Array.from(this.fileProgress.values()).reduce(
+              (acc, val) => acc + val,
+              0,
+            );
+          },
         },
-      });
+      );
     } catch (error) {
       console.error('Error uploading file', error);
       throw error;
