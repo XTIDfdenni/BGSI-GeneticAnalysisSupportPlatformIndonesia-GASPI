@@ -130,7 +130,18 @@ export class DataSubmissionFormComponent {
       });
       return;
     }
-    this.files = [...this.files, ...Array.from(files)];
+
+    const newFiles = Array.from(files).filter((file) => {
+      if (this.files.some((addedFile) => addedFile.name === file.name)) {
+        this.sb.open(`File with name ${file.name} already exists!`, 'Okay', {
+          duration: 60000,
+        });
+        return false;
+      }
+      return true;
+    });
+
+    this.files = [...this.files, ...newFiles];
   }
 
   reset() {
