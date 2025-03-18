@@ -56,13 +56,16 @@
         <div class="text-center">No variants available</div>
       }
     </div>
-
-    <mat-paginator
-      #paginator
-      [pageSizeOptions]="[5, 10, 50]"
-      [pageSize]="pageSize"
-      length="9999"
-      (page)="pageChange($event)"
-    ></mat-paginator>
+    <div class="flex flex-row justify-between items-center">
+      <button mat-raised-button color="primary">Generate Report</button>
+      <mat-paginator
+        class="block"
+        #paginator
+        [pageSizeOptions]="[5, 10, 50]"
+        [pageSize]="pageSize"
+        length="9999"
+        (page)="pageChange($event)"
+      ></mat-paginator>
+    </div>
   </mat-card-content>
 </mat-card>
