@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  ElementRef,
   Injectable,
   Input,
   OnChanges,
@@ -78,6 +79,7 @@ export class SavedForReportingViewerComponent
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator')
   paginator!: MatPaginator;
+  @ViewChild('downloadLink') downloadLink!: ElementRef<HTMLAnchorElement>;
   protected variants: SavedVariants[] = [];
   protected pageSize = 5;
   private pageTokens = new Map<number, any>();
@@ -164,6 +166,26 @@ export class SavedForReportingViewerComponent
           });
       }
     });
+  }
+
+  generateReport() {
+    this.ss.start();
+    this.cs
+      .generateReport(this.projectName, this.requestId)
+      .pipe(catchError(() => of(null)))
+      .subscribe((res) => {
+        if (res) {
+          console.log(res);
+          const dataUrl = `data:application/pdf;base64,${res.content}`;
+          this.downloadLink.nativeElement.href = dataUrl;
+          this.downloadLink.nativeElement.click();
+        } else {
+          this.sb.open('Failed to generate report', 'Dismiss', {
+            duration: 5000,
+          });
+        }
+        this.ss.end();
+      });
   }
 
   list(page: number) {

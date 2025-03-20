@@ -57,7 +57,9 @@
       }
     </div>
     <div class="flex flex-row justify-between items-center">
-      <button mat-raised-button color="primary">Generate Report</button>
+      <button mat-raised-button color="primary" (click)="generateReport()">
+        Generate Report
+      </button>
       <mat-paginator
         class="block"
         #paginator
@@ -69,3 +71,16 @@
     </div>
   </mat-card-content>
 </mat-card>
+<mat-card class="mt-4" [class.hide]="variants.length !== 0">
+  <mat-card-content>
+    <h2>No variants selected for reporting</h2>
+    <p>
+      Generating report will create the negative findings report for the
+      individual.
+    </p>
+    <button mat-raised-button color="primary" (click)="generateReport()">
+      Generate Report
+    </button>
+  </mat-card-content>
+</mat-card>
+<a #downloadLink class="invisible" download="report.pdf"></a>
