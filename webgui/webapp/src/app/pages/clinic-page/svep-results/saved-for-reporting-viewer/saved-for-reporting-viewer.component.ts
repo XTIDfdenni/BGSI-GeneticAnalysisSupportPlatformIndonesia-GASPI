@@ -177,6 +177,9 @@ export class SavedForReportingViewerComponent
         if (res) {
           console.log(res);
           const dataUrl = `data:application/pdf;base64,${res.content}`;
+          this.downloadLink.nativeElement.download = `${this.projectName}_${
+            this.requestId
+          }_${new Date().toISOString()}_report.pdf`;
           this.downloadLink.nativeElement.href = dataUrl;
           this.downloadLink.nativeElement.click();
         } else {
