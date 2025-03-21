@@ -8,4 +8,7 @@ export const CONFIGS: { [key: string]: any } = {
       'Codon Change',
     ],
   },
+  RSPON: {
+    cols: ['Alt Allele', 'Codon Change'],
+  },
 };
