@@ -24,6 +24,8 @@ import { MatCardModule } from '@angular/material/card';
 import { catchError, of, Subject, Subscription } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
+import { environment } from 'src/environments/environment';
+import { CONFIGS } from '../hub_configs';
 
 type SavedVariants = {
   name: string;
@@ -82,6 +84,7 @@ export class SavedForReportingViewerComponent
   @ViewChild('downloadLink') downloadLink!: ElementRef<HTMLAnchorElement>;
   protected variants: SavedVariants[] = [];
   protected pageSize = 5;
+  protected hub = environment.hub_name in CONFIGS ? environment.hub_name : null;
   private pageTokens = new Map<number, any>();
   private savedVariantsChangedSubscription: Subscription | null = null;
 
@@ -173,8 +176,8 @@ export class SavedForReportingViewerComponent
     this.cs
       .generateReport(this.projectName, this.requestId)
       .pipe(catchError(() => of(null)))
-      .subscribe((res) => {
-        if (res) {
+      .subscribe((res: any) => {
+        if (res && res.success) {
           console.log(res);
           const dataUrl = `data:application/pdf;base64,${res.content}`;
           this.downloadLink.nativeElement.download = `${this.projectName}_${
@@ -182,6 +185,10 @@ export class SavedForReportingViewerComponent
           }_${new Date().toISOString()}_report.pdf`;
           this.downloadLink.nativeElement.href = dataUrl;
           this.downloadLink.nativeElement.click();
+        } else if (res && !res.success) {
+          this.sb.open(res.message, 'Dismiss', {
+            duration: 5000,
+          });
         } else {
           this.sb.open('Failed to generate report', 'Dismiss', {
             duration: 5000,

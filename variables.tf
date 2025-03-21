@@ -58,13 +58,13 @@ variable "ses-source-email" {
 }
 
 variable "gaspi-admin-email" {
-  type = string
+  type        = string
   description = "Email address of the administrator to send security alerts"
 }
 
 # Will be removed when DNS records are available for use
 variable "bui-ssm-parameter-name" {
-  type        = string 
+  type        = string
   description = "Name of the SSM parameter storing the Beacon UI URL"
   default     = "bui-ssm-beacon-ui-url"
 }
@@ -104,4 +104,11 @@ variable "max-request-rate-per-5mins" {
   type        = number
   description = "Maximum number of requests allowed per IP address per 5 minutes"
   default     = 10000
+}
+
+# Hub configurations
+variable "hub_name" {
+  type        = string
+  description = "Configuration for the hub"
+  default     = "NONE"
 }

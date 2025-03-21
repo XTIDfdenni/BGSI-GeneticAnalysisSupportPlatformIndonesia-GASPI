@@ -57,9 +57,13 @@
       }
     </div>
     <div class="flex flex-row justify-between items-center">
-      <button mat-raised-button color="primary" (click)="generateReport()">
-        Generate Report
-      </button>
+      @if (hub) {
+        <button mat-raised-button color="primary" (click)="generateReport()">
+          Generate Report
+        </button>
+      } @else {
+        <p>Lab configuration is not set. Please contact the administrator.</p>
+      }
       <mat-paginator
         class="block"
         #paginator
@@ -78,9 +82,13 @@
       Generating report will create the negative findings report for the
       individual.
     </p>
-    <button mat-raised-button color="primary" (click)="generateReport()">
-      Generate Report
-    </button>
+    @if (hub) {
+      <button mat-raised-button color="primary" (click)="generateReport()">
+        Generate Report
+      </button>
+    } @else {
+      <p>Lab configuration is not set. Please contact the administrator.</p>
+    }
   </mat-card-content>
 </mat-card>
 <a #downloadLink class="invisible" download="report.pdf"></a>

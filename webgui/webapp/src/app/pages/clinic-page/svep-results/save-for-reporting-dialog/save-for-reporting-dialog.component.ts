@@ -19,9 +19,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, of } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
-import { CONFIGS } from './hub_configs';
-// TODO import from ENV
-const LAB = 'RSCM';
+import { CONFIGS } from '../hub_configs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-save-for-reporting-dialog',
@@ -53,14 +52,17 @@ export class SaveForReportingDialogComponent {
   ) {}
 
   filterCols(row: { [key: string]: string }): { [key: string]: string } {
-    const { cols } = CONFIGS[LAB];
-    const filteredRow: { [key: string]: string } = {};
-    for (const col of cols) {
-      if (row[col]) {
-        filteredRow[col] = row[col];
+    if (environment.hub_name in CONFIGS) {
+      const { cols } = CONFIGS[environment.hub_name];
+      const filteredRow: { [key: string]: string } = {};
+      for (const col of cols) {
+        if (row[col]) {
+          filteredRow[col] = row[col];
+        }
       }
+      return filteredRow;
     }
-    return filteredRow;
+    return row;
   }
 
   async saveForReporting() {

@@ -1,4 +1,4 @@
-export const CONFIGS = {
+export const CONFIGS: { [key: string]: any } = {
   RSCM: {
     cols: [
       'Alt Allele',
