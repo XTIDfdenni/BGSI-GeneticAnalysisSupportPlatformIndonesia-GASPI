@@ -11,13 +11,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DportalService } from '../../../../../services/dportal.service';
 import { catchError, of, switchMap, map, defaultIfEmpty } from 'rxjs';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { FileDropperComponent } from '../../file-dropper/file-dropper.component';
 import { Storage } from 'aws-amplify';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { forkJoin } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { DecimalPipe } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-data-submission-form',
@@ -28,7 +28,6 @@ import { DecimalPipe } from '@angular/common';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSnackBarModule,
     FileDropperComponent,
     MatProgressSpinnerModule,
     MatIconModule,
@@ -48,7 +47,7 @@ export class DataSubmissionFormComponent {
   constructor(
     private fb: FormBuilder,
     private dps: DportalService,
-    private sb: MatSnackBar,
+    private tstr: ToastrService,
   ) {
     this.dataSubmissionForm = this.fb.group({
       projectName: fb.control('', [
@@ -114,10 +113,10 @@ export class DataSubmissionFormComponent {
       .subscribe((res: any) => {
         console.log('sub', res);
         if (res) {
-          this.sb.open('Project created', 'Okay', { duration: 60000 });
+          this.tstr.success('Project created', 'Success');
           this.reset();
         } else {
-          this.sb.open('Project creation failed', 'Okay', { duration: 60000 });
+          this.tstr.error('Project creation failed', 'Error');
         }
         this.dataSubmissionForm.enable();
       });
@@ -125,17 +124,13 @@ export class DataSubmissionFormComponent {
 
   patchFiles(files: FileList) {
     if (files.length + this.files.length > 20) {
-      this.sb.open('No more than 20 files per project is allowed!', 'Okay', {
-        duration: 60000,
-      });
+      this.tstr.error('No more than 20 files per project is allowed!', 'Error');
       return;
     }
 
     const newFiles = Array.from(files).filter((file) => {
       if (this.files.some((addedFile) => addedFile.name === file.name)) {
-        this.sb.open(`File with name ${file.name} already exists!`, 'Okay', {
-          duration: 60000,
-        });
+        this.tstr.error(`File with name ${file.name} already exists!`, 'Error');
         return false;
       }
       return true;

@@ -19,13 +19,13 @@ import {
   MatPaginatorModule,
   PageEvent,
 } from '@angular/material/paginator';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 import { catchError, of, Subject, Subscription } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { environment } from 'src/environments/environment';
 import { CONFIGS } from '../hub_configs';
+import { ToastrService } from 'ngx-toastr';
 
 type SavedVariants = {
   name: string;
@@ -65,7 +65,6 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   standalone: true,
   imports: [
     CommonModule,
-    MatSnackBarModule,
     MatPaginatorModule,
     MatButtonModule,
     MatIconModule,
@@ -90,9 +89,9 @@ export class SavedForReportingViewerComponent
 
   constructor(
     private cs: ClinicService,
-    private sb: MatSnackBar,
     private dg: MatDialog,
     private ss: SpinnerService,
+    private tstr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -156,14 +155,10 @@ export class SavedForReportingViewerComponent
           .pipe(catchError(() => of(null)))
           .subscribe((res) => {
             if (res) {
-              this.sb.open('Annotation deleted', 'Okay', {
-                duration: 5000,
-              });
+              this.tstr.success('Annotation deleted', 'Success');
               this.cs.savedVariantsChanged.next();
             } else {
-              this.sb.open('Failed to delete annotation', 'Dismiss', {
-                duration: 5000,
-              });
+              this.tstr.error('Failed to delete annotation', 'Error');
             }
             this.ss.end();
           });
@@ -186,13 +181,9 @@ export class SavedForReportingViewerComponent
           this.downloadLink.nativeElement.href = dataUrl;
           this.downloadLink.nativeElement.click();
         } else if (res && !res.success) {
-          this.sb.open(res.message, 'Dismiss', {
-            duration: 5000,
-          });
+          this.tstr.error(res.message, 'Error');
         } else {
-          this.sb.open('Failed to generate report', 'Dismiss', {
-            duration: 5000,
-          });
+          this.tstr.error('Failed to generate report', 'Error');
         }
         this.ss.end();
       });
@@ -202,7 +193,7 @@ export class SavedForReportingViewerComponent
     // not the first page but the page token is not set
     if (!this.pageTokens.get(page) && page > 0) {
       this.paginator.pageIndex--;
-      this.sb.open('No more items to show', 'Okay', { duration: 60000 });
+      this.tstr.warning('No more items to show', 'Warning');
       return;
     }
 
@@ -216,14 +207,12 @@ export class SavedForReportingViewerComponent
       .pipe(catchError(() => of(null)))
       .subscribe((res) => {
         if (!res) {
-          this.sb.open('Failed to load annotations', 'Dismiss', {
-            duration: 5000,
-          });
+          this.tstr.error('Failed to load annotations', 'Error');
         } else {
           //handle if there no data on next page (set page index and last page to prev value)
           if (res.variants.length <= 0 && this.paginator.pageIndex > 0) {
             this.paginator.pageIndex--;
-            this.sb.open('No more items to show', 'Okay', { duration: 60000 });
+            this.tstr.warning('No more items to show', 'Warning');
             return;
           }
           this.variants = res.variants;
