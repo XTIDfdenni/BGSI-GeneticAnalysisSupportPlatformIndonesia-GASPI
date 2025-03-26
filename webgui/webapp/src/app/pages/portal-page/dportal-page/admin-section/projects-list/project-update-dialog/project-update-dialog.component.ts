@@ -24,6 +24,7 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-project-updates',
@@ -39,6 +40,7 @@ import { ToastrService } from 'ngx-toastr';
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatDialogModule,
+    MatPaginatorModule,
   ],
   templateUrl: './project-update-dialog.component.html',
   styleUrl: './project-update-dialog.component.scss',
