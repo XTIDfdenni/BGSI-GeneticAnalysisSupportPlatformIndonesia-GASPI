@@ -123,8 +123,8 @@ export class DataSubmissionFormComponent {
   }
 
   patchFiles(files: FileList) {
-    if (files.length + this.files.length > 20) {
-      this.tstr.error('No more than 20 files per project is allowed!', 'Error');
+    if (files.length + this.files.length > 50) {
+      this.tstr.error('No more than 50 files per project is allowed!', 'Error');
       return;
     }
 
