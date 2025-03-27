@@ -74,7 +74,7 @@ export class AuthService {
 
   async signOut() {
     await Auth.signOut();
-    this.refresh();
+    await this.refresh();
     window.location.href = '/login';
   }
 
