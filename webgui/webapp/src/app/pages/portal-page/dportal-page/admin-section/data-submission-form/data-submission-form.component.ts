@@ -56,7 +56,10 @@ export class DataSubmissionFormComponent {
         Validators.minLength(6),
         Validators.maxLength(64),
       ]),
-      projectDescription: fb.control('', Validators.required),
+      projectDescription: fb.control('', [
+        Validators.required,
+        Validators.maxLength(5000),
+      ]),
     });
   }
 

@@ -65,10 +65,10 @@ export class ProjectUpdateDialogComponent {
   ) {
     this.project = data.project;
     this.dataSubmissionForm = this.fb.group({
-      projectDescription: this.fb.control(
-        this.project.description,
+      projectDescription: this.fb.control(this.project.description, [
         Validators.required,
-      ),
+        Validators.maxLength(5000),
+      ]),
     });
 
     console.log(this.project.files);
