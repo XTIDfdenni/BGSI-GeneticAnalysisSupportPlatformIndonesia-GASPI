@@ -70,6 +70,8 @@ export class ProjectUpdateDialogComponent {
         Validators.required,
       ),
     });
+
+    console.log(this.project.files);
   }
 
   removeFile(file: string) {
@@ -138,7 +140,7 @@ export class ProjectUpdateDialogComponent {
 
   patchFiles(files: FileList) {
     if (files.length + this.addedFiles.length > 50) {
-      this.tstr.error('No more than 50 files per project is allowed!', 'Error');
+      this.tstr.error('No more than 50 files allowed per upload!', 'Error');
       return;
     }
 
@@ -152,6 +154,17 @@ export class ProjectUpdateDialogComponent {
       }
       return true;
     });
+
+    const totalFutureFiles =
+      this.addedFiles.length +
+      newFiles.length +
+      this.project.files.length -
+      this.removedFiles.length;
+
+    if (totalFutureFiles > 5000) {
+      this.tstr.error('No more than 5000 files allowed per project!', 'Error');
+      return;
+    }
 
     this.addedFiles = [...this.addedFiles, ...newFiles];
   }
