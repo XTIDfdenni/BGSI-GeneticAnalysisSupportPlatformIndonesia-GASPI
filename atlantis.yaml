@@ -29,6 +29,7 @@ projects:
   plan_requirements: [approved]
   apply_requirements: [approved]
   workflow: hub01-workflow
+
 - name: gxc-xapiens
   branch: /xapiens/
   dir: .
@@ -41,6 +42,7 @@ projects:
   plan_requirements: [approved]
   apply_requirements: [approved]
   workflow: hub02-workflow
+
 - name: gxc-hub01
   branch: /hub01/
   dir: .
@@ -50,6 +52,7 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub01-workflow
+
 - name: gxc-hub02
   branch: /hub02/
   dir: .
@@ -59,3 +62,23 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub02-workflow
+
+- name: gxc-hub01-uat
+  branch: /hub01-uat/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 3
+  autoplan:
+    when_modified: *tf_files
+  workflow: hub01-uat-workflow
+
+- name: gxc-hub02-uat
+  branch: /hub02-uat/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 4
+  autoplan:
+    when_modified: *tf_files
+  workflow: hub02-uat-workflow
