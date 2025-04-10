@@ -28,6 +28,7 @@ ENVIRONMENT = """export const environment = {{
     endpoint: '{api_endpoint_svep}',
     region: '{region}',
   }},
+  hub_name: '{hub_name}',
 }};"""
 
 
@@ -85,6 +86,7 @@ def setup_env(
     api_endpoint_sbeacon: str,
     api_endpoint_svep: str,
     dir: str,
+    hub_name: str,
 ):
     with open(
         os.path.join(dir, "src/environments/environment.development.ts"), "w"
@@ -100,6 +102,7 @@ def setup_env(
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
                 api_endpoint_svep=api_endpoint_svep,
+                hub_name=hub_name,
             )
         )
     with open(os.path.join(dir, "src/environments/environment.ts"), "w") as f:
@@ -114,6 +117,7 @@ def setup_env(
                 user_pool_web_client_id=user_pool_web_client_id,
                 api_endpoint_sbeacon=api_endpoint_sbeacon,
                 api_endpoint_svep=api_endpoint_svep,
+                hub_name=hub_name,
             )
         )
 
@@ -132,6 +136,7 @@ if __name__ == "__main__":
     api_endpoint_sbeacon = args["api_endpoint_sbeacon"]
     api_endpoint_svep = args["api_endpoint_svep"]
     data_portal_bucket = args["data_portal_bucket"]
+    hub_name = args["hub_name"]
 
     setup_env(
         base_range,
@@ -143,6 +148,7 @@ if __name__ == "__main__":
         api_endpoint_sbeacon,
         api_endpoint_svep,
         webapp_dir,
+        hub_name,
     )
     npm_install(install_cmd, webapp_dir)
     build(build_cmd, webapp_dir)
