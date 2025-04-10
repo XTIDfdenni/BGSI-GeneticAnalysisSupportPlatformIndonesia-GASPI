@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import {
   MatPaginator,
@@ -50,6 +50,7 @@ import {
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import { ToastrService } from 'ngx-toastr';
+import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 
 import { MatExpansionModule } from '@angular/material/expansion';
 type SVEPResult = {
@@ -99,6 +100,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ScrollingModule,
     MatCardModule,
     MatExpansionModule,
+    AutoCompleteComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -373,4 +375,10 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   onSelectChange(event: any, key: string) {
     this.filterValues[key] = event;
   }
+
+  //handling order autocomplete based on index
+  compareFn = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    // return 0 untuk tidak mengubah urutan
+    return 0;
+  };
 }
