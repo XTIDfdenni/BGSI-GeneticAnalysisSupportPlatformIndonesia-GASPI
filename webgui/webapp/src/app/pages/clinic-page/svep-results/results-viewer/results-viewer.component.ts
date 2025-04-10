@@ -143,6 +143,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
   protected dataView = new Observable<any[]>();
+  protected currentRenderedRows: any[] = [];
   protected chromosomeField: FormControl = new FormControl('');
   protected basePositionField: FormControl = new FormControl('');
   protected filterField: FormControl = new FormControl('');
@@ -169,7 +170,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   ) {}
 
   resort(sort: Sort) {
-    const snapshot = [...this.originalRows];
+    const snapshot = [...this.currentRenderedRows];
     const key = sort.active;
     if (sort.direction === 'asc') {
       snapshot.sort((a, b) => {
@@ -182,7 +183,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       });
       this.dataRows.next(snapshot);
     } else {
-      this.dataRows.next(this.originalRows);
+      this.dataRows.next(snapshot);
     }
   }
 
@@ -196,6 +197,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
         // Determine the start and end rendered range
         const start = Math.max(0, value[1] - 10);
         const end = Math.min(value[0].length, value[1] + 100);
+        this.currentRenderedRows = [...value[0].slice(start, end)]; // 🔥 store snapshot
 
         // Update the datasource for the rendered range of data
         return value[0].slice(start, end);
@@ -381,4 +383,9 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     // return 0 untuk tidak mengubah urutan
     return 0;
   };
+
+  removeFilter(key: string) {
+    const { [key]: _, ...rest } = this.filterValues;
+    this.filterValues = rest;
+  }
 }

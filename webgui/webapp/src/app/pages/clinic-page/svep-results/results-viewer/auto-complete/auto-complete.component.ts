@@ -6,6 +6,7 @@ import { AsyncPipe } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'auto-complete-component',
@@ -17,6 +18,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatAutocompleteModule,
     ReactiveFormsModule,
     AsyncPipe,
+    MatIconModule,
   ],
   templateUrl: './auto-complete.component.html',
   styleUrl: './auto-complete.component.scss',
@@ -24,7 +26,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 export class AutoCompleteComponent implements OnInit {
   myControl = new FormControl('');
   filteredOptions: Observable<string[]> | undefined;
-  @Output() optionSelected = new EventEmitter<string>(); // New event output
+  @Output() optionSelected = new EventEmitter<string>();
+  @Output() deleteFilter = new EventEmitter<void>();
 
   @Input() label = '';
   @Input() options: string[] = [];
@@ -45,6 +48,10 @@ export class AutoCompleteComponent implements OnInit {
   }
 
   handleOptionSelected(value: string) {
-    this.optionSelected.emit(value); // Emit selected value
+    this.optionSelected.emit(value);
+  }
+
+  clearFilter() {
+    this.deleteFilter.emit();
   }
 }

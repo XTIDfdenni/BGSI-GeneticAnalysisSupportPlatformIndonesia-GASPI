@@ -122,6 +122,7 @@
                   [label]="item.key"
                   [options]="filterMasterData[item.key]"
                   (optionSelected)="onSelectChange($event, item.key)"
+                  (deleteFilter)="removeFilter(item.key)"
                 />
               }
             </div>
@@ -139,8 +140,6 @@
               </button>
             </div>
           </div>
-
-          <pre>{{ filterValues | json }}</pre>
         </mat-expansion-panel>
       </mat-accordion>
     </div>
