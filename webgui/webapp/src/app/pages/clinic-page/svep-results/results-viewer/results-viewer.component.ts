@@ -5,6 +5,7 @@ import {
   Injectable,
   Input,
   OnChanges,
+  signal,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -48,8 +49,8 @@ import {
   ScrollingModule,
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
-import { ToastrService } from 'ngx-toastr';
 
+import { MatExpansionModule } from '@angular/material/expansion';
 type SVEPResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -96,6 +97,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatCheckboxModule,
     ScrollingModule,
     MatCardModule,
+    MatExpansionModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -113,6 +115,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  readonly panelOpenState = signal(false);
   protected results: SVEPResult | null = null;
   protected columns: string[] = [
     'selected',
@@ -132,12 +135,15 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'Strand',
     'Transcript Support Level',
   ];
+  filterValues: { [key: string]: string } = {};
+  filterMasterData: { [key: string]: any[] } = {};
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
   protected dataView = new Observable<any[]>();
   protected chromosomeField: FormControl = new FormControl('');
   protected basePositionField: FormControl = new FormControl('');
   protected filterField: FormControl = new FormControl('');
+  protected advancedFilter: FormControl = new FormControl('');
   protected annotationForm: FormGroup = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -306,9 +312,64 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
           });
         return row;
       });
-    this.dataRows.next(this.originalRows);
+    // this.dataRows.next(this.originalRows);
+    this.setFilter();
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.pageIndex = result.page - 1;
     this.cs.selectedVariants.next(new Map());
+    this.setMasterData();
+  }
+
+  setFilter() {
+    const filtered = this.originalRows.filter((item) => {
+      return this.columns.every((col) => {
+        const filterVal = this.filterValues[col];
+        const itemVal = item[col]?.toString().toLowerCase() || '';
+        return filterVal ? itemVal.includes(filterVal.toLowerCase()) : true;
+      });
+    });
+
+    this.dataRows.next(filtered);
+  }
+
+  resetFilter() {
+    this.filterValues = {};
+    this.refetch(
+      this.requestId,
+      this.projectName,
+      this.chromosomeField.value,
+      this.pageIndex + 1,
+    );
+  }
+
+  addFilter() {
+    //add dinamic filter
+    const filterKey = this.advancedFilter.value;
+    if (this.filterValues.hasOwnProperty(filterKey) || filterKey === '') {
+      return;
+    }
+    this.filterValues = { ...this.filterValues, [filterKey]: '' };
+  }
+
+  setMasterData() {
+    this.columns.forEach((x) => {
+      if (x !== 'selected') {
+        const uniqueData = Array.from(
+          new Set(this.originalRows.map((item) => item[x])),
+        );
+
+        const existing = this.filterMasterData[x] || [];
+        const merged = Array.from(new Set([...existing, ...uniqueData]));
+
+        this.filterMasterData = {
+          ...this.filterMasterData,
+          [x]: merged,
+        };
+      }
+    });
+  }
+
+  onSelectChange(event: any, key: string) {
+    this.filterValues[key] = event;
   }
 }
