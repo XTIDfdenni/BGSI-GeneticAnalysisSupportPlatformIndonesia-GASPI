@@ -49,6 +49,7 @@ import {
   ScrollingModule,
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
+import { ToastrService } from 'ngx-toastr';
 
 import { MatExpansionModule } from '@angular/material/expansion';
 type SVEPResult = {
