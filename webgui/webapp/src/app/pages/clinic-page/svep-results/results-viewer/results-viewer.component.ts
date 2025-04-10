@@ -380,7 +380,6 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
 
   //handling order autocomplete based on index
   compareFn = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
-    // return 0 untuk tidak mengubah urutan
     return 0;
   };
 
