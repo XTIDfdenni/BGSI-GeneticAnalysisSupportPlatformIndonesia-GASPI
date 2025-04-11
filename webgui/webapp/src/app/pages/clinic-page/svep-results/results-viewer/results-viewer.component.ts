@@ -9,7 +9,7 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import {
   MatPaginator,
@@ -50,6 +50,7 @@ import {
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import { ToastrService } from 'ngx-toastr';
+import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 
 import { MatExpansionModule } from '@angular/material/expansion';
 type SVEPResult = {
@@ -99,6 +100,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ScrollingModule,
     MatCardModule,
     MatExpansionModule,
+    AutoCompleteComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -141,6 +143,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
   protected dataView = new Observable<any[]>();
+  protected currentRenderedRows: any[] = [];
   protected chromosomeField: FormControl = new FormControl('');
   protected basePositionField: FormControl = new FormControl('');
   protected filterField: FormControl = new FormControl('');
@@ -167,7 +170,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   ) {}
 
   resort(sort: Sort) {
-    const snapshot = [...this.originalRows];
+    const snapshot = [...this.currentRenderedRows];
     const key = sort.active;
     if (sort.direction === 'asc') {
       snapshot.sort((a, b) => {
@@ -180,7 +183,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       });
       this.dataRows.next(snapshot);
     } else {
-      this.dataRows.next(this.originalRows);
+      this.dataRows.next(snapshot);
     }
   }
 
@@ -194,6 +197,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
         // Determine the start and end rendered range
         const start = Math.max(0, value[1] - 10);
         const end = Math.min(value[0].length, value[1] + 100);
+        this.currentRenderedRows = [...value[0].slice(start, end)]; // 🔥 store snapshot
 
         // Update the datasource for the rendered range of data
         return value[0].slice(start, end);
@@ -372,5 +376,15 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
 
   onSelectChange(event: any, key: string) {
     this.filterValues[key] = event;
+  }
+
+  //handling order autocomplete based on index
+  compareFn = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0;
+  };
+
+  removeFilter(key: string) {
+    const { [key]: _, ...rest } = this.filterValues;
+    this.filterValues = rest;
   }
 }

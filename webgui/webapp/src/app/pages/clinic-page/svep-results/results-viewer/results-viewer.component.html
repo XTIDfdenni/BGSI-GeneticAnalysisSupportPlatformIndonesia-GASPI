@@ -114,20 +114,16 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-              @for (item of filterValues | keyvalue; track item.key) {
-                <mat-form-field class="w-[200px]">
-                  <mat-label>Search {{ item.key }}</mat-label>
-                  <mat-select
-                    [(ngModel)]="filterValues[item.key]"
-                    (selectionChange)="onSelectChange($event.value, item.key)"
-                  >
-                    @for (option of filterMasterData[item.key]; track option) {
-                      <mat-option [value]="option">
-                        {{ option }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+              @for (
+                item of filterValues | keyvalue: compareFn;
+                track item.key
+              ) {
+                <auto-complete-component
+                  [label]="item.key"
+                  [options]="filterMasterData[item.key]"
+                  (optionSelected)="onSelectChange($event, item.key)"
+                  (deleteFilter)="removeFilter(item.key)"
+                />
               }
             </div>
 
