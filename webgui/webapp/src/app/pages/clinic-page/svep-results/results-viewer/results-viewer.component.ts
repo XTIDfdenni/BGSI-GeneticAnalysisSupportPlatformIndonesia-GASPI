@@ -130,6 +130,20 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'Codon Change',
     'Strand',
     'Transcript Support Level',
+    'ref',
+    'gt',
+    'qual',
+    'filter',
+    'variationId',
+    'rsId',
+    'omimId',
+    'classification',
+    'conditions',
+    'clinSig',
+    'reviewStatus',
+    'lastEvaluated',
+    'accession',
+    'pubmed',
   ];
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
