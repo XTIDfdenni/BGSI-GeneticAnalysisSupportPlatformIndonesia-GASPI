@@ -117,7 +117,6 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   protected columns: string[] = [
     'selected',
     'Rank',
-    '.',
     'Region',
     'Alt Allele',
     'Consequence',
