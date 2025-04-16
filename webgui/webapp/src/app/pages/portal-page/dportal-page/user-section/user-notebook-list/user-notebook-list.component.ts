@@ -90,7 +90,11 @@ export class UserNotebookListComponent implements OnInit {
       .subscribe((values) => {
         if (values.instanceType && values.volumeSize) {
           this.aws
-            .calculateTotalPricePerMonth(values.instanceType, values.volumeSize)
+            .calculateTotalPricePerMonth(
+              values.instanceType,
+              values.volumeSize,
+              '',
+            )
             .pipe(catchError(() => of(null)))
             .subscribe((price) => {
               this.estimatedPrice = price;
