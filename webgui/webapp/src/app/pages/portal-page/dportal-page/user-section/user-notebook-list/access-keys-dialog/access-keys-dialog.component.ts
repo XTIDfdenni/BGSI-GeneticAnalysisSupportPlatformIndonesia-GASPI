@@ -7,6 +7,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
 import AWS from 'aws-sdk';
+import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
+import { Storage } from 'aws-amplify';
+import { UserQuotaService } from 'src/app/services/userquota.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-access-keys-dialog',
@@ -29,8 +33,14 @@ export class AccessKeysDialogComponent implements OnInit {
   s3uri!: string;
   script = '';
   json = '';
+  totalStorageSize = 0;
+  expiredsText = '';
+  limitSizeText = '';
 
-  constructor(private auth: AuthService) {
+  constructor(
+    private auth: AuthService,
+    private uq: UserQuotaService,
+  ) {
     this.auth.getKeys().then((keys) => {
       this.accessKeyId = keys.accessKeyId;
       this.secretAccessKey = keys.secretAccessKey;
@@ -40,10 +50,40 @@ export class AccessKeysDialogComponent implements OnInit {
     });
   }
 
-  async ngOnInit(): Promise<void> {
+  async generateTotalSize() {
+    const res = await Storage.list(``, {
+      pageSize: 'ALL',
+      level: 'private',
+    });
+
+    const bytesTotal = getTotalStorageSize(res.results);
+    return bytesTotal;
+  }
+
+  async ngOnInit() {
+    this.generateCurlCommand();
+  }
+
+  async generateCurlCommand(): Promise<void> {
     try {
       const { accessKeyId, secretAccessKey, sessionToken, identityId } =
         await this.auth.getKeys();
+
+      const totalStorageSize = await this.generateTotalSize();
+      const { quotaSize: totalQuotaSize } = await firstValueFrom(
+        this.uq.getCurrentUsage(),
+      );
+
+      const limitSizeInBytes = totalQuotaSize - totalStorageSize;
+      const expires = 60 * 60; // 1 hour
+
+      this.expiredsText = `${expires / 60 / 60} Hour${
+        expires / 60 / 60 > 1 ? 's' : ''
+      }`;
+
+      console.log(limitSizeInBytes);
+
+      this.limitSizeText = formatBytes(limitSizeInBytes, 2);
 
       const s3 = new AWS.S3({
         region: environment.auth.region,
@@ -56,25 +96,33 @@ export class AccessKeysDialogComponent implements OnInit {
       const res = s3.createPresignedPost({
         Bucket: environment.storage.dataPortalBucket,
         Fields: {
-          key: `private/${identityId}/databaseTesting.svg`,
+          key: `private/${identityId}/FILE_NAME.format`,
         },
         Expires: 60 * 60,
         Conditions: [
-          ['content-length-range', 0, 1024 * 5], // ⚠️ Limit to 5KB
+          // ['content-length-range', 0, 1024 * 1], // ⚠️ Limit to 5KB
+          ['content-length-range', 0, limitSizeInBytes], // ⚠️ Limit to 5KB
         ],
       });
 
       this.json = JSON.stringify(res, null, 2);
+      const curlHtml = [
+        `curl -X POST ${res.url} \\`,
+        ...Object.entries(res.fields).map(([k, v]) => {
+          if (k === 'key') {
+            const formattedKey = v.replace(
+              '/FILE_NAME.format',
+              '/<b class="text-red-500">file_name.format</b>',
+            );
+            // Use single quotes in outer HTML to preserve inner HTML
+            return `  -F ${k}="${formattedKey}" \\`;
+          }
+          return `  -F ${k}="${v}" \\`;
+        }),
+        `  -F file=@<b class="text-red-500">/your/path/to/file.format</b>`,
+      ].join('<br>');
 
-      const curl = [
-        `curl --fail --show-error -v -X POST ${res.url} \\`,
-        ...Object.entries(res.fields).map(
-          ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
-        ),
-        `  -F file=@database.svg`,
-      ].join('\n');
-
-      this.script = curl;
+      this.script = curlHtml;
     } catch (error) {
       console.error('Error initializing access keys:', error);
     }

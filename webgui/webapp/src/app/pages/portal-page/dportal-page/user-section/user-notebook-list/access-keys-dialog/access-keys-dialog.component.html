@@ -1,12 +1,34 @@
 <h1 mat-dialog-title>Upload File to S3</h1>
 <div mat-dialog-content>
-  You can use the following keys to access S3 to upload/download data.
+  Use the following script to upload your file to your private S3 bucket.
   <br />
 
+  <div class="alert-warning my-2" role="alert">
+    <span class="block sm:inline">You cannot upload files contained in a folder using a presigned URL. This URL will expire in <b>{{ expiredsText }}</b> and the file size limit is <b>{{ limitSizeText }}</b>.</span>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    class="mr-2.5"
+    (click)="generateCurlCommand()"
+  >
+    Regenerate Script
+  </button>
+
   <div class="mt-4">
-    <pre class="bg-gray-100 p-2 rounded-md overflow-x-auto">{{
-      script
-    }}</pre>
+    <pre class="code-block" [innerHTML]="script"></pre>
+  </div>
+
+
+  <div>
+    <em>Replace the placeholders below before running the command:</em><br />
+     <p>
+      <strong class="quote">FILE_NAME.format</strong> → the name you want the file to have in S3 (e.g. <code>example.txt</code>)
+     </p>
+     <p>
+      <strong class="quote">/path/to/local/file.format</strong> → the full path to your local file (e.g. <code>/home/user/example.txt</code>)
+     </p>
   </div>
 
   <button
