@@ -144,6 +144,15 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'lastEvaluated',
     'accession',
     'pubmed',
+    'Allele Frequency (African)',
+    'Allele Frequency (East Asian)',
+    'Allele Frequency (Finnish)',
+    'Allele Frequency (Non-Finnish European)',
+    'Allele Frequency (South Asian)',
+    'Allele Frequency (Admixed American)',
+    'Allele Frequency (Global)',
+    'Allele Count',
+    'Allele Number',
   ];
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
