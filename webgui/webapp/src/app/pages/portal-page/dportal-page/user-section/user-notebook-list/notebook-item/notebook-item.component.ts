@@ -65,6 +65,7 @@ export class NotebookItemComponent implements OnInit {
       .calculateTotalPricePerMonth(
         this.status.instanceType,
         this.status.volumeSize,
+        this.status.status,
       )
       .subscribe((costEstimation) => {
         this.costEstimation = costEstimation;
