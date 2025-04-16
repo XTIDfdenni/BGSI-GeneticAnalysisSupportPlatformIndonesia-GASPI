@@ -1,43 +1,74 @@
 <h1 mat-dialog-title>Upload File to S3</h1>
 <div mat-dialog-content>
-  Use the following script to upload your file to your private S3 bucket.
-  <br />
+  <p>
+    Please provide a unique name to avoid overwriting an existing file in the
+    project.
+    <br />
+    Please provide the extension of file (eg: .json, .csv, .txt).
+  </p>
 
-  <div class="alert-warning my-2" role="alert">
-    <span class="block sm:inline">You cannot upload files contained in a folder using a presigned URL. This URL will expire in <b>{{ expiredsText }}</b> and the file size limit is <b>{{ limitSizeText }}</b>.</span>
-  </div>
+  <form [formGroup]="fileNameForm">
+    <mat-form-field class="w-full">
+      <mat-label>File Name</mat-label>
+      <input
+        matInput
+        formControlName="name"
+        type="text"
+        required
+        autocomplete="off"
+        placeholder="eg: transformed-metadata.json"
+      />
+      <mat-error>
+        A name is required (6-30 alphanumeric characters including - and _)
+      </mat-error>
+    </mat-form-field>
+    <div class="flex flex-row space-x-1">
+      <button mat-raised-button mat-dialog-close color="primary">Close</button>
 
-  <button
-    mat-raised-button
-    color="primary"
-    class="mr-2.5"
-    (click)="generateCurlCommand()"
-  >
-    Regenerate Script
-  </button>
+      <button
+        mat-raised-button
+        type="button"
+        [disabled]="fileNameForm.invalid"
+        color="primary"
+        (click)="generateCurlCommand(fileNameForm.value.name)"
+      >
+        Generate
+      </button>
+    </div>
+  </form>
 
-  <div class="mt-4">
-    <pre class="code-block" [innerHTML]="script"></pre>
-  </div>
+  @if (script) {
+    <div class="mt-4">
+      Use the following script to upload your file to your private S3 bucket. Copy the script and run it in your terminal.
+    </div>
+
+    <div class="alert-warning" role="alert">
+      <span class="block sm:inline">You cannot upload files contained in a folder using a presigned URL. This URL will expire in <b>{{ expiredsText }}</b> and the file size limit is <b>{{ limitSizeText }}</b>.</span>
+    </div>
+
+    <div class="mt-4">
+      <pre class="code-block" [innerHTML]="scriptHtml"></pre>
+    </div>
 
 
-  <div>
-    <em>Replace the placeholders below before running the command:</em><br />
-     <p>
-      <strong class="quote">FILE_NAME.format</strong> → the name you want the file to have in S3 (e.g. <code>example.txt</code>)
-     </p>
-     <p>
-      <strong class="quote">/path/to/local/file.format</strong> → the full path to your local file (e.g. <code>/home/user/example.txt</code>)
-     </p>
-  </div>
+    <div>
+      <em>Replace the placeholders below before running the command:</em><br />
+       <p>
+        <strong class="quote">/path/to/local/file.format</strong> → the full path to your local file (e.g. <code>/home/user/example.txt</code>) or <code>example.txt</code> if the file located in root folder <br />
+       </p>
+    </div>
 
-  <button
-    mat-raised-button
-    color="primary"
-    [cdkCopyToClipboard]="script"
-    class="mr-2.5"
-  >
-    Copy Scripts
-  </button>
-  <button mat-raised-button mat-dialog-close color="primary">Close</button>
+    <div class="flex flex-row space-x-1">
+      <button mat-raised-button mat-dialog-close color="primary">Close</button>
+
+      <button
+        mat-raised-button
+        color="primary"
+        [cdkCopyToClipboard]="script"
+        class="mr-2.5"
+      >
+        Copy Script
+      </button>
+    </div>
+  }
 </div>
