@@ -11,11 +11,24 @@ import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
 import { Storage } from 'aws-amplify';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 import { firstValueFrom } from 'rxjs';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-access-keys-dialog',
   standalone: true,
   imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatButtonModule,
     ClipboardModule,
@@ -25,28 +38,27 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './access-keys-dialog.component.html',
   styleUrl: './access-keys-dialog.component.scss',
 })
-export class AccessKeysDialogComponent implements OnInit {
-  accessKeyId!: string;
-  secretAccessKey!: string;
-  sessionToken!: string;
-  copyString!: string;
-  s3uri!: string;
+export class AccessKeysDialogComponent {
   script = '';
+  scriptHtml = '';
   json = '';
   totalStorageSize = 0;
   expiredsText = '';
   limitSizeText = '';
 
+  fileNameForm: FormGroup;
+
   constructor(
     private auth: AuthService,
     private uq: UserQuotaService,
   ) {
-    this.auth.getKeys().then((keys) => {
-      this.accessKeyId = keys.accessKeyId;
-      this.secretAccessKey = keys.secretAccessKey;
-      this.sessionToken = keys.sessionToken;
-      this.s3uri = `s3://${environment.storage.dataPortalBucket}/private/${keys.identityId}/`;
-      this.copyString = `export AWS_ACCESS_KEY_ID=${this.accessKeyId}\nexport AWS_SECRET_ACCESS_KEY=${this.secretAccessKey}\nexport AWS_SESSION_TOKEN=${this.sessionToken}`;
+    this.fileNameForm = new FormGroup({
+      name: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(30),
+        Validators.pattern('^[a-zA-Z0-9-_.]*$'),
+      ]),
     });
   }
 
@@ -60,11 +72,7 @@ export class AccessKeysDialogComponent implements OnInit {
     return bytesTotal;
   }
 
-  async ngOnInit() {
-    this.generateCurlCommand();
-  }
-
-  async generateCurlCommand(): Promise<void> {
+  async generateCurlCommand(filename: string): Promise<void> {
     try {
       const { accessKeyId, secretAccessKey, sessionToken, identityId } =
         await this.auth.getKeys();
@@ -74,15 +82,14 @@ export class AccessKeysDialogComponent implements OnInit {
         this.uq.getCurrentUsage(),
       );
 
-      const limitSizeInBytes = totalQuotaSize - totalStorageSize;
+      const limitSizeInBytes = Math.floor(totalQuotaSize - totalStorageSize);
       const expires = 60 * 60; // 1 hour
 
       this.expiredsText = `${expires / 60 / 60} Hour${
         expires / 60 / 60 > 1 ? 's' : ''
       }`;
 
-      console.log(limitSizeInBytes);
-
+      console.log('limitSizeInBytes', limitSizeInBytes);
       this.limitSizeText = formatBytes(limitSizeInBytes, 2);
 
       const s3 = new AWS.S3({
@@ -96,16 +103,22 @@ export class AccessKeysDialogComponent implements OnInit {
       const res = s3.createPresignedPost({
         Bucket: environment.storage.dataPortalBucket,
         Fields: {
-          key: `private/${identityId}/FILE_NAME.format`,
+          key: `private/${identityId}/${filename}`,
         },
         Expires: 60 * 60,
-        Conditions: [
-          // ['content-length-range', 0, 1024 * 1], // ⚠️ Limit to 5KB
-          ['content-length-range', 0, limitSizeInBytes], // ⚠️ Limit to 5KB
-        ],
+        Conditions: [['content-length-range', 0, limitSizeInBytes]],
       });
 
       this.json = JSON.stringify(res, null, 2);
+
+      const curl = [
+        `curl -X POST ${res.url} \\`,
+        ...Object.entries(res.fields).map(
+          ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
+        ),
+        `  -F file=@YOUR_FILE.format`,
+      ].join('\n');
+
       const curlHtml = [
         `curl -X POST ${res.url} \\`,
         ...Object.entries(res.fields).map(([k, v]) => {
@@ -122,7 +135,8 @@ export class AccessKeysDialogComponent implements OnInit {
         `  -F file=@<b class="text-red-500">/your/path/to/file.format</b>`,
       ].join('<br>');
 
-      this.script = curlHtml;
+      this.scriptHtml = curlHtml;
+      this.script = curl;
     } catch (error) {
       console.error('Error initializing access keys:', error);
     }
