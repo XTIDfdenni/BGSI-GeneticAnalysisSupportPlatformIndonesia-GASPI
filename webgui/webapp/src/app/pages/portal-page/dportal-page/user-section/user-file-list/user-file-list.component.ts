@@ -5,9 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Storage } from 'aws-amplify';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AuthService } from 'src/app/services/auth.service';
-import { catchError, filter, firstValueFrom, of } from 'rxjs';
-import { DportalService } from 'src/app/services/dportal.service';
+import { firstValueFrom } from 'rxjs';
 import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 

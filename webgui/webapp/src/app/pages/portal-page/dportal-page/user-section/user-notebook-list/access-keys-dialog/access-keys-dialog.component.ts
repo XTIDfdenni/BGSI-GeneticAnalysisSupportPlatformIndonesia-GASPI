@@ -21,6 +21,8 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+const filePath = '/your/path/to/file.format';
+
 @Component({
   selector: 'app-access-keys-dialog',
   standalone: true,
@@ -111,32 +113,24 @@ export class AccessKeysDialogComponent {
 
       this.json = JSON.stringify(res, null, 2);
 
-      const curl = [
+      const curl: string[] = [
         `curl -X POST ${res.url} \\`,
         ...Object.entries(res.fields).map(
           ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
         ),
-        `  -F file=@YOUR_FILE.format`,
-      ].join('\n');
+        `  -F "file=@${filePath}"`, // Adding file path dynamically
+      ];
 
-      const curlHtml = [
-        `curl -X POST ${res.url} \\`,
-        ...Object.entries(res.fields).map(([k, v]) => {
-          if (k === 'key') {
-            const formattedKey = v.replace(
-              '/FILE_NAME.format',
-              '/<b class="text-red-500">file_name.format</b>',
-            );
-            // Use single quotes in outer HTML to preserve inner HTML
-            return `  -F ${k}="${formattedKey}" \\`;
-          }
-          return `  -F ${k}="${v}" \\`;
-        }),
-        `  -F file=@<b class="text-red-500">/your/path/to/file.format</b>`,
-      ].join('<br>');
+      // Replace the file path with HTML formatted version in the last part
+      const curlHtml = curl
+        .slice(0, -1) // Take all but the last line (removing the last "file" line)
+        .concat(
+          `  -F "file=@<span class="text-red-500">${filePath}</span>"`, // Add HTML formatted file path
+        )
+        .join('<br>'); // Join the array into a single string with <br> between lines
 
       this.scriptHtml = curlHtml;
-      this.script = curl;
+      this.script = curl.join('\n');
     } catch (error) {
       console.error('Error initializing access keys:', error);
     }
