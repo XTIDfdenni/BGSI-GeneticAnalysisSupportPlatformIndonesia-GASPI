@@ -91,7 +91,6 @@ export class AccessKeysDialogComponent {
         expires / 60 / 60 > 1 ? 's' : ''
       }`;
 
-      console.log('limitSizeInBytes', limitSizeInBytes);
       this.limitSizeText = formatBytes(limitSizeInBytes, 2);
 
       const s3 = new AWS.S3({

@@ -30,6 +30,7 @@ export class UserFileListComponent implements OnInit {
   costEstimation: number = 0;
   totalSize: number = 0;
   totalSizeFormatted: string = '';
+  totalSizeRemainingText: string = '';
 
   loadingUsage: boolean = false;
 
@@ -52,6 +53,10 @@ export class UserFileListComponent implements OnInit {
 
     this.totalSize = bytesTotal;
     this.totalSizeFormatted = formatBytes(bytesTotal, 2);
+    this.totalSizeRemainingText = formatBytes(
+      Math.floor(this.quotaSize - this.totalSize),
+      2,
+    );
   }
 
   async list() {
@@ -73,6 +78,7 @@ export class UserFileListComponent implements OnInit {
     this.quotaSize = quotaSize;
     this.quotaSizeFormatted = formatBytes(this.quotaSize, 2);
     this.costEstimation = costEstimation;
+
     this.loadingUsage = false;
   }
 
