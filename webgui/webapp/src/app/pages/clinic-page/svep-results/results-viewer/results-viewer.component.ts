@@ -53,6 +53,8 @@ import { ToastrService } from 'ngx-toastr';
 import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 type SVEPResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -101,6 +103,8 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatCardModule,
     MatExpansionModule,
     AutoCompleteComponent,
+    MatIconModule,
+    MatTooltipModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -408,5 +412,36 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   removeFilter(key: string) {
     const { [key]: _, ...rest } = this.filterValues;
     this.filterValues = rest;
+  }
+
+  handleRedirectUrl(column: string, value: string) {
+    const urlMap: Record<string, string> = {
+      'Gene ID': `https://www.ncbi.nlm.nih.gov/gene/?term=${value}`,
+      variationId: `https://www.ncbi.nlm.nih.gov/clinvar/variation/${value}/`,
+      rsId: `https://www.ncbi.nlm.nih.gov/snp/${value}`,
+      accession: `https://www.ncbi.nlm.nih.gov/clinvar/${value}/?redir=rcv`,
+      pubmed: `https://pubmed.ncbi.nlm.nih.gov/${value}/`,
+    };
+
+    const url =
+      urlMap[column] ||
+      `https://asia.ensembl.org/Homo_sapiens/Location/View?r=${value}`;
+    window.open(url, '_blank');
+  }
+
+  splitPubMedArray(pubmedString: string): string[] {
+    //handle error if data null
+    if (
+      !pubmedString ||
+      pubmedString.trim() === '' ||
+      pubmedString.trim() === '-'
+    ) {
+      return [];
+    }
+    return pubmedString.split(',').map((id) => id.trim());
+  }
+
+  showTooltip(message: string) {
+    return `Secondary analysis on this variants reports "${message}" `;
   }
 }
