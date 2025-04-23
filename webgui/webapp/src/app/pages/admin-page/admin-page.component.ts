@@ -13,7 +13,7 @@ import {
   FormsModule,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { Subject, catchError, of, startWith, switchMap } from 'rxjs';
+import { Subject, catchError, firstValueFrom, of } from 'rxjs';
 import * as _ from 'lodash';
 import {
   MatPaginator,
@@ -32,6 +32,7 @@ import { MatCardModule } from '@angular/material/card';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { bytesToGigabytes, formatBytes } from 'src/app/utils/file';
 import { MatIconModule } from '@angular/material/icon';
+import { AwsService } from 'src/app/services/aws.service';
 // import { testUsers } from './test_responses/test_users';
 
 // Docs: https://material.angular.io/components/paginator/examples
@@ -89,8 +90,9 @@ export class AdminPageComponent implements OnInit {
     'First name',
     'Last name',
     'Email',
-    'User Quota',
-    'User Usage',
+    'Size Quota/Usage',
+    'Query Quota/Usage',
+    'Est Cost',
     'Confirmed',
     'MFA Active',
   ];
@@ -106,6 +108,7 @@ export class AdminPageComponent implements OnInit {
     private fb: FormBuilder,
     private cd: ChangeDetectorRef,
     private dg: MatDialog,
+    private aws: AwsService,
   ) {
     this.newUserForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -176,6 +179,13 @@ export class AdminPageComponent implements OnInit {
       },
     });
 
+    dialog.componentInstance.updateDataUser = (
+      userData: any,
+      costEstimation: number | null,
+    ) => {
+      this.updateData(userData, row.Email, costEstimation);
+    };
+
     dialog.afterClosed().subscribe((data) => {
       if (_.get(data, 'reload', false)) {
         this.resetPagination();
@@ -209,12 +219,15 @@ export class AdminPageComponent implements OnInit {
     this.listUsers();
   }
 
-  formatData(size: number, count: number, isConvert: boolean) {
-    const valueInGB = formatBytes(size, 2);
+  formatData(quota: number, used: number, isConvert: boolean, isRaw?: boolean) {
     if (isConvert) {
-      return `${valueInGB}/ ${count} Count(s)`;
+      const valueInGB = formatBytes(used, 2);
+      if (isRaw) {
+        return `${quota}GB / ${valueInGB}`;
+      }
+      return `${bytesToGigabytes(quota)}GB / ${valueInGB}`;
     }
-    return `${bytesToGigabytes(size)} GB/ ${count} Count(s)`;
+    return ` ${quota} Count(s) / ${used} Count(s)`;
   }
 
   listUsers() {
@@ -231,12 +244,17 @@ export class AdminPageComponent implements OnInit {
     this.adminServ
       .listUsers(this.pageSize, this.pageTokens.at(-1) || null, key, query)
       .pipe(catchError(() => of(null)))
-      .subscribe((response) => {
+      .subscribe(async (response) => {
         if (response) {
           this.pageTokens.push(response.pagination_token);
-          this.usersTableDataSource = _.map(
-            _.get(response, 'users', []),
-            (user: any) => ({
+
+          const users = _.map(_.get(response, 'users', []), (user: any) => {
+            const usageCount = user.Usage?.usageCount ?? 0;
+            const usageSize = user.Usage?.usageSize ?? 0;
+            const userQuotaCount = user.Usage?.quotaQueryCount;
+            const userSize = user.Usage?.quotaSize;
+
+            return {
               Sub: _.get(_.find(user.Attributes, { Name: 'sub' }), 'Value', ''),
               Email: _.get(
                 _.find(user.Attributes, { Name: 'email' }),
@@ -253,23 +271,81 @@ export class AdminPageComponent implements OnInit {
                 'Value',
                 '',
               ),
-              'User Quota': this.formatData(
-                user.Usage.quotaSize ?? 0,
-                user.Usage.quotaQueryCount ?? 0,
-                false,
-              ),
-              'User Usage': this.formatData(
-                user.Usage.usageSize ?? 0,
-                user.Usage.usageCount ?? 0,
+              'Size Quota/Usage': this.formatData(
+                user.Usage?.quotaSize ?? 0,
+                usageSize,
                 true,
+              ),
+              'Query Quota/Usage': this.formatData(
+                user.Usage?.quotaQueryCount ?? 0,
+                usageCount,
+                false,
               ),
               Confirmed:
                 _.get(user, 'UserStatus') === 'CONFIRMED' ? 'Yes' : 'No',
-              'MFA Active': _.get(user, 'MFA').length > 0 ? 'Yes' : 'No',
+              'MFA Active': _.get(user, 'MFA', []).length > 0 ? 'Yes' : 'No',
+              usageCount,
+              usageSize,
+              userQuotaCount,
+              userSize,
+              'Est Cost': 'Calculating...',
+            };
+          });
+
+          // wait all callculation
+          await Promise.all(
+            users.map(async (user) => {
+              user['Est Cost'] = await this.getEstimatedCost(
+                user.userQuotaCount,
+                bytesToGigabytes(user.userSize),
+              );
             }),
           );
+
+          // reassign data
+          this.usersTableDataSource = users;
         }
+
         this.usersLoading = false;
       });
+  }
+
+  updateData(userData: any, userEmail: string, costEstimation: number | null) {
+    const indexData = this.usersTableDataSource.findIndex(
+      (e: any) => e.Email === userEmail,
+    );
+
+    if (indexData > -1) {
+      this.usersTableDataSource[indexData]['Size Quota/Usage'] =
+        this.formatData(
+          userData.quotaSize ?? 0,
+          this.usersTableDataSource[indexData].usageSize ?? 0,
+          true,
+          true,
+        );
+      this.usersTableDataSource[indexData]['Query Quota/Usage'] =
+        this.formatData(
+          userData.quotaQueryCount ?? 0,
+          this.usersTableDataSource[indexData].usageCount ?? 0,
+          false,
+        );
+      this.usersTableDataSource[indexData]['Est Cost'] = `$${costEstimation}`;
+      return;
+    }
+  }
+
+  async getEstimatedCost(
+    usageCount: number,
+    usageSize: number,
+  ): Promise<string> {
+    try {
+      const res = await firstValueFrom(
+        this.aws.calculateQuotaEstimationPerMonth(usageCount, usageSize),
+      );
+      return `$${res}`;
+    } catch (error) {
+      console.error('Estimation failed:', error);
+      return '$0.00';
+    }
   }
 }
