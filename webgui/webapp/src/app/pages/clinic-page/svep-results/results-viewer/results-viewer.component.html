@@ -160,11 +160,23 @@
           <ng-container matColumnDef="selected">
             <th mat-header-cell *matHeaderCellDef class="!text-center">#</th>
             <td mat-cell *matCellDef="let row">
-              <mat-checkbox
-                (change)="cs.selection(row, $event.checked)"
-                [checked]="(cs.selectedVariants | async)!.has(cs.hashRow(row))"
-              >
-              </mat-checkbox>
+              <div class="flex flex-row items-center">
+                <mat-checkbox
+                  (change)="cs.selection(row, $event.checked)"
+                  [checked]="
+                    (cs.selectedVariants | async)!.has(cs.hashRow(row))
+                  "
+                >
+                </mat-checkbox>
+                @if (!["PASS", "-", ""].includes(row["filter"])) {
+                  <div
+                    class="flex justify-center items-center bg-red-600 rounded-full"
+                    [matTooltip]="showTooltip(row['filter'])"
+                  >
+                    <mat-icon class="text-white">priority_high</mat-icon>
+                  </div>
+                }
+              </div>
             </td>
           </ng-container>
           @for (column of columns; track $index) {
@@ -183,15 +195,32 @@
                   *matCellDef="let element"
                   class="whitespace-nowrap"
                 >
-                  @if (column === "Region") {
-                    <a
-                      class="no-underline text-blue-500"
-                      href="https://asia.ensembl.org/Homo_sapiens/Location/View?r={{
-                        element[column]
-                      }}"
-                      target="_blank"
-                      >{{ element[column] }}</a
+                  @if (
+                    [
+                      "Region",
+                      "Gene ID",
+                      "variationId",
+                      "rsId",
+                      "accession"
+                    ].includes(column)
+                  ) {
+                    <div
+                      class="cursor-pointer text-blue-500"
+                      (click)="handleRedirectUrl(column, element[column])"
                     >
+                      {{ element[column] }}
+                    </div>
+                  } @else if (column === "pubmed" && element[column] !== "-") {
+                    <div>
+                      @for (id of splitPubMedArray(element[column]); track id) {
+                        <span
+                          class="cursor-pointer text-blue-500"
+                          (click)="handleRedirectUrl(column, id)"
+                        >
+                          {{ id }} </span
+                        >,
+                      }
+                    </div>
                   } @else {
                     {{ element[column] }}
                   }

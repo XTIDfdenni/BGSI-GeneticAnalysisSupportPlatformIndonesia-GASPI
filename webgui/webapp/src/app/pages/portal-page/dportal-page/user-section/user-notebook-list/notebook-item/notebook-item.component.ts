@@ -6,6 +6,7 @@ import { InstanceName } from '../user-notebook-list.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { catchError, of } from 'rxjs';
 import { AwsService } from 'src/app/services/aws.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 export enum Status {
   PENDING = 'Pending',
@@ -30,7 +31,7 @@ export interface SignedNotebookUrl {
 @Component({
   selector: 'app-notebook-item',
   standalone: true,
-  imports: [MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [MatButtonModule, MatIconModule, MatDialogModule, MatTooltipModule],
   templateUrl: './notebook-item.component.html',
   styleUrl: './notebook-item.component.scss',
 })
@@ -146,5 +147,23 @@ export class NotebookItemComponent implements OnInit {
         anchor.rel = 'noopener noreferrer';
         anchor.click();
       });
+  }
+
+  showTooltip(message: string) {
+    const urlMap: Record<string, string> = {
+      Pending: `Notebook is being created`,
+      Stopped: `Notebook cannot be opened unless it is restarted and then opened again.`,
+      Stopping: `Notebook is being stopped`,
+    };
+
+    const url = urlMap[message] || ``;
+    return url;
+  }
+
+  getStatusColor(status: string): string {
+    if (status === Status.STOPPED) return 'red';
+    if (status === Status.PENDING || status === Status.STOPPING)
+      return 'goldenrod';
+    return 'inherit';
   }
 }
