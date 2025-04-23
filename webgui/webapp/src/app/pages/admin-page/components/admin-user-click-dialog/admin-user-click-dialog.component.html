@@ -49,13 +49,13 @@
               formControlName="administrators"
               color="primary"
               value="administrators"
-              >Admin access</mat-checkbox
+              >Admin</mat-checkbox
             >
             <mat-checkbox
               color="primary"
               formControlName="managers"
               value="managers"
-              >Data Manager Access</mat-checkbox
+              >Data Manager</mat-checkbox
             >
             <mat-checkbox
               color="primary"
@@ -63,7 +63,7 @@
               aria-disabled="true"
               disabled
               checked
-              >Basic User Access</mat-checkbox
+              >Basic User</mat-checkbox
             >
           </div>
         </div>
@@ -135,7 +135,7 @@
         mat-raised-button
         color="primary"
         (click)="done()"
-        [disabled]="form.invalid || !costEstimation"
+        [disabled]="form.invalid || !costEstimation || loadingCostEstimation"
       >
         Update
       </button>
