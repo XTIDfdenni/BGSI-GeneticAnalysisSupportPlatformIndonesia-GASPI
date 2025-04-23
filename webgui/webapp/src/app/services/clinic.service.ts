@@ -11,8 +11,6 @@ import {
   switchMap,
 } from 'rxjs';
 import { environment } from 'src/environments/environment';
-// TODO import from ENV
-const LAB = 'RSCM';
 
 export type SelectedVariants = Map<string, string[]>;
 
@@ -219,7 +217,7 @@ export class ClinicService {
         `dportal/projects/${project}/clinical-workflows/${jobId}/report`,
         {
           body: {
-            lab: LAB,
+            lab: environment.hub_name,
           },
         },
       ),
