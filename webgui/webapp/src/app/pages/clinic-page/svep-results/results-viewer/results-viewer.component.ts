@@ -163,6 +163,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'Allele Frequency (Global)',
     'Allele Count',
     'Allele Number',
+    'SIFT (max)',
   ];
   filterValues: { [key: string]: string } = {};
   filterMasterData: { [key: string]: any[] } = {};
