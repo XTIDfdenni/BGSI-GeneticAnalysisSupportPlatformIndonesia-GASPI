@@ -153,6 +153,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'Allele Frequency (Global)',
     'Allele Count',
     'Allele Number',
+    'SIFT (max)',
   ];
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
