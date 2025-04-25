@@ -31,27 +31,27 @@ export class QcReportComponent {
 
   protected listQC: QCItem[] = [
     {
-      title: '',
+      title: 'Histogram : Variant Quality Score Distributions',
       desc: 'Here is the histogram representing the distribution of variant quality scores. The x-axis shows the quality score ranges, and the y-axis represents the number of variants in each range.',
       key: 'qc_hc',
     },
     {
-      title: '',
+      title: 'Scatter Plot : Low Variant Flagging',
       desc: 'Here is the scatter plot for Low-Variant Flagging, where each point represents a variant with its quality score (QUAL) on the x-axis and depth (DP) on the y-axis. Low-quality variants could be flagged based on predefined thresholds.',
       key: 'low_var',
     },
     {
-      title: '',
+      title: 'Boxplot: Genotype Quality',
       desc: 'Here is the Boxplot: Genotype Quality, where each genomic position (POS) on the x-axis has a distribution of genotype quality (QUAL) values on the y-axis. The boxplot shows the median, quartiles, and potential outliers for each position',
       key: 'gq',
     },
     {
-      title: '',
+      title: 'Histogram or density plot: Allele Frequency',
       desc: 'Here is the Histogram/Density Plot: Allele Frequency, showing the distribution of allele frequencies. The histogram bars represent the count of variants in each frequency range, while the smooth density curve helps visualize the overall distribution trend.',
       key: 'alle_freq',
     },
     {
-      title: '',
+      title: 'Only with SNPs PASS all filters',
       desc: `Here is the Bar Chart: Number of Substitutions of SNPs (Passed Variants).The X-axis represents different types of SNP substitutions (Transitions and Transversions).The Y-axis represents the count of passed variants for each substitution type.`,
       key: 'snp_pass',
     },

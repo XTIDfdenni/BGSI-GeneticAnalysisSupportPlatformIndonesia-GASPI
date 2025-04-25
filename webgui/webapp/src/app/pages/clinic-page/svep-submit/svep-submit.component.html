@@ -6,14 +6,17 @@
           class="flex justify-center items-center bg-primary-50 rounded-full p-1 cursor-pointer"
           (click)="backToList()"
         >
-          <mat-icon class="white-icon">keyboard_backspace</mat-icon>
+          <mat-icon style="color: white">keyboard_backspace</mat-icon>
         </div>
         <div class="text-base">
           Statistic Graph of
           <b class="text-primary-60 text-xl">{{
             selectedProject.fileName || ""
           }}</b>
-          file from the Kaplan Meier 37 project
+          file from the
+          <b class="text-primary-60 text-xl"
+            >{{ selectedProject.projectName }}
+          </b>
         </div>
       </div>
     } @else {
