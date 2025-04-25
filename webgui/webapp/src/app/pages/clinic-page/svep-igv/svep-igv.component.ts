@@ -40,6 +40,7 @@ export interface IIGVData {
   projectName: string | null;
   bamURL: string | null;
   bamIndex: string | null;
+  filename?: string | null;
 }
 
 @Injectable()
@@ -111,13 +112,17 @@ export class SvepIGVComponent {
     });
   }
 
-  async handleSelectDataIGV(a: any, b: any) {
-    const bamURL = await this.handleGetPrefixURL(a, b);
-    const bamIndex = await this.handleGetPrefixURL(a, b + '.bai');
+  async handleSelectDataIGV(projectName: any, fileName: any) {
+    const bamURL = await this.handleGetPrefixURL(projectName, fileName);
+    const bamIndex = await this.handleGetPrefixURL(
+      projectName,
+      fileName + '.bai',
+    );
     this.igvData = {
-      projectName: a || '',
+      projectName: projectName || '',
       bamURL: bamURL || '',
       bamIndex: bamIndex || '',
+      filename: fileName,
     };
   }
 
