@@ -191,11 +191,22 @@ export class ProjectsListComponent {
   }
 
   showQC(filename: string, projectName: string) {
-    const selectedProject: SelectedProjectType = {
-      projectName: projectName,
-      fileName: filename,
-    };
-    this.selectProject.emit(selectedProject);
+    const disabled = this.findDisableStatus(filename);
+    if (!disabled) {
+      const selectedProject: SelectedProjectType = {
+        projectName: projectName,
+        fileName: filename,
+      };
+      this.selectProject.emit(selectedProject);
+    }
+  }
+
+  findDisableStatus(fileToFind: string) {
+    const foundFile: any = this.dataSource.data
+      .flatMap((group) => group.files)
+      .find((file) => file.filename === fileToFind);
+
+    return foundFile.disabled;
   }
 
   submit(file: string, projectName: string) {

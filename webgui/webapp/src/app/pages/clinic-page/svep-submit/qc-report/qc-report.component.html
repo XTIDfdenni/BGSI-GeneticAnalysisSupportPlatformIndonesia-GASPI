@@ -14,6 +14,12 @@
                 alt="{{ item.title }}"
                 class="w-4/5 h-auto object-contain"
               />
+            } @else {
+              <img
+                class="w-3/5 h-auto object-contain p-20"
+                src="../../../../../assets/images/no-items.png"
+                alt="No Items"
+              />
             }
           </div>
           <div class="text-lg text-black">{{ item.desc }}</div>

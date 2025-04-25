@@ -25,6 +25,7 @@ import {
   map,
   Observable,
   of,
+  startWith,
   Subject,
 } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
@@ -55,6 +56,7 @@ import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 type SVEPResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -105,6 +107,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     AutoCompleteComponent,
     MatIconModule,
     MatTooltipModule,
+    MatAutocompleteModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -186,6 +189,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   protected Object = Object;
   protected resultsLength = 0;
   protected pageIndex = 0;
+  filteredColumns: Observable<string[]> | undefined;
 
   constructor(
     protected cs: ClinicService,
@@ -235,6 +239,10 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       // if chromosome or page change we clear position
       this.basePositionField.setValue('');
     });
+    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || '')),
+    );
   }
 
   pageChange(event: PageEvent) {
@@ -444,5 +452,13 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
 
   showTooltip(message: string) {
     return `Secondary analysis on this variants reports "${message}" `;
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.columns.filter((option) =>
+      option.toLowerCase().includes(filterValue),
+    );
   }
 }
