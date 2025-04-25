@@ -24,6 +24,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from 'src/environments/environment';
 import { ClinicService } from 'src/app/services/clinic.service';
+import { SelectedProjectType } from '../svep-submit.component';
 
 interface ProjectFile {
   filename: string;
@@ -81,6 +82,8 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
 })
 export class ProjectsListComponent {
   @Output() filesSelected = new EventEmitter<FileSelectEvent>();
+  @Output() selectProject = new EventEmitter<SelectedProjectType>();
+
   loading = true;
   dataSource = new MatTableDataSource<Project>();
   displayedColumns: string[] = ['name', 'description', 'files', 'actions'];
@@ -187,8 +190,12 @@ export class ProjectsListComponent {
     }
   }
 
-  showQC() {
-    this.tstr.error('Waiting API', 'Error');
+  showQC(filename: string, projectName: string) {
+    const selectedProject: SelectedProjectType = {
+      projectName: projectName,
+      fileName: filename,
+    };
+    this.selectProject.emit(selectedProject);
   }
 
   submit(file: string, projectName: string) {
