@@ -45,6 +45,16 @@ export class QcReportComponent {
       desc: 'Here is the Boxplot: Genotype Quality, where each genomic position (POS) on the x-axis has a distribution of genotype quality (QUAL) values on the y-axis. The boxplot shows the median, quartiles, and potential outliers for each position',
       key: 'gq',
     },
+    {
+      title: '',
+      desc: 'Here is the Histogram/Density Plot: Allele Frequency, showing the distribution of allele frequencies. The histogram bars represent the count of variants in each frequency range, while the smooth density curve helps visualize the overall distribution trend.',
+      key: 'alle_freq',
+    },
+    {
+      title: '',
+      desc: `Here is the Bar Chart: Number of Substitutions of SNPs (Passed Variants).The X-axis represents different types of SNP substitutions (Transitions and Transversions).The Y-axis represents the count of passed variants for each substitution type.`,
+      key: 'snp_pass',
+    },
   ];
 
   loading = false;
