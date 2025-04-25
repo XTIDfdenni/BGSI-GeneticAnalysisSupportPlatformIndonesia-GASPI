@@ -78,6 +78,14 @@ export class ClinicService {
     );
   }
 
+  generateQC(projectName: string, fileName: string, key: string) {
+    return from(
+      API.post(environment.api_endpoint_svep.name, 'vcfstats', {
+        body: { projectName, fileName, key },
+      }),
+    );
+  }
+
   getSvepResults(
     requestId: string,
     projectName: string,
