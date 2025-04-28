@@ -213,7 +213,11 @@ export class NotebooksComponent {
     if (!notebooks) return of([]);
 
     const costEstimations$ = notebooks.map((n) =>
-      this.aws.calculateTotalPricePerMonth(n.instanceType, n.volumeSize),
+      this.aws.calculateTotalPricePerMonth(
+        n.instanceType,
+        n.volumeSize,
+        n.status,
+      ),
     );
 
     return forkJoin(costEstimations$).pipe(

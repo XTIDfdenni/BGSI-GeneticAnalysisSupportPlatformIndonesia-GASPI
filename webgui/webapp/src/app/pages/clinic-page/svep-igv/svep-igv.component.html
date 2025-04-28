@@ -1,3 +1,25 @@
+@if (igvData) {
+  <mat-card class="mb-2">
+    <mat-card-content>
+      <div class="flex flex-row gap-4 items-center">
+        <div
+          class="flex justify-center items-center bg-primary-50 rounded-full p-1 cursor-pointer"
+          (click)="handleBackToFiles()"
+        >
+          <mat-icon style="color: white">keyboard_backspace</mat-icon>
+        </div>
+        <div class="text-base">
+          Result of the file
+          <b class="text-primary-60 text-xl">{{ igvData.filename || "" }}</b>
+          from
+          <b class="text-primary-60 text-xl">{{ igvData.projectName || "" }}</b>
+          project
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+}
+
 <mat-card>
   <mat-card-content>
     <div class="mx-1 lg:mx-[20px]">
@@ -77,17 +99,6 @@
           ></mat-paginator>
           <br />
         </div>
-      }
-
-      @if (igvData) {
-        <button
-          mat-raised-button
-          color="primary"
-          (click)="handleBackToFiles()"
-          class="mt-2"
-        >
-          Back to files
-        </button>
       }
     </div>
   </mat-card-content>

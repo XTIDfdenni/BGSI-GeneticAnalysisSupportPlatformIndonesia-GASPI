@@ -1,16 +1,36 @@
 import { ClipboardModule } from '@angular/cdk/clipboard';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/environments/environment';
+import AWS from 'aws-sdk';
+import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
+import { Storage } from 'aws-amplify';
+import { UserQuotaService } from 'src/app/services/userquota.service';
+import { firstValueFrom } from 'rxjs';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
+const filePath = '/your/path/to/file.format';
 
 @Component({
   selector: 'app-access-keys-dialog',
   standalone: true,
   imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatButtonModule,
     ClipboardModule,
@@ -21,19 +41,103 @@ import { environment } from 'src/environments/environment';
   styleUrl: './access-keys-dialog.component.scss',
 })
 export class AccessKeysDialogComponent {
-  accessKeyId!: string;
-  secretAccessKey!: string;
-  sessionToken!: string;
-  copyString!: string;
-  s3uri!: string;
+  script = '';
+  scriptHtml = '';
+  json = '';
+  totalStorageSize = 0;
+  expiredsText = '';
+  limitSizeText = '';
 
-  constructor(private auth: AuthService) {
-    this.auth.getKeys().then((keys) => {
-      this.accessKeyId = keys.accessKeyId;
-      this.secretAccessKey = keys.secretAccessKey;
-      this.sessionToken = keys.sessionToken;
-      this.s3uri = `s3://${environment.storage.dataPortalBucket}/private/${keys.identityId}/`;
-      this.copyString = `export AWS_ACCESS_KEY_ID=${this.accessKeyId}\nexport AWS_SECRET_ACCESS_KEY=${this.secretAccessKey}\nexport AWS_SESSION_TOKEN=${this.sessionToken}`;
+  fileNameForm: FormGroup;
+
+  constructor(
+    private auth: AuthService,
+    private uq: UserQuotaService,
+  ) {
+    this.fileNameForm = new FormGroup({
+      name: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(30),
+        Validators.pattern('^[a-zA-Z0-9-_.]*$'),
+      ]),
+    });
+  }
+
+  async generateTotalSize() {
+    const res = await Storage.list(``, {
+      pageSize: 'ALL',
+      level: 'private',
+    });
+
+    const bytesTotal = getTotalStorageSize(res.results);
+    return bytesTotal;
+  }
+
+  async generateCurlCommand(filename: string): Promise<void> {
+    try {
+      const { accessKeyId, secretAccessKey, sessionToken, identityId } =
+        await this.auth.getKeys();
+
+      const totalStorageSize = await this.generateTotalSize();
+      const { quotaSize: totalQuotaSize } = await firstValueFrom(
+        this.uq.getCurrentUsage(),
+      );
+
+      const limitSizeInBytes = Math.floor(totalQuotaSize - totalStorageSize);
+      const expires = 60 * 60; // 1 hour
+
+      this.expiredsText = `${expires / 60 / 60} Hour${
+        expires / 60 / 60 > 1 ? 's' : ''
+      }`;
+
+      this.limitSizeText = formatBytes(limitSizeInBytes, 2);
+
+      const s3 = new AWS.S3({
+        region: environment.auth.region,
+        credentials: {
+          accessKeyId,
+          secretAccessKey,
+          sessionToken,
+        },
+      });
+      const res = s3.createPresignedPost({
+        Bucket: environment.storage.dataPortalBucket,
+        Fields: {
+          key: `private/${identityId}/${filename}`,
+        },
+        Expires: 60 * 60,
+        Conditions: [['content-length-range', 0, limitSizeInBytes]],
+      });
+
+      this.json = JSON.stringify(res, null, 2);
+
+      const curl: string[] = [
+        `curl -X POST ${res.url} \\`,
+        ...Object.entries(res.fields).map(
+          ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
+        ),
+        `  -F "file=@${filePath}"`, // Adding file path dynamically
+      ];
+
+      // Replace the file path with HTML formatted version in the last part
+      const curlHtml = curl
+        .slice(0, -1) // Take all but the last line (removing the last "file" line)
+        .concat(
+          `  -F "file=@<span class="text-red-500">${filePath}</span>"`, // Add HTML formatted file path
+        )
+        .join('<br>'); // Join the array into a single string with <br> between lines
+
+      this.scriptHtml = curlHtml;
+      this.script = curl.join('\n');
+    } catch (error) {
+      console.error('Error initializing access keys:', error);
+    }
+  }
+
+  copyToClipboard(): void {
+    navigator.clipboard.writeText(this.script).then(() => {
+      console.log('Script copied to clipboard!');
     });
   }
 }

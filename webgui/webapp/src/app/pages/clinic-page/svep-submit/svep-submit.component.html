@@ -1,67 +1,45 @@
 <mat-card>
   <mat-card-content>
-    <div class="mx-1 lg:mx-[20px]">
-      <h2 class="text-left">Instructions</h2>
-      <p>
-        sVEP operates by using a single input in the form of a VCF file. Please
-        select a VCF from the list of available files.
-      </p>
-      <p>
-        Disabled options indicate missing .tbi/.csi index files in project
-        bucket.
-      </p>
-      <app-projects-list #projects (filesSelected)="filesSelected($event)" />
-      <br />
-      <div class="flex flex-row">
-        <button
-          [disabled]="submissionStarted"
-          class="w-[110px] mr-1"
-          mat-raised-button
-          color="primary"
-          (click)="reset()"
+    @if (selectedProject) {
+      <div class="flex flex-row gap-4 items-center">
+        <div
+          class="flex justify-center items-center bg-primary-50 rounded-full p-1 cursor-pointer"
+          (click)="backToList()"
         >
-          Reset
-        </button>
-        <button
-          class="w-[110px] mr-1"
-          mat-raised-button
-          color="primary"
-          (click)="submit()"
-          [disabled]="!valid || submissionStarted"
-        >
-          Submit
-        </button>
-        <!--[disabled]="!(valid || vcfFileInputControl.valid) || submissionStarted"-->
-        @if (submissionStarted) {
-          <mat-spinner class="flex !h-[36px] !w-[36px]"></mat-spinner>
-        }
+          <mat-icon style="color: white">keyboard_backspace</mat-icon>
+        </div>
+        <div class="text-base">
+          Statistic Graph of
+          <b class="text-primary-60 text-xl">{{
+            selectedProject.fileName || ""
+          }}</b>
+          file from the
+          <b class="text-primary-60 text-xl"
+            >{{ selectedProject.projectName }}
+          </b>
+        </div>
       </div>
-      <!-- @if (results.RequestId && results.ProjectName) {
-        <a
-          class="w-[224px] mr-1 mt-1"
-          mat-raised-button
-          color="primary"
-          [routerLink]="['/clinic', 'svep-results']"
-          [queryParams]="{
-            jobId: results.RequestId,
-            projectName: results.ProjectName
-          }"
-          >View Results</a
-        >
+    } @else {
+      <div class="mx-1 lg:mx-[20px]">
+        <h2 class="text-left">Instructions</h2>
         <p>
-          Following is your unique Job Id. Click on link to view result or save
-          the Job Id for future results retrieval.
+          sVEP operates by using a single input in the form of a VCF file.
+          Please select a VCF from the list of available files.
         </p>
-        <a
-          class="text-cyan-950 decoration-transparent break-all"
-          [routerLink]="['/clinic', 'svep-results']"
-          [queryParams]="{
-            jobId: results.RequestId,
-            projectName: results.ProjectName
-          }"
-          >{{ results.RequestId }}</a
-        >
-      } -->
-    </div>
+        <p>
+          Disabled options indicate missing .tbi/.csi index files in project
+          bucket.
+        </p>
+        <app-projects-list
+          #projects
+          (filesSelected)="filesSelected($event)"
+          (selectProject)="handleSelectProject($event)"
+        />
+        <br />
+      </div>
+    }
   </mat-card-content>
 </mat-card>
+@if (selectedProject) {
+  <qc-report [qcData]="selectedProject" />
+}

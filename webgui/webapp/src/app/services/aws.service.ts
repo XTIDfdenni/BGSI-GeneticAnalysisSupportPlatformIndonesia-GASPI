@@ -214,6 +214,7 @@ export class AwsService {
   calculateTotalPricePerMonth(
     instanceType: string,
     volumeSize: number,
+    status: string,
   ): Observable<number> {
     return forkJoin({
       instancePrice: from(this.getInstancePricing(instanceType)),
@@ -221,9 +222,10 @@ export class AwsService {
     }).pipe(
       map(({ instancePrice, volumePrice }) => {
         const volumePricePerMonth = (volumePrice || 0) * volumeSize;
-        const instancePricePerMonth = this.calculateMonthlyCost(
-          instancePrice || 0,
-        );
+        const instancePricePerMonth =
+          status.toLowerCase() !== 'stopped'
+            ? this.calculateMonthlyCost(instancePrice || 0)
+            : 0;
         return parseFloat(
           (volumePricePerMonth + instancePricePerMonth).toFixed(2),
         );

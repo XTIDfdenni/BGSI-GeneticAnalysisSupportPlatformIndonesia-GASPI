@@ -77,23 +77,98 @@
         </button>
       }
     </div>
-    @if (dataRows.value.length > 0) {
-      <div class="mb-2">
-        <strong>Click on table headers to sort</strong>
-      </div>
-      <div
-        class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700"
-      >
-        <cdk-virtual-scroll-viewport [style.height.px]="700">
-          <table
-            mat-table
-            [dataSource]="dataView"
-            matSort
-            (matSortChange)="resort($event)"
-          >
-            <ng-container matColumnDef="selected">
-              <th mat-header-cell *matHeaderCellDef class="!text-center">#</th>
-              <td mat-cell *matCellDef="let row">
+
+    <!-- advanced filter  -->
+    <div class="mb-2">
+      <mat-accordion>
+        <mat-expansion-panel
+          (opened)="panelOpenState.set(true)"
+          (closed)="panelOpenState.set(false)"
+        >
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span class="text-lg text-primary-50 font-semibold"
+                >Advanced Filter Term</span
+              >
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="flex flex-col">
+            <div class="flex flex-row space-x-1 items-center gap-2">
+              <mat-form-field class="w-[200px] self-center">
+                <mat-label>Filter</mat-label>
+                <input
+                  type="text"
+                  placeholder="Pick Filter"
+                  aria-label="Search Filter"
+                  matInput
+                  [formControl]="advancedFilter"
+                  [matAutocomplete]="auto"
+                />
+                <mat-autocomplete #auto="matAutocomplete">
+                  @for (option of filteredColumns | async; track option) {
+                    @if (option !== "selected") {
+                      <mat-option [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    }
+                  }
+                </mat-autocomplete>
+              </mat-form-field>
+              <div class="mb-5">
+                <button mat-raised-button color="primary" (click)="addFilter()">
+                  Add Filter
+                </button>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4">
+              @for (
+                item of filterValues | keyvalue: compareFn;
+                track item.key
+              ) {
+                <auto-complete-component
+                  [label]="item.key"
+                  [options]="filterMasterData[item.key]"
+                  (optionSelected)="onSelectChange($event, item.key)"
+                  (deleteFilter)="removeFilter(item.key)"
+                />
+              }
+            </div>
+
+            <div class="gap-2 flex flex-row">
+              <button
+                mat-raised-button
+                style="background: #ffa705"
+                (click)="resetFilter()"
+              >
+                Reset Filter
+              </button>
+              <button mat-raised-button color="primary" (click)="setFilter()">
+                Filter
+              </button>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <!-- @if (dataRows.value.length > 0) { -->
+    <div class="mb-2">
+      <strong>Click on table headers to sort</strong>
+    </div>
+    <div
+      class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700"
+    >
+      <cdk-virtual-scroll-viewport [style.height.px]="700">
+        <table
+          mat-table
+          [dataSource]="dataView"
+          matSort
+          (matSortChange)="resort($event)"
+        >
+          <ng-container matColumnDef="selected">
+            <th mat-header-cell *matHeaderCellDef class="!text-center">#</th>
+            <td mat-cell *matCellDef="let row">
+              <div class="flex flex-row items-center">
                 <mat-checkbox
                   (change)="cs.selection(row, $event.checked)"
                   [checked]="
@@ -101,64 +176,90 @@
                   "
                 >
                 </mat-checkbox>
-              </td>
-            </ng-container>
-            @for (column of columns; track $index) {
-              @if (column !== "selected") {
-                <ng-container [matColumnDef]="column">
-                  <th
-                    mat-header-cell
-                    *matHeaderCellDef
-                    class="whitespace-nowrap"
-                    mat-sort-header
+                @if (!["PASS", "-", ""].includes(row["filter"])) {
+                  <div
+                    class="flex justify-center items-center bg-red-600 rounded-full"
+                    [matTooltip]="showTooltip(row['filter'])"
                   >
-                    {{ column }}
-                  </th>
-                  <td
-                    mat-cell
-                    *matCellDef="let element"
-                    class="whitespace-nowrap"
-                  >
-                    @if (column === "Region") {
-                      <a
-                        class="no-underline text-blue-500"
-                        href="https://asia.ensembl.org/Homo_sapiens/Location/View?r={{
-                          element[column]
-                        }}"
-                        target="_blank"
-                        >{{ element[column] }}</a
-                      >
-                    } @else {
+                    <mat-icon class="text-white">priority_high</mat-icon>
+                  </div>
+                }
+              </div>
+            </td>
+          </ng-container>
+          @for (column of columns; track $index) {
+            @if (column !== "selected") {
+              <ng-container [matColumnDef]="column">
+                <th
+                  mat-header-cell
+                  *matHeaderCellDef
+                  class="whitespace-nowrap"
+                  mat-sort-header
+                >
+                  {{ column }}
+                </th>
+                <td
+                  mat-cell
+                  *matCellDef="let element"
+                  class="whitespace-nowrap"
+                >
+                  @if (
+                    [
+                      "Region",
+                      "Gene ID",
+                      "variationId",
+                      "rsId",
+                      "accession"
+                    ].includes(column)
+                  ) {
+                    <div
+                      class="cursor-pointer text-blue-500"
+                      (click)="handleRedirectUrl(column, element[column])"
+                    >
                       {{ element[column] }}
-                    }
-                  </td>
-                </ng-container>
-              }
+                    </div>
+                  } @else if (column === "pubmed" && element[column] !== "-") {
+                    <div>
+                      @for (id of splitPubMedArray(element[column]); track id) {
+                        <span
+                          class="cursor-pointer text-blue-500"
+                          (click)="handleRedirectUrl(column, id)"
+                        >
+                          {{ id }} </span
+                        >,
+                      }
+                    </div>
+                  } @else {
+                    {{ element[column] }}
+                  }
+                </td>
+              </ng-container>
             }
+          }
 
-            <tr mat-header-row *matHeaderRowDef="columns"></tr>
-            <ng-template
-              let-row
-              matRowDef
-              cdkVirtualFor
-              [matRowDefColumns]="columns"
-              [cdkVirtualForOf]="dataRows"
-            >
-              <tr mat-row></tr>
-            </ng-template>
-          </table>
-        </cdk-virtual-scroll-viewport>
-      </div>
-      <mat-paginator
-        showFirstLastButtons
-        #paginator
-        hidePageSize
-        pageSize="1"
-        [length]="resultsLength"
-        [pageIndex]="pageIndex"
-        (page)="pageChange($event)"
-      >
-      </mat-paginator>
-    }
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <ng-template
+            let-row
+            matRowDef
+            cdkVirtualFor
+            [matRowDefColumns]="columns"
+            [cdkVirtualForOf]="dataRows"
+          >
+            <tr mat-row></tr>
+          </ng-template>
+        </table>
+      </cdk-virtual-scroll-viewport>
+    </div>
+    <mat-paginator
+      showFirstLastButtons
+      #paginator
+      hidePageSize
+      pageSize="1"
+      [length]="resultsLength"
+      [pageIndex]="pageIndex"
+      (page)="pageChange($event)"
+    >
+    </mat-paginator>
+    <!-- } -->
   </mat-card-content>
 </mat-card>

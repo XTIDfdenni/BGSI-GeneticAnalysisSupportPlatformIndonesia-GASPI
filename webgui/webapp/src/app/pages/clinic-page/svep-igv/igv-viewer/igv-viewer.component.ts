@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input } from '@angular/core';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
+import { IIGVData } from '../svep-igv.component';
 declare var igv: any; // Declare IGV
 
 @Component({
@@ -11,11 +12,7 @@ declare var igv: any; // Declare IGV
   styleUrl: './igv-viewer.component.scss',
 })
 export class IgvViewerComponent {
-  @Input() data!: {
-    projectName: string | null;
-    bamURL: string | null;
-    bamIndex: string | null;
-  } | null;
+  @Input() data!: IIGVData | null;
 
   private igvBrowser: any = null;
   loading = false;
@@ -32,6 +29,7 @@ export class IgvViewerComponent {
         this.loading = false;
         console.error('Error loading IGV script:', error);
       });
+    console.log(this.data);
   }
 
   loadScript(src: string): Promise<void> {

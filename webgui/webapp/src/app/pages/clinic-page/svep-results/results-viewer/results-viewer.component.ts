@@ -5,10 +5,11 @@ import {
   Injectable,
   Input,
   OnChanges,
+  signal,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import {
   MatPaginator,
@@ -24,6 +25,7 @@ import {
   map,
   Observable,
   of,
+  startWith,
   Subject,
 } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
@@ -49,7 +51,12 @@ import {
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import { ToastrService } from 'ngx-toastr';
+import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
 
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 type SVEPResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -96,6 +103,11 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatCheckboxModule,
     ScrollingModule,
     MatCardModule,
+    MatExpansionModule,
+    AutoCompleteComponent,
+    MatIconModule,
+    MatTooltipModule,
+    MatAutocompleteModule,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -113,6 +125,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  readonly panelOpenState = signal(false);
   protected results: SVEPResult | null = null;
   protected columns: string[] = [
     'selected',
@@ -155,12 +168,16 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'Allele Number',
     'SIFT (max)',
   ];
+  filterValues: { [key: string]: string } = {};
+  filterMasterData: { [key: string]: any[] } = {};
   protected originalRows: any[] = [];
   protected dataRows = new BehaviorSubject<any[]>([]);
   protected dataView = new Observable<any[]>();
+  protected currentRenderedRows: any[] = [];
   protected chromosomeField: FormControl = new FormControl('');
   protected basePositionField: FormControl = new FormControl('');
   protected filterField: FormControl = new FormControl('');
+  protected advancedFilter: FormControl = new FormControl('');
   protected annotationForm: FormGroup = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -172,6 +189,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   protected Object = Object;
   protected resultsLength = 0;
   protected pageIndex = 0;
+  filteredColumns: Observable<string[]> | undefined;
 
   constructor(
     protected cs: ClinicService,
@@ -183,7 +201,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
   ) {}
 
   resort(sort: Sort) {
-    const snapshot = [...this.originalRows];
+    const snapshot = [...this.currentRenderedRows];
     const key = sort.active;
     if (sort.direction === 'asc') {
       snapshot.sort((a, b) => {
@@ -196,7 +214,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       });
       this.dataRows.next(snapshot);
     } else {
-      this.dataRows.next(this.originalRows);
+      this.dataRows.next(snapshot);
     }
   }
 
@@ -210,6 +228,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
         // Determine the start and end rendered range
         const start = Math.max(0, value[1] - 10);
         const end = Math.min(value[0].length, value[1] + 100);
+        this.currentRenderedRows = [...value[0].slice(start, end)]; // 🔥 store snapshot
 
         // Update the datasource for the rendered range of data
         return value[0].slice(start, end);
@@ -220,6 +239,10 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
       // if chromosome or page change we clear position
       this.basePositionField.setValue('');
     });
+    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || '')),
+    );
   }
 
   pageChange(event: PageEvent) {
@@ -329,9 +352,113 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
           });
         return row;
       });
-    this.dataRows.next(this.originalRows);
+    // this.dataRows.next(this.originalRows);
+    this.setFilter();
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
     this.pageIndex = result.page - 1;
     this.cs.selectedVariants.next(new Map());
+    this.setMasterData();
+  }
+
+  setFilter() {
+    const filtered = this.originalRows.filter((item) => {
+      return this.columns.every((col) => {
+        const filterVal = this.filterValues[col];
+        const itemVal = item[col]?.toString().toLowerCase() || '';
+        return filterVal ? itemVal.includes(filterVal.toLowerCase()) : true;
+      });
+    });
+
+    this.dataRows.next(filtered);
+  }
+
+  resetFilter() {
+    this.filterValues = {};
+    this.refetch(
+      this.requestId,
+      this.projectName,
+      this.chromosomeField.value,
+      this.pageIndex + 1,
+    );
+  }
+
+  addFilter() {
+    //add dinamic filter
+    const filterKey = this.advancedFilter.value;
+    if (this.filterValues.hasOwnProperty(filterKey) || filterKey === '') {
+      return;
+    }
+    this.filterValues = { ...this.filterValues, [filterKey]: '' };
+  }
+
+  setMasterData() {
+    this.columns.forEach((x) => {
+      if (x !== 'selected') {
+        const uniqueData = Array.from(
+          new Set(this.originalRows.map((item) => item[x])),
+        );
+
+        const existing = this.filterMasterData[x] || [];
+        const merged = Array.from(new Set([...existing, ...uniqueData]));
+
+        this.filterMasterData = {
+          ...this.filterMasterData,
+          [x]: merged,
+        };
+      }
+    });
+  }
+
+  onSelectChange(event: any, key: string) {
+    this.filterValues[key] = event;
+  }
+
+  //handling order autocomplete based on index
+  compareFn = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0;
+  };
+
+  removeFilter(key: string) {
+    const { [key]: _, ...rest } = this.filterValues;
+    this.filterValues = rest;
+  }
+
+  handleRedirectUrl(column: string, value: string) {
+    const urlMap: Record<string, string> = {
+      'Gene ID': `https://www.ncbi.nlm.nih.gov/gene/?term=${value}`,
+      variationId: `https://www.ncbi.nlm.nih.gov/clinvar/variation/${value}/`,
+      rsId: `https://www.ncbi.nlm.nih.gov/snp/${value}`,
+      accession: `https://www.ncbi.nlm.nih.gov/clinvar/${value}/?redir=rcv`,
+      pubmed: `https://pubmed.ncbi.nlm.nih.gov/${value}/`,
+    };
+
+    const url =
+      urlMap[column] ||
+      `https://asia.ensembl.org/Homo_sapiens/Location/View?r=${value}`;
+    window.open(url, '_blank');
+  }
+
+  splitPubMedArray(pubmedString: string): string[] {
+    //handle error if data null
+    if (
+      !pubmedString ||
+      pubmedString.trim() === '' ||
+      pubmedString.trim() === '-'
+    ) {
+      return [];
+    }
+    return pubmedString.split(',').map((id) => id.trim());
+  }
+
+  showTooltip(message: string) {
+    return `Secondary analysis on this variants reports "${message}" `;
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.columns.filter((option) =>
+      option.toLowerCase().includes(filterValue),
+    );
   }
 }

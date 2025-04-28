@@ -15,7 +15,13 @@ import { ClinicService } from 'src/app/services/clinic.service';
 import { environment } from 'src/environments/environment';
 import { MatCardModule } from '@angular/material/card';
 import { ToastrService } from 'ngx-toastr';
+import { QcReportComponent } from './qc-report/qc-report.component';
+import { MatIconModule } from '@angular/material/icon';
 
+export interface SelectedProjectType {
+  projectName: string | null;
+  fileName: string | null;
+}
 @Component({
   selector: 'app-submit-page',
   standalone: true,
@@ -28,8 +34,10 @@ import { ToastrService } from 'ngx-toastr';
     FormsModule,
     ReactiveFormsModule,
     ProjectsListComponent,
+    QcReportComponent,
     MatProgressSpinnerModule,
     MatCardModule,
+    MatIconModule,
   ],
   providers: [],
   templateUrl: './svep-submit.component.html',
@@ -46,6 +54,8 @@ export class SvepSubmitComponent {
     ProjectName: null,
   };
 
+  protected selectedProject: SelectedProjectType | null = null;
+
   constructor(
     private cs: ClinicService,
     private tstr: ToastrService,
@@ -58,46 +68,11 @@ export class SvepSubmitComponent {
     this.valid = true;
   }
 
-  reset() {
-    this.projects.list(0);
-    this.submissionStarted = false;
-    this.valid = false;
+  handleSelectProject(updatedProject: SelectedProjectType): void {
+    this.selectedProject = updatedProject; // Update parent's variable with the child data
   }
 
-  submit() {
-    this.submissionStarted = true;
-
-    if (this.vcfFile) {
-      const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${this.projectName}/project-files/${this.vcfFile}`;
-
-      this.cs
-        .submitSvepJob(s3URI, this.projectName!)
-        .pipe(
-          catchError((e) => {
-            const errorMessage =
-              e.response?.data?.error?.errorMessage ||
-              'Something went wrong when initaiting the job. Please try again later.';
-            this.tstr.error(errorMessage, 'Error');
-            this.submissionStarted = false;
-            return of(null);
-          }),
-        )
-        .subscribe((response: any) => {
-          if (response) {
-            this.tstr.success(
-              'Displaying results takes time according to the size of your data. Once completed, we will send you a notification via email.',
-              'Success',
-            );
-            this.reset();
-            // im not delete cuz maybe used soon
-            // this.results.RequestId = response.RequestId ?? null;
-            // this.results.ProjectName = response.ProjectName ?? null;
-            // this.reset();
-          }
-        });
-    } else {
-      this.tstr.warning('No file selected', 'Warning');
-      this.submissionStarted = false;
-    }
+  backToList() {
+    this.selectedProject = null;
   }
 }

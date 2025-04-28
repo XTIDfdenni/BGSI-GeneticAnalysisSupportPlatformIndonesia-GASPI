@@ -17,7 +17,10 @@
         >.
       </div>
       <div>
-        Currently, your data usage are <b>{{ totalSizeFormatted }} -</b>
+        Currently, your data usage are <b> {{ totalSizeFormatted }} -</b>
+      </div>
+      <div class="text-red-500 flex flex-row items-center">
+        <mat-icon class="text-base">error</mat-icon><span>Your remaining storage size is <b> {{ totalSizeRemainingText }}</b></span>
       </div>
       <div>
         Estimated Cost of your data is <b>${{ costEstimation }}</b> per month.

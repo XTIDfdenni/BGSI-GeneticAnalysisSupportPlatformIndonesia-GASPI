@@ -5,9 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Storage } from 'aws-amplify';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AuthService } from 'src/app/services/auth.service';
-import { catchError, filter, firstValueFrom, of } from 'rxjs';
-import { DportalService } from 'src/app/services/dportal.service';
+import { firstValueFrom } from 'rxjs';
 import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 
@@ -32,6 +30,7 @@ export class UserFileListComponent implements OnInit {
   costEstimation: number = 0;
   totalSize: number = 0;
   totalSizeFormatted: string = '';
+  totalSizeRemainingText: string = '';
 
   loadingUsage: boolean = false;
 
@@ -54,6 +53,10 @@ export class UserFileListComponent implements OnInit {
 
     this.totalSize = bytesTotal;
     this.totalSizeFormatted = formatBytes(bytesTotal, 2);
+    this.totalSizeRemainingText = formatBytes(
+      Math.floor(this.quotaSize - this.totalSize),
+      2,
+    );
   }
 
   async list() {
@@ -75,6 +78,7 @@ export class UserFileListComponent implements OnInit {
     this.quotaSize = quotaSize;
     this.quotaSizeFormatted = formatBytes(this.quotaSize, 2);
     this.costEstimation = costEstimation;
+
     this.loadingUsage = false;
   }
 

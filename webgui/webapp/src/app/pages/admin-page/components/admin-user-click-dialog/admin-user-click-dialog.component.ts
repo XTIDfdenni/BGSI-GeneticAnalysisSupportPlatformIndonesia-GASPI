@@ -23,6 +23,7 @@ import {
   distinctUntilChanged,
   forkJoin,
   of,
+  tap,
 } from 'rxjs';
 import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
@@ -62,6 +63,7 @@ export class AdminUserClickDialogComponent implements OnInit {
   protected costEstimation: number | null = 0;
   protected usageSize = 0;
   protected usageCount = 0;
+  protected loadingCostEstimation: boolean = true;
 
   constructor(
     public dialogRef: MatDialogRef<AdminUserClickDialogComponent>,
@@ -80,11 +82,12 @@ export class AdminUserClickDialogComponent implements OnInit {
     });
   }
 
+  updateDataUser: (userData: any, quotaSize: number | null) => void = () => {};
+
   ngOnInit(): void {
     this.dialogRef.afterOpened().subscribe(() => {
       this.getUserGroups();
     });
-
     this.onChangeCalculateCost();
   }
 
@@ -92,15 +95,16 @@ export class AdminUserClickDialogComponent implements OnInit {
     this.form.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
       .subscribe((values) => {
+        this.loadingCostEstimation = true;
         if (values.quotaQueryCount && values.quotaSize) {
           this.aws
             .calculateQuotaEstimationPerMonth(
               values.quotaQueryCount,
               values.quotaSize,
             )
-
             .subscribe((res) => {
               this.costEstimation = res;
+              this.loadingCostEstimation = false;
             });
         }
       });
@@ -231,9 +235,19 @@ export class AdminUserClickDialogComponent implements OnInit {
 
   updateUser() {
     const groups = _.pick(this.form.value, ['administrators', 'managers']);
-    return this.as
-      .updateUsersGroups(this.data.email, groups)
-      .pipe(catchError(() => of(null)));
+
+    return this.as.updateUsersGroups(this.data.email, groups).pipe(
+      // when update success call parent function to update data.
+      tap((response) => {
+        if (response) {
+          this.updateDataUser(this.form.value, this.costEstimation);
+        }
+      }),
+      catchError((error) => {
+        console.error('Update failed', error);
+        return of(null);
+      }),
+    );
   }
 
   done(): void {

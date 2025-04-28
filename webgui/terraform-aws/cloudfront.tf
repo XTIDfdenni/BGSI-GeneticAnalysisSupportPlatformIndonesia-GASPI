@@ -21,7 +21,7 @@ resource "aws_cloudfront_response_headers_policy" "bui-security-headers-policy" 
         "script-src 'self' 'sha256-2P8mXF+NOGY5a6oJ1jDjLINrckn9RgJYdEesn+Qf4rQ=' https://cdn.jsdelivr.net/npm/igv@3.1.2/dist/igv.min.js;",
         "style-src 'self' 'unsafe-inline';",
         "font-src 'self' https://fonts.gstatic.com;",
-        "img-src 'self' data: content: blob:;",
+        "img-src 'self' data: content: blob: https://${var.data_portal_bucket}.s3.${var.region}.amazonaws.com;",
         "form-action 'self';",
 
         "connect-src 'self' ${var.api_endpoint_sbeacon} ${var.api_endpoint_svep}",

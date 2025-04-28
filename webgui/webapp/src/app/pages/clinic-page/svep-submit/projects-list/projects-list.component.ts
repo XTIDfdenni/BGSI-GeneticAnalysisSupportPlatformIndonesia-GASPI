@@ -21,6 +21,10 @@ import {
 } from '@angular/material/paginator';
 import { isEmpty } from 'lodash';
 import { ToastrService } from 'ngx-toastr';
+import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
+import { environment } from 'src/environments/environment';
+import { ClinicService } from 'src/app/services/clinic.service';
+import { SelectedProjectType } from '../svep-submit.component';
 
 interface ProjectFile {
   filename: string;
@@ -70,20 +74,19 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatRadioModule,
     MatPaginatorModule,
     ComponentSpinnerComponent,
+    MatTooltip,
+    MatTooltipModule,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
 })
 export class ProjectsListComponent {
   @Output() filesSelected = new EventEmitter<FileSelectEvent>();
+  @Output() selectProject = new EventEmitter<SelectedProjectType>();
+
   loading = true;
   dataSource = new MatTableDataSource<Project>();
-  displayedColumns: string[] = [
-    'name',
-    'description',
-    'files',
-    // 'actions',
-  ];
+  displayedColumns: string[] = ['name', 'description', 'files', 'actions'];
   assignTo: string | null = null;
   viewUsers: string | null = null;
   projectName: string | null = null;
@@ -94,11 +97,13 @@ export class ProjectsListComponent {
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
   private isEmptyLastPage = false;
+  protected submissionStarted = false;
 
   constructor(
     private dps: DportalService,
     private tstr: ToastrService,
     private cd: ChangeDetectorRef,
+    private cs: ClinicService,
   ) {}
 
   ngOnInit(): void {
@@ -157,6 +162,7 @@ export class ProjectsListComponent {
               name: project.name,
               description: project.description,
               files: filesWithStatus,
+              action: '',
               indexed: false,
             };
           });
@@ -184,19 +190,55 @@ export class ProjectsListComponent {
     }
   }
 
-  isFileSelected(fileName: string, projectName: string): boolean {
-    return this.vcfFile === fileName && this.projectName === projectName;
+  showQC(filename: string, projectName: string) {
+    const disabled = this.findDisableStatus(filename);
+    if (!disabled) {
+      const selectedProject: SelectedProjectType = {
+        projectName: projectName,
+        fileName: filename,
+      };
+      this.selectProject.emit(selectedProject);
+    }
   }
 
-  onFileSelect(fileName: string, projectName: string) {
-    const fileEvent: FileSelectEvent = {
-      projectName: projectName,
-      vcf: fileName,
-    };
-    this.filesSelected.emit(fileEvent);
+  findDisableStatus(fileToFind: string) {
+    const foundFile: any = this.dataSource.data
+      .flatMap((group) => group.files)
+      .find((file) => file.filename === fileToFind);
+
+    return foundFile.disabled;
   }
 
-  getSelectedFile() {
-    return this.vcfFile;
+  submit(file: string, projectName: string) {
+    this.submissionStarted = true;
+
+    if (file) {
+      const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${file}`;
+
+      this.cs
+        .submitSvepJob(s3URI, projectName!)
+        .pipe(
+          catchError((e) => {
+            const errorMessage =
+              e.response?.data?.error?.errorMessage ||
+              'Something went wrong when initaiting the job. Please try again later.';
+            this.tstr.error(errorMessage, 'Error');
+            this.submissionStarted = false;
+            return of(null);
+          }),
+        )
+        .subscribe((response: any) => {
+          if (response) {
+            this.tstr.success(
+              'Displaying results takes time according to the size of your data. Once completed, we will send you a notification via email.',
+              'Success',
+            );
+            this.list(0);
+          }
+        });
+    } else {
+      this.tstr.warning('No file selected', 'Warning');
+      this.submissionStarted = false;
+    }
   }
 }
