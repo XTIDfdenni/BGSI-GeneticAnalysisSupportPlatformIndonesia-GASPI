@@ -383,6 +383,57 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
+  async makeCohort() {
+    const { CohortJobIdDialogComponent } = await import(
+      './cohort-job-id-dialog/cohort-job-id-dialog.component'
+    );
+
+    const dialog = this.dg.open(CohortJobIdDialogComponent, {
+      data: {},
+    });
+
+    dialog.afterClosed().subscribe((jobId) => {
+      if (!jobId) {
+        return;
+      }
+      const form: any = this.form.value;
+      const query = {
+        jobId: jobId,
+        projects: form.projects,
+        scope: form.scope,
+        query: {
+          filters: serializeFilters(form.filters, form.scope),
+          requestedGranularity: form.granularity,
+        },
+        meta: {
+          apiVersion: 'v2.0',
+        },
+      };
+      if (form.scope === ScopeTypes.GENOMIC_VARIANTS) {
+        _.set(
+          query,
+          'query.requestParameters',
+          serializeRequestParameters(form.requestParameters),
+        );
+      }
+      this.ss.start();
+      this.dps
+        .generateCohort(query)
+        .pipe(catchError(() => of(null)))
+        .subscribe((data) => {
+          if (data) {
+            this.tstr.success(
+              'Cohort job created successfully. Please check the status in My Data section.',
+              'Success',
+            );
+          } else {
+            this.tstr.error('Unable to create cohort job.', 'Error');
+          }
+          this.ss.end();
+        });
+    });
+  }
+
   addFilter(filters: FormArray) {
     const group = this.fb.group({
       id: this.fb.control('', [Validators.required]),

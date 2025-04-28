@@ -395,4 +395,13 @@ export class DportalService {
       ),
     );
   }
+
+  generateCohort(payload: any) {
+    console.log('generate cohort');
+    return from(
+      API.post(environment.api_endpoint_sbeacon.name, 'dportal/cohort', {
+        body: payload,
+      }),
+    );
+  }
 }
