@@ -18,7 +18,6 @@ import { MatInputModule } from '@angular/material/input';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, of } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
-import { SpinnerService } from 'src/app/services/spinner.service';
 import { environment } from 'src/environments/environment';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 
@@ -40,7 +39,12 @@ import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/
 })
 export class SubmitQueryDialogComponent {
   protected jobForm: FormGroup = new FormGroup({
-    jobName: new FormControl('', [Validators.required]),
+    jobName: new FormControl('', [
+      Validators.required,
+      Validators.minLength(10),
+      Validators.maxLength(20),
+      Validators.pattern(/^[a-zA-Z0-9-_]+$/),
+    ]),
   });
   protected loading = false;
 
