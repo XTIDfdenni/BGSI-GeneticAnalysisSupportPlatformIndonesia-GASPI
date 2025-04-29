@@ -65,13 +65,13 @@ export class ClinicService {
     );
   }
 
-  submitSvepJob(location: string, projectName: string) {
+  submitSvepJob(location: string, projectName: string, jobName: string) {
     return from(Auth.currentCredentials()).pipe(
       switchMap((credentials) => {
         const userId = credentials.identityId;
         return from(
           API.post(environment.api_endpoint_svep.name, 'submit', {
-            body: { location, projectName, userId },
+            body: { location, projectName, userId, jobName },
           }),
         );
       }),

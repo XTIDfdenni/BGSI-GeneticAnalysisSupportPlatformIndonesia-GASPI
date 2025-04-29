@@ -37,7 +37,7 @@
       @for (file of element.files; track $index) {
         <div class="flex flex-row gap-2 mb-2 mt-2">
           <div
-            (click)="submit(file.filename, element.name)"
+            (click)="openJobDialog(file.filename, element.name)"
             class="bg-primary-50 flex justify-center items-center rounded-full w-8 h-8 shadow-xl overflow-hidden cursor-pointer"
             matTooltip="Run Clinical Workflow"
             aria-label="Run Clinical Workflow"
