@@ -169,7 +169,6 @@ export class ProjectsListComponent {
                 disabled: !hasIndex,
               };
             });
-
             return {
               name: project.name,
               description: project.description,
