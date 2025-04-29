@@ -109,7 +109,7 @@
           <mat-error>Confirmation mismatch</mat-error>
         </mat-form-field>
       </div>
-      @if (userPasswordForm.value.newPassword.length > 0) {
+      @if (userPasswordForm.value.newPassword?.length > 0) {
         <div class="flex space-x-[10px] items-center">
           <h4 class="w-[200px]">Password strength:</h4>
           <div class="w-[250px]">
