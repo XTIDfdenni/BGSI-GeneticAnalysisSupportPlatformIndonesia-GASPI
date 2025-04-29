@@ -299,9 +299,26 @@
         [disabled]="form.invalid"
         mat-raised-button
         color="primary"
-        class="!mb-2.5 w-[120px]"
+        class="!mb-2.5 mr-2.5 w-[120px]"
       >
         Run Query
+      </button>
+      <button
+        type="button"
+        (click)="makeCohort()"
+        [disabled]="
+          form.invalid ||
+          form.value.customReturn ||
+          ![scopeTypes.GENOMIC_VARIANTS, scopeTypes.INDIVIDUALS].includes(
+            form.value.scope
+          ) ||
+          form.value.granularity !== 'record'
+        "
+        mat-raised-button
+        color="primary"
+        class="!mb-2.5 w-[120px]"
+      >
+        Make Cohort
       </button>
     }
   </mat-card-content>
