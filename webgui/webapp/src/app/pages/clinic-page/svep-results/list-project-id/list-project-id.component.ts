@@ -100,8 +100,8 @@ export class ListJobComponent implements OnChanges, OnInit {
   displayedColumns: string[] = [
     'input_vcf',
     'job_status',
-    'job_id',
     'job_name',
+    'job_id',
   ];
   JobStatus = JobStatus;
   jobStatusOptions = ['all', ...Object.values(JobStatus)];
