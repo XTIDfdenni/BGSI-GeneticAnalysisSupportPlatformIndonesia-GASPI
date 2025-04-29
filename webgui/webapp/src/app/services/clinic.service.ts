@@ -49,6 +49,8 @@ export class ClinicService {
     limit?: number,
     last_evaluated_key?: string | null,
     project?: string,
+    search?: string,
+    job_status?: string,
   ) {
     console.log('get list jobs id');
     return from(
@@ -59,6 +61,8 @@ export class ClinicService {
           queryStringParameters: {
             ...(limit !== undefined && limit !== null ? { limit } : {}),
             ...(last_evaluated_key ? { last_evaluated_key } : {}),
+            ...(search ? { search } : {}),
+            ...(job_status !== 'all' ? { job_status } : {}),
           },
         },
       ),

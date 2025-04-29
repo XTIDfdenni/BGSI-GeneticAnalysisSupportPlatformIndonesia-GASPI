@@ -9,7 +9,15 @@ import {
 } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { catchError, of, Subject, Subscription } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+  Subject,
+  Subscription,
+} from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import {
   MatPaginator,
@@ -25,6 +33,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { ToastrService } from 'ngx-toastr';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
 
 interface Project {
   job_id: string;
@@ -73,6 +85,10 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatTooltip,
     ComponentSpinnerComponent,
     MatCardModule,
+    MatInputModule,
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatSelectModule,
   ],
   templateUrl: './list-project-id.component.html',
   styleUrl: './list-project-id.component.scss',
@@ -81,14 +97,26 @@ export class ListJobComponent implements OnChanges, OnInit {
   @Input({ required: true }) projectName!: string;
   loading = true;
   dataSource = new MatTableDataSource<Project>();
-  displayedColumns: string[] = ['input_vcf', 'job_status', 'job_id'];
+  displayedColumns: string[] = [
+    'input_vcf',
+    'job_status',
+    'job_id',
+    'job_name',
+  ];
   JobStatus = JobStatus;
+  jobStatusOptions = ['all', ...Object.values(JobStatus)];
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
   private isEmptyLastPage = false;
   private paramSubscription: Subscription | null = null;
+
+  // Reactive form controls for search and status
+  searchControl = new FormControl('');
+  statusControl = new FormControl(this.jobStatusOptions[0]);
+  private searchSubject = new BehaviorSubject<string>('');
+  private statusSubject = new BehaviorSubject<string>(this.jobStatusOptions[0]);
 
   constructor(
     private cs: ClinicService,
@@ -100,7 +128,7 @@ export class ListJobComponent implements OnChanges, OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.list(0);
+    this.list(0, '', this.jobStatusOptions[0]);
     this.cd.detectChanges();
 
     this.paginator.page.subscribe((event: PageEvent) => {
@@ -108,9 +136,38 @@ export class ListJobComponent implements OnChanges, OnInit {
         this.resetPagination();
         this.refresh();
       } else {
-        this.list(event.pageIndex);
+        this.list(
+          event.pageIndex,
+          this.searchSubject.value,
+          this.statusSubject.value,
+        );
       }
     });
+
+    // Detect changes on search input
+    this.searchControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((value) => {
+        this.resetPagination();
+        this.setSearchInput(value as string);
+        this.list(
+          this.paginator.pageIndex,
+          value as string,
+          this.statusSubject.value,
+        );
+      });
+
+    this.statusControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe((value) => {
+        this.resetPagination();
+        this.setStatusInput(value as string);
+        this.list(
+          this.paginator.pageIndex,
+          this.searchSubject.value,
+          value as string,
+        );
+      });
   }
 
   ngOnChanges(): void {
@@ -134,7 +191,15 @@ export class ListJobComponent implements OnChanges, OnInit {
     });
   }
 
-  list(page: number) {
+  setSearchInput(query: string) {
+    this.searchSubject.next(query);
+  }
+
+  setStatusInput(query: string) {
+    this.statusSubject.next(query);
+  }
+
+  list(page: number, search: string, status: string) {
     this.loading = true;
 
     if (this.isEmptyLastPage && this.paginator.pageIndex > 0) {
@@ -145,7 +210,13 @@ export class ListJobComponent implements OnChanges, OnInit {
     }
 
     this.cs
-      .getMyJobsID(this.pageSize, this.pageTokens.get(page), this.projectName)
+      .getMyJobsID(
+        this.pageSize,
+        this.pageTokens.get(page),
+        this.projectName,
+        search,
+        status,
+      )
       .pipe(
         catchError((error) => {
           console.error('Error fetching job id:', error);
@@ -176,7 +247,7 @@ export class ListJobComponent implements OnChanges, OnInit {
   refresh() {
     try {
       this.resetPagination();
-      this.list(0);
+      this.list(0, this.searchSubject.value, this.statusSubject.value);
     } catch (error) {
       console.log(error);
     }
