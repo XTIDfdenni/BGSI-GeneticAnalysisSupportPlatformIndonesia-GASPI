@@ -20,7 +20,22 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTabsModule } from '@angular/material/tabs';
+import { CommonModule } from '@angular/common';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
+enum CmdType {
+  LINUX = 'Linux',
+  POWERSHELL = 'PowerShell',
+  CMD = 'CMD',
+}
+
+interface CmdTab {
+  label: string;
+  plain: string;
+  html: string;
+  tab: CmdType;
+}
 const filePath = '/your/path/to/file.format';
 
 @Component({
@@ -36,6 +51,9 @@ const filePath = '/your/path/to/file.format';
     ClipboardModule,
     MatTooltipModule,
     MatIconModule,
+    MatTabsModule,
+    CommonModule,
+    NoopAnimationsModule,
   ],
   templateUrl: './access-keys-dialog.component.html',
   styleUrl: './access-keys-dialog.component.scss',
@@ -47,7 +65,9 @@ export class AccessKeysDialogComponent {
   totalStorageSize = 0;
   expiredsText = '';
   limitSizeText = '';
+  cmdTabs: CmdTab[] = [];
 
+  selectedTab: CmdType = CmdType.LINUX;
   fileNameForm: FormGroup;
 
   constructor(
@@ -72,6 +92,77 @@ export class AccessKeysDialogComponent {
 
     const bytesTotal = getTotalStorageSize(res.results);
     return bytesTotal;
+  }
+
+  generateUploadScripts(res: any): void {
+    // macOS / Linux
+    const linux = [
+      `curl -X POST ${res.url} \\`,
+      ...Object.entries(res.fields).map(
+        ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
+      ),
+      `  -F "file=@${filePath}"`,
+    ];
+    const linuxHtml = [
+      ...linux.slice(0, -1),
+      `  -F "file=@<span class='text-red-500'>${filePath}</span>"`,
+    ].join('<br>');
+
+    // Windows PowerShell
+    const powershell = [
+      `curl -Method POST -Uri ${JSON.stringify(res.url)} \\`,
+      ...Object.entries(res.fields).map(
+        ([k, v]) => `  -Form ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
+      ),
+      `  -Form "file=@${filePath}"`,
+    ];
+    const powershellHtml = [
+      ...powershell.slice(0, -1),
+      `  -Form "file=@<span class='text-red-500'>${filePath}</span>"`,
+    ].join('<br>');
+
+    // Windows CMD
+    const cmd = [
+      `curl -X POST ${res.url} ^`,
+      ...Object.entries(res.fields).map(
+        ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} ^`,
+      ),
+      `  -F "file=@${filePath}"`,
+    ];
+    const cmdHtml = [
+      ...cmd.slice(0, -1),
+      `  -F "file=@<span class='text-red-500'>${filePath}</span>"`,
+    ].join('<br>');
+
+    this.cmdTabs = [
+      {
+        label: 'macOS / Linux',
+        plain: linux.join('\n'),
+        html: linuxHtml,
+        tab: CmdType.LINUX,
+      },
+      {
+        label: 'Windows PowerShell',
+        plain: powershell.join('\n'),
+        html: powershellHtml,
+        tab: CmdType.POWERSHELL,
+      },
+      {
+        label: 'Windows CMD',
+        plain: cmd.join('\n'),
+        html: cmdHtml,
+        tab: CmdType.CMD,
+      },
+    ];
+  }
+
+  // This method is to calculate and set the selected index based on `selectedTab`
+  get selectedIndex(): number {
+    return this.cmdTabs.findIndex((tab) => tab.tab === this.selectedTab);
+  }
+
+  set selectedIndex(index: number) {
+    this.selectedTab = this.cmdTabs[index]?.tab || 'LINUX'; // Set the selectedTab based on index
   }
 
   async generateCurlCommand(filename: string): Promise<void> {
@@ -110,26 +201,7 @@ export class AccessKeysDialogComponent {
         Conditions: [['content-length-range', 0, limitSizeInBytes]],
       });
 
-      this.json = JSON.stringify(res, null, 2);
-
-      const curl: string[] = [
-        `curl -X POST ${res.url} \\`,
-        ...Object.entries(res.fields).map(
-          ([k, v]) => `  -F ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
-        ),
-        `  -F "file=@${filePath}"`, // Adding file path dynamically
-      ];
-
-      // Replace the file path with HTML formatted version in the last part
-      const curlHtml = curl
-        .slice(0, -1) // Take all but the last line (removing the last "file" line)
-        .concat(
-          `  -F "file=@<span class="text-red-500">${filePath}</span>"`, // Add HTML formatted file path
-        )
-        .join('<br>'); // Join the array into a single string with <br> between lines
-
-      this.scriptHtml = curlHtml;
-      this.script = curl.join('\n');
+      this.generateUploadScripts(res);
     } catch (error) {
       console.error('Error initializing access keys:', error);
     }
