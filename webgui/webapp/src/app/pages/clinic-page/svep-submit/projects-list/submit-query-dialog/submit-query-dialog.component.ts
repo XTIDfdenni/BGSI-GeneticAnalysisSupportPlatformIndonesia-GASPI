@@ -41,7 +41,7 @@ export class SubmitQueryDialogComponent {
   protected jobForm: FormGroup = new FormGroup({
     jobName: new FormControl('', [
       Validators.required,
-      Validators.minLength(10),
+      Validators.minLength(3),
       Validators.maxLength(20),
       Validators.pattern(/^[a-zA-Z0-9 ]+$/), // Allow alphanumeric and space
     ]),
