@@ -15,7 +15,7 @@ def lambda_handler(event, context):
     print(f"Event received: {json.dumps(event)}")
     try:
         body_dict = event.get("body")
-        email = "fajarsep12@gmail.com"
+        email = body_dict["email"]
         first_name = body_dict["first_name"]
         last_name = body_dict["last_name"]
         project_name = body_dict["project_name"]
