@@ -43,7 +43,7 @@ export class SubmitQueryDialogComponent {
       Validators.required,
       Validators.minLength(10),
       Validators.maxLength(20),
-      Validators.pattern(/^[a-zA-Z0-9-_]+$/),
+      Validators.pattern(/^[a-zA-Z0-9 ]+$/), // Allow alphanumeric and space
     ]),
   });
   protected loading = false;
