@@ -10,5 +10,7 @@
   @apply text-red-500 font-bold bg-gray-100 p-1 rounded-md;
 }
 
-
-
+/* Disable transition on mat-row */
+mat-row, mat-cell {
+  transition: none !important;
+}
