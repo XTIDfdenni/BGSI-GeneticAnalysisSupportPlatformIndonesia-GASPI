@@ -59,21 +59,21 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub02-workflow
-- name: gxc-hub01-uat
-  branch: /hub01-uat/
+- name: gxc-uat01
+  branch: /uat01/
   dir: .
   workspace: default
   terraform_version: *tf_version
   execution_order_group: 5
   autoplan:
     when_modified: *tf_files
-  workflow: hub01-uat-workflow
-- name: gxc-hub02-uat
-  branch: /hub02-uat/
+  workflow: uat01-workflow
+- name: gxc-uat02
+  branch: /uat02/
   dir: .
   workspace: default
   terraform_version: *tf_version
   execution_order_group: 6
   autoplan:
     when_modified: *tf_files
-  workflow: hub02-uat-workflow
+  workflow: uat02-workflow
