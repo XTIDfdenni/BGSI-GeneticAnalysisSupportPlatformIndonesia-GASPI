@@ -123,10 +123,11 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
   protected filterTypes = FilterTypes;
   // TODO bug fix for https://github.com/angular/components/issues/13870
   protected disableAnimation = true;
-  // displayed results
+  // displayed results and related data tied with results
   protected results: any = null;
   protected endpoint: any = null;
   protected query: any = null;
+  protected projects: any = null;
   // protected results: any = result;
   // protected endpoint: any = endpoint;
   // protected query: any = query;
@@ -376,6 +377,7 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
           this.results = data;
           this.endpoint = endpoint;
           this.scope = form.customReturn ? form.return : form.scope;
+          this.projects = form.projects;
         }
         this.query = query;
 
