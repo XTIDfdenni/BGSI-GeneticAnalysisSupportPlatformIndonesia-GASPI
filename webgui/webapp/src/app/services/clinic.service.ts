@@ -65,12 +65,28 @@ export class ClinicService {
     );
   }
 
-  submitSvepJob(location: string, projectName: string) {
+  submitClinicJob(location: string, projectName: string) {
+    let pathPart: string;
+    switch (environment.hub_name) {
+      case 'RSCM':
+      case 'RSSARDJITO':
+        pathPart = 'submit';
+        break;
+      case 'RSPON':
+        pathPart = 'pipeline_pharmcat/submit';
+        break;
+      case 'RSIGNG':
+        pathPart = 'pipeline_lookup/submit';
+        break;
+      default:
+        throw new Error(`Unsupported hub_name: ${environment.hub_name}`);
+    }
+
     return from(Auth.currentCredentials()).pipe(
       switchMap((credentials) => {
         const userId = credentials.identityId;
         return from(
-          API.post(environment.api_endpoint_clinic.name, 'submit', {
+          API.post(environment.api_endpoint_clinic.name, pathPart, {
             body: { location, projectName, userId },
           }),
         );
@@ -86,7 +102,7 @@ export class ClinicService {
     );
   }
 
-  getSvepResults(
+  getClinicResults(
     requestId: string,
     projectName: string,
     chromosome: string | null = null,
@@ -98,9 +114,24 @@ export class ClinicService {
       ...(page && { page }),
       ...(position && { position }),
     };
+    let pathPart: string;
+    switch (environment.hub_name) {
+      case 'RSCM':
+      case 'RSSARDJITO':
+        pathPart = 'results';
+        break;
+      case 'RSPON':
+        pathPart = 'pipeline_pharmcat/results';
+        break;
+      case 'RSIGNG':
+        pathPart = 'pipeline_lookup/results';
+        break;
+      default:
+        throw new Error(`Unsupported hub_name: ${environment.hub_name}`);
+    }
 
     return from(
-      API.get(environment.api_endpoint_clinic.name, 'results', {
+      API.get(environment.api_endpoint_clinic.name, pathPart, {
         queryStringParameters: {
           request_id: requestId,
           project_name: projectName,
