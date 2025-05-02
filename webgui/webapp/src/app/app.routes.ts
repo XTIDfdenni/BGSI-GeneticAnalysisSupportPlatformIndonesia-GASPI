@@ -72,14 +72,14 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'svep-submit',
+        redirectTo: 'clinic-submit',
       },
       {
-        path: 'svep-submit',
+        path: 'clinic-submit',
         loadComponent: () =>
           import(
             './pages/clinic-page/clinic-submit/clinic-submit.component'
-          ).then((c) => c.SvepSubmitComponent),
+          ).then((c) => c.ClinicSubmitComponent),
       },
       {
         path: 'clinic-results',

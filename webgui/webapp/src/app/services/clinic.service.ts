@@ -70,7 +70,7 @@ export class ClinicService {
       switchMap((credentials) => {
         const userId = credentials.identityId;
         return from(
-          API.post(environment.api_endpoint_svep.name, 'submit', {
+          API.post(environment.api_endpoint_clinic.name, 'submit', {
             body: { location, projectName, userId },
           }),
         );
@@ -80,7 +80,7 @@ export class ClinicService {
 
   generateQC(projectName: string, fileName: string, key: string) {
     return from(
-      API.post(environment.api_endpoint_svep.name, 'vcfstats', {
+      API.post(environment.api_endpoint_clinic.name, 'vcfstats', {
         body: { projectName, fileName, key },
       }),
     );
@@ -100,7 +100,7 @@ export class ClinicService {
     };
 
     return from(
-      API.get(environment.api_endpoint_svep.name, 'results', {
+      API.get(environment.api_endpoint_clinic.name, 'results', {
         queryStringParameters: {
           request_id: requestId,
           project_name: projectName,
