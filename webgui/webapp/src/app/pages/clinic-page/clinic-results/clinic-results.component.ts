@@ -14,7 +14,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-import { ResultsViewerComponent } from './results-viewer/results-viewer.component';
+import { SvepResultsViewerComponent } from './svep-results-viewer/svep-results-viewer.component';
+import { PgxflowResultsViewerComponent } from './pgxflow-results-viewer/pgxflow-results-viewer.component';
 import { MatCardModule } from '@angular/material/card';
 import { DportalService } from 'src/app/services/dportal.service';
 import { AnnotationViewerComponent } from './annotation-viewer/annotation-viewer.component';
@@ -23,6 +24,7 @@ import { ListJobComponent } from './list-project-id/list-project-id.component';
 import { MatIconModule } from '@angular/material/icon';
 import { SavedForReportingViewerComponent } from './saved-for-reporting-viewer/saved-for-reporting-viewer.component';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 
 interface Project {
   name: string;
@@ -38,7 +40,7 @@ interface Project {
     MatFormFieldModule,
     ReactiveFormsModule,
     MatInputModule,
-    ResultsViewerComponent,
+    SvepResultsViewerComponent,
     AnnotationViewerComponent,
     MatCardModule,
     MatOptionModule,
@@ -53,6 +55,7 @@ interface Project {
   styleUrl: './clinic-results.component.scss',
 })
 export class ClinicResultsComponent implements OnInit, OnDestroy {
+  protected clinicMode = environment.clinic_mode;
   protected requestIdFormControl: FormControl<string>;
   protected projectNameFormControl: FormControl<string>;
   protected requestId: string | null = null;
