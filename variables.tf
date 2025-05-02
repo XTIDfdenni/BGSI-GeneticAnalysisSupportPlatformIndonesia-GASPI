@@ -106,6 +106,18 @@ variable "svep-method-queue-size" {
   default     = 1000
 }
 
+variable "pgxflow-method-max-request-rate" {
+  type        = number
+  description = "Number of requests allowed per second per method for pgxflow API"
+  default     = 100
+}
+
+variable "pgxflow-method-queue-size" {
+  type        = number
+  description = "Number of requests allowed to be queued per method for pgxflow API"
+  default     = 1000
+}
+
 variable "max-request-rate-per-5mins" {
   type        = number
   description = "Maximum number of requests allowed per IP address per 5 minutes"
@@ -131,4 +143,19 @@ variable "svep-filters" {
   })
   description = "Filters to apply to the svep records"
   default     = {}
+  nullable    = true
+}
+
+variable "pgxflow_configuration" {
+  type = object({
+    ORGANISATIONS = list(object({
+      gene = string
+      drug = string
+    }))
+    GENES = list(string)
+    DRUGS = list(string)
+  })
+  description = "List of gene-drug organisation associations, genes to filter, and drugs to filter"
+  default     = {}
+  nullable    = true
 }
