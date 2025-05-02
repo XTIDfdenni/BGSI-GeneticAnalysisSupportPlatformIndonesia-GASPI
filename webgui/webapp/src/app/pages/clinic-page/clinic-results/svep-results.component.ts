@@ -49,10 +49,10 @@ interface Project {
     SavedForReportingViewerComponent,
   ],
   providers: [],
-  templateUrl: './svep-results.component.html',
-  styleUrl: './svep-results.component.scss',
+  templateUrl: './clinic-results.component.html',
+  styleUrl: './clinic-results.component.scss',
 })
-export class SvepResultsComponent implements OnInit, OnDestroy {
+export class ClinicResultsComponent implements OnInit, OnDestroy {
   protected requestIdFormControl: FormControl<string>;
   protected projectNameFormControl: FormControl<string>;
   protected requestId: string | null = null;

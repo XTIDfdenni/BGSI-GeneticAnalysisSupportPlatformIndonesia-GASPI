@@ -82,11 +82,11 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'svep-results',
+        path: 'clinic-results',
         loadComponent: () =>
           import(
-            './pages/clinic-page/svep-results/svep-results.component'
-          ).then((c) => c.SvepResultsComponent),
+            './pages/clinic-page/clinic-results/clinic-results.component'
+          ).then((c) => c.ClinicResultsComponent),
       },
       {
         path: 'clinic-igv',
