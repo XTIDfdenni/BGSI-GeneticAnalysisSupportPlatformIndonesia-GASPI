@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ResultsViewerComponent } from './results-viewer.component';
+import { ResultsViewerComponent } from './svep-results-viewer.component';
 
 describe('ResultsViewerComponent', () => {
   let component: ResultsViewerComponent;

@@ -86,7 +86,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
 }
 
 @Component({
-  selector: 'app-results-viewer',
+  selector: 'app-svep-results-viewer',
   standalone: true,
   imports: [
     CommonModule,
@@ -117,10 +117,10 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     },
     TableVirtualScrollStrategy,
   ],
-  templateUrl: './results-viewer.component.html',
-  styleUrl: './results-viewer.component.scss',
+  templateUrl: './svep-results-viewer.component.html',
+  styleUrl: './svep-results-viewer.component.scss',
 })
-export class ResultsViewerComponent implements OnChanges, AfterViewInit {
+export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
