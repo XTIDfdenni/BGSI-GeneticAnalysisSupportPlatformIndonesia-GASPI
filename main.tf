@@ -73,6 +73,7 @@ module "svep" {
   svep-job-email-lambda-function-arn = module.cognito.svep_job_email_lambda_function_arn
   cognito-user-pool-id               = module.cognito.cognito_user_pool_id
   hub_name                           = var.hub_name
+  filters                            = var.svep-filters
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"
