@@ -77,9 +77,9 @@ export const routes: Routes = [
       {
         path: 'svep-submit',
         loadComponent: () =>
-          import('./pages/clinic-page/svep-submit/svep-submit.component').then(
-            (c) => c.SvepSubmitComponent,
-          ),
+          import(
+            './pages/clinic-page/clinic-submit/clinic-submit.component'
+          ).then((c) => c.SvepSubmitComponent),
       },
       {
         path: 'clinic-results',

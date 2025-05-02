@@ -40,10 +40,10 @@ export interface SelectedProjectType {
     MatIconModule,
   ],
   providers: [],
-  templateUrl: './svep-submit.component.html',
-  styleUrl: './svep-submit.component.scss',
+  templateUrl: './clinic-submit.component.html',
+  styleUrl: './clinic-submit.component.scss',
 })
-export class SvepSubmitComponent {
+export class ClinicSubmitComponent {
   @ViewChild('projects') private projects!: ProjectsListComponent;
   protected projectName: string | null = null;
   protected vcfFile: string | null = null;
