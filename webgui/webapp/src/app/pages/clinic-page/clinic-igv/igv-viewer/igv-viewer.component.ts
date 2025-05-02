@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input } from '@angular/core';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
-import { IIGVData } from '../svep-igv.component';
+import { IIGVData } from '../clinic-igv.component';
 declare var igv: any; // Declare IGV
 
 @Component({

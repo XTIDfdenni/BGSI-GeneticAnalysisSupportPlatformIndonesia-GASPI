@@ -61,7 +61,7 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
   protected myProjects: Project[] = [];
   private paramSubscription: Subscription | null = null;
   filteredOptions: Observable<Project[]> | undefined;
-  @ViewChild(ListJobComponent) svepIGVComponent!: ListJobComponent;
+  @ViewChild(ListJobComponent) clinicIGVComponent!: ListJobComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -88,7 +88,7 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
 
   loadListData() {
     if (this.projectName === this.projectNameFormControl.value) {
-      this.svepIGVComponent.refresh();
+      this.clinicIGVComponent.refresh();
     } else {
       this.router.navigate([], {
         relativeTo: this.route,

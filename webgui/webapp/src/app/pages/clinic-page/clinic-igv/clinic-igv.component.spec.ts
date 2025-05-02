@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SvepIGVComponent } from './svep-igv.component';
+import { ClinicIGVComponent } from './clinic-igv.component';
 
-describe('SvepIGVComponent', () => {
-  let component: SvepIGVComponent;
-  let fixture: ComponentFixture<SvepIGVComponent>;
+describe('ClinicIGVComponent', () => {
+  let component: ClinicIGVComponent;
+  let fixture: ComponentFixture<ClinicIGVComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SvepIGVComponent],
+      imports: [ClinicIGVComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SvepIGVComponent);
+    fixture = TestBed.createComponent(ClinicIGVComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

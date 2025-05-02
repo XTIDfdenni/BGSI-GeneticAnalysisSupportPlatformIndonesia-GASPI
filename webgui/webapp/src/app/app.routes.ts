@@ -89,10 +89,10 @@ export const routes: Routes = [
           ).then((c) => c.SvepResultsComponent),
       },
       {
-        path: 'svep-igv',
+        path: 'clinic-igv',
         loadComponent: () =>
-          import('./pages/clinic-page/svep-igv/svep-igv.component').then(
-            (c) => c.SvepIGVComponent,
+          import('./pages/clinic-page/clinic-igv/clinic-igv.component').then(
+            (c) => c.ClinicIGVComponent,
           ),
       },
     ],
