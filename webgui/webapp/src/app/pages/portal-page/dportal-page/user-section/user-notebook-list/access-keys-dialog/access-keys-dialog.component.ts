@@ -108,18 +108,46 @@ export class AccessKeysDialogComponent {
       `  -F "file=@<span class='text-red-500'>${filePath}</span>"`,
     ].join('<br>');
 
-    // Windows PowerShell
     const powershell = [
-      `curl -Method POST -Uri ${JSON.stringify(res.url)} \\`,
-      ...Object.entries(res.fields).map(
-        ([k, v]) => `  -Form ${JSON.stringify(k)}=${JSON.stringify(v)} \\`,
-      ),
-      `  -Form "file=@${filePath}"`,
+      `$uri = "${res.url}"`,
+      `$filePath = "${filePath}"`, // Dynamically set the file path here
+      `Write-Host "File Path: $filePath"`, // Debugging to show the path
+      `$fields = @{` +
+        Object.entries(res.fields)
+          .map(([k, v]) => `  ${JSON.stringify(k)} = ${JSON.stringify(v)}`)
+          .join('; ') +
+        `}`,
+      `$content = New-Object System.Net.Http.MultipartFormDataContent`,
+      `foreach ($key in $fields.Keys) {`,
+      `  $content.Add([System.Net.Http.StringContent]::new($fields[$key]), $key)`,
+      `}`,
+      `$fileStream = [System.IO.File]::OpenRead($filePath)`,
+      `$fileContent = New-Object System.Net.Http.StreamContent($fileStream)`,
+      `$fileContent.Headers.ContentDisposition = [System.Net.Http.Headers.ContentDispositionHeaderValue]::new("form-data")`,
+      `$fileContent.Headers.ContentDisposition.Name = "file"`,
+      `$fileContent.Headers.ContentDisposition.FileName = [System.IO.Path]::GetFileName($filePath)`,
+      `$content.Add($fileContent, "file", [System.IO.Path]::GetFileName($filePath))`,
+      `$client = New-Object System.Net.Http.HttpClient`,
+      `$response = $client.PostAsync($uri, $content).Result`,
+
+      // Check if response is successful
+      `if ($response.IsSuccessStatusCode) {`,
+      `  Write-Output "Upload complete."`,
+      `} else {`,
+      `  Write-Host "Error: " $response.StatusCode`,
+      `  Write-Host "Response Content: " ($response.Content.ReadAsStringAsync().Result)`,
+      `  Write-Host "Details: " $response.ReasonPhrase`,
+      `}`,
     ];
-    const powershellHtml = [
-      ...powershell.slice(0, -1),
-      `  -Form "file=@<span class='text-red-500'>${filePath}</span>"`,
-    ].join('<br>');
+
+    const powershellHtml = powershell
+      .map((line) => {
+        if (line.includes('$filePath =')) {
+          return `<span class='text-red-500'>${line}</span>`; // Highlight file path line
+        }
+        return line;
+      })
+      .join('<br>');
 
     // Windows CMD
     const cmd = [
