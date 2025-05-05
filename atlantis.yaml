@@ -109,7 +109,7 @@ projects:
   dir: .
   workspace: default
   terraform_version: *tf_version
-  execution_order_group: 9
+  execution_order_group: 10
   autoplan:
     when_modified: *tf_files
   workflow: uat04-workflow
