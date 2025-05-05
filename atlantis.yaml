@@ -59,12 +59,30 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub02-workflow
+- name: gxc-hub03
+  branch: /hub03/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 5
+  autoplan:
+    when_modified: *tf_files
+  workflow: hub03-workflow
+- name: gxc-hub04
+  branch: /hub04/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 6
+  autoplan:
+    when_modified: *tf_files
+  workflow: hub04-workflow
 - name: gxc-uat01
   branch: /uat01/
   dir: .
   workspace: default
   terraform_version: *tf_version
-  execution_order_group: 5
+  execution_order_group: 7
   autoplan:
     when_modified: *tf_files
   workflow: uat01-workflow
@@ -73,7 +91,25 @@ projects:
   dir: .
   workspace: default
   terraform_version: *tf_version
-  execution_order_group: 6
+  execution_order_group: 8
   autoplan:
     when_modified: *tf_files
-  workflow: uat02-workflow
+  workflow: uat03-workflow
+- name: gxc-uat03
+  branch: /uat03/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 9
+  autoplan:
+    when_modified: *tf_files
+  workflow: uat03-workflow
+- name: gxc-uat04
+  branch: /uat04/
+  dir: .
+  workspace: default
+  terraform_version: *tf_version
+  execution_order_group: 10
+  autoplan:
+    when_modified: *tf_files
+  workflow: uat04-workflow
