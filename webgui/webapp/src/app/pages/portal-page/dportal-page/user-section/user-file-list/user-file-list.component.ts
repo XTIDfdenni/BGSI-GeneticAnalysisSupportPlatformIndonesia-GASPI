@@ -8,6 +8,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
 import { formatBytes, getTotalStorageSize } from 'src/app/utils/file';
 import { UserQuotaService } from 'src/app/services/userquota.service';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-user-file-list',
@@ -44,8 +45,9 @@ export class UserFileListComponent implements OnInit {
   }
 
   loadList() {
-    this.list();
     this.currentUsage();
+
+    timer(500).subscribe(() => this.list());
   }
 
   generateTotalSize(files: any[]) {
@@ -53,6 +55,7 @@ export class UserFileListComponent implements OnInit {
 
     this.totalSize = bytesTotal;
     this.totalSizeFormatted = formatBytes(bytesTotal, 2);
+
     this.totalSizeRemainingText = formatBytes(
       Math.floor(this.quotaSize - this.totalSize),
       2,
@@ -80,6 +83,8 @@ export class UserFileListComponent implements OnInit {
     this.costEstimation = costEstimation;
 
     this.loadingUsage = false;
+
+    return { quotaSize };
   }
 
   async copy(file: any) {
