@@ -25,6 +25,7 @@ import {
 } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-project-updates',
@@ -37,6 +38,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     MatFormFieldModule,
     FormsModule,
     MatInputModule,
+    MatTooltipModule,
     ReactiveFormsModule,
     MatProgressSpinnerModule,
     MatDialogModule,

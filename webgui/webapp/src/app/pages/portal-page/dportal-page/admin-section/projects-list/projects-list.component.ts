@@ -36,6 +36,7 @@ export interface Project {
   name: string;
   description: string;
   files: string[];
+  pendingFiles: string[];
   totalSamples: number;
   ingestedDatasets: string[];
   errorMessages: { file: string; error: string }[];
@@ -168,6 +169,7 @@ export class ProjectsListComponent {
             description: project.description,
             files: project.files,
             totalSamples: project.total_samples,
+            pendingFiles: project.pending_files,
             ingestedDatasets: project.ingested_datasets,
             errorMessages: project.error_messages,
           }));
@@ -340,7 +342,9 @@ export class ProjectsListComponent {
       },
     });
     dialog.afterClosed().subscribe((result) => {
-      this.list(this.paginator.pageIndex, '');
+      if (result) {
+        this.list(this.paginator.pageIndex, '');
+      }
     });
   }
 }

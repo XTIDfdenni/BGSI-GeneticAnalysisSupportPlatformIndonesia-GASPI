@@ -21,8 +21,6 @@ import {
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTabsModule } from '@angular/material/tabs';
-import { CommonModule } from '@angular/common';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 enum CmdType {
   LINUX = 'Linux',
@@ -51,8 +49,6 @@ const filePath = '/your/path/to/file.format';
     MatTooltipModule,
     MatIconModule,
     MatTabsModule,
-    CommonModule,
-    NoopAnimationsModule,
   ],
   templateUrl: './access-keys-dialog.component.html',
   styleUrl: './access-keys-dialog.component.scss',
