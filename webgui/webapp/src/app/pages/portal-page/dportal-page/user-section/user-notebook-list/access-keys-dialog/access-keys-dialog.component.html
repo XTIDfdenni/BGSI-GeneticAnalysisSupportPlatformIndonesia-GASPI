@@ -37,7 +37,7 @@
     </div>
   </form>
 
-  @if (script) {
+  @if (cmdTabs.length > 0) {
     <div class="mt-4">
       Use the following script to upload your file to your private S3 bucket. Copy the script and run it in your terminal.
     </div>
@@ -56,22 +56,30 @@
        </p>
     </div>
 
-    <div class="mt-4">
-      <pre class="code-block" [innerHTML]="scriptHtml"></pre>
-    </div>
+    <mat-tab-group [(selectedIndex)]="selectedIndex">
+      @for (tab of cmdTabs; track tab) {
+        <div>
+          <mat-tab [label]="tab.label">
+            @if (selectedTab === tab.tab) {
+          <pre class="code-block" [innerHTML]="tab.html"></pre>
 
+          <div class="flex flex-row space-x-1">
+            <button mat-raised-button mat-dialog-close color="primary">Close</button>
 
-    <div class="flex flex-row space-x-1">
-      <button mat-raised-button mat-dialog-close color="primary">Close</button>
+            <button
+              mat-raised-button
+              color="primary"
+              [cdkCopyToClipboard]="tab.plain"
+              class="mr-2.5"
+            >
+              Copy Script
+            </button>
+          </div>
+            }
+          </mat-tab>
+        </div>
+      }
+    </mat-tab-group>
 
-      <button
-        mat-raised-button
-        color="primary"
-        [cdkCopyToClipboard]="script"
-        class="mr-2.5"
-      >
-        Copy Script
-      </button>
-    </div>
   }
 </div>
