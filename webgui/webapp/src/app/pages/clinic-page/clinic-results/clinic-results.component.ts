@@ -15,7 +15,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { SvepResultsViewerComponent } from './svep-results-viewer/svep-results-viewer.component';
-import { PgxflowResultsViewerComponent } from './pgxflow-results-viewer/pgxflow-results-viewer.component';
+import { PharmcatResultsViewerComponent } from './pharmcat-results-viewer/pharmcat-results-viewer.component';
+import { LookupResultsViewerComponent } from './lookup-results-viewer/lookup-results-viewer.component';
 import { MatCardModule } from '@angular/material/card';
 import { DportalService } from 'src/app/services/dportal.service';
 import { AnnotationViewerComponent } from './annotation-viewer/annotation-viewer.component';
@@ -41,6 +42,8 @@ interface Project {
     ReactiveFormsModule,
     MatInputModule,
     SvepResultsViewerComponent,
+    PharmcatResultsViewerComponent,
+    LookupResultsViewerComponent,
     AnnotationViewerComponent,
     MatCardModule,
     MatOptionModule,
@@ -55,7 +58,7 @@ interface Project {
   styleUrl: './clinic-results.component.scss',
 })
 export class ClinicResultsComponent implements OnInit, OnDestroy {
-  protected clinicMode = environment.clinic_mode;
+  protected hubName: string = environment.hub_name;
   protected requestIdFormControl: FormControl<string>;
   protected projectNameFormControl: FormControl<string>;
   protected requestId: string | null = null;

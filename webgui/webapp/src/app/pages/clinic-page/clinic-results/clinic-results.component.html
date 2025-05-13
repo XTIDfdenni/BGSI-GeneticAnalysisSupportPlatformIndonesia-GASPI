@@ -58,10 +58,12 @@
       </div>
     </mat-card-content>
   </mat-card>
-  @if (clinicMode == 'svep') {
+  @if (["RSCM", "RSSARDJITO"].includes(hubName)) {
     <app-svep-results-viewer [requestId]="requestId" [projectName]="projectName" />
-  } @else if (clinicMode == 'pgxflow') {
-    <app-pgxflow-results-viewer [requestId]="requestId" [projectName]="projectName" />
+  } @else if (["RSPON"].includes(hubName)) {
+    <app-pharmcat-results-viewer [requestId]="requestId" [projectName]="projectName" />
+  } @else if (["RSIGNG"].includes(hubName)) {
+    <app-lookup-results-viewer [requestId]="requestId" [projectName]="projectName" />
   }
   <app-annotation-viewer [requestId]="requestId" [projectName]="projectName" />
   <app-saved-for-reporting-viewer
