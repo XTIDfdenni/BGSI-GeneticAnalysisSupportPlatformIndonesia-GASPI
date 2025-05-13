@@ -47,6 +47,8 @@ export class ClinicSubmitComponent {
   @ViewChild('projects') private projects!: ProjectsListComponent;
   protected projectName: string | null = null;
   protected vcfFile: string | null = null;
+  protected clinicMode =
+    environment.clinic_mode === 'svep' ? 'sVEP' : 'PGxFlow';
   protected valid = false;
   protected submissionStarted = false;
   protected results = {
