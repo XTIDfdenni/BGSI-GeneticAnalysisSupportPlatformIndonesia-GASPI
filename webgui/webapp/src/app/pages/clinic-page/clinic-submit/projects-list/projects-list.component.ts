@@ -216,7 +216,7 @@ export class ProjectsListComponent {
       const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${file}`;
 
       this.cs
-        .submitSvepJob(s3URI, projectName!)
+        .submitClinicJob(s3URI, projectName!)
         .pipe(
           catchError((e) => {
             const errorMessage =
