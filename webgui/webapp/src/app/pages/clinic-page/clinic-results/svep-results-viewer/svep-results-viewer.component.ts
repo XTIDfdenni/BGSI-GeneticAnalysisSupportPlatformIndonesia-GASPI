@@ -29,6 +29,7 @@ import {
   Subject,
 } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
+import { clinicFilter, clinicResort } from 'src/app/utils/clinic';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import {
   FormControl,
@@ -45,13 +46,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
-import { TableVirtualScrollStrategy } from './scroll-strategy.service';
+import { TableVirtualScrollStrategy } from '../scroll-strategy.service';
 import {
   ScrollingModule,
   VIRTUAL_SCROLL_STRATEGY,
 } from '@angular/cdk/scrolling';
 import { ToastrService } from 'ngx-toastr';
-import { AutoCompleteComponent } from './auto-complete/auto-complete.component';
+import { AutoCompleteComponent } from '../auto-complete/auto-complete.component';
 
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -203,20 +204,7 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
 
   resort(sort: Sort) {
     const snapshot = [...this.currentRenderedRows];
-    const key = sort.active;
-    if (sort.direction === 'asc') {
-      snapshot.sort((a, b) => {
-        return a[key] < b[key] ? -1 : 1;
-      });
-      this.dataRows.next(snapshot);
-    } else if (sort.direction === 'desc') {
-      snapshot.sort((a, b) => {
-        return a[key] > b[key] ? -1 : 1;
-      });
-      this.dataRows.next(snapshot);
-    } else {
-      this.dataRows.next(snapshot);
-    }
+    clinicResort(snapshot, sort, (sorted) => this.dataRows.next(sorted));
   }
 
   ngAfterViewInit(): void {
@@ -274,12 +262,9 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     const term = this.filterField.value;
 
     if (term) {
-      const filtered = this.originalRows.filter((row) => {
-        return Object.values(row).some((v: any) => {
-          return v.toString().includes(term);
-        });
-      });
-      this.dataRows.next(filtered);
+      clinicFilter(this.originalRows, term, (filtered) =>
+        this.dataRows.next(filtered),
+      );
     } else {
       this.dataRows.next(this.originalRows);
     }
