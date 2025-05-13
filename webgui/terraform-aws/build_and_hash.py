@@ -28,7 +28,7 @@ ENVIRONMENT = """export const environment = {{
     endpoint: '{api_endpoint_clinic}',
     region: '{region}',
   }},
-  clinic_mode: '{clinic_mode}'
+  clinic_mode: '{clinic_mode}',
   hub_name: '{hub_name}',
 }};"""
 
