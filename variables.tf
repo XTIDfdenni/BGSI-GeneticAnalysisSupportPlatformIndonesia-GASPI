@@ -129,6 +129,11 @@ variable "hub_name" {
   type        = string
   description = "Configuration for the hub"
   default     = "NONE"
+
+  validation {
+    condition     = contains(["RSCM", "RSSARDJITO", "RSPON", "RSIGNG", "RSJPD"])
+    error_message = "hub_name must be one of: RSCM, RSSARDJITO, RSPON, RSIGNG, RSJPD"
+  }
 }
 
 variable "svep-filters" {
@@ -156,6 +161,6 @@ variable "pgxflow_configuration" {
     DRUGS = list(string)
   })
   description = "List of gene-drug organisation associations, genes to filter, and drugs to filter"
-  default     = {}
+  default     = null
   nullable    = true
 }
