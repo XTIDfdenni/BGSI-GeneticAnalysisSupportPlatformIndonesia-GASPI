@@ -131,7 +131,7 @@ variable "hub_name" {
   default     = "NONE"
 
   validation {
-    condition     = contains(["RSCM", "RSSARDJITO", "RSPON", "RSIGNG", "RSJPD"])
+    condition     = contains(["RSCM", "RSSARDJITO", "RSPON", "RSIGNG", "RSJPD"], var.hub_name)
     error_message = "hub_name must be one of: RSCM, RSSARDJITO, RSPON, RSIGNG, RSJPD"
   }
 }
