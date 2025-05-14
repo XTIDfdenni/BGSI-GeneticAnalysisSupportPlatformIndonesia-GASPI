@@ -56,22 +56,88 @@
         <div class="text-center">No variants available</div>
       }
     </div>
+    <mat-paginator
+      class="block"
+      #paginator
+      [pageSizeOptions]="[5, 10, 50]"
+      [pageSize]="pageSize"
+      length="9999"
+      (page)="pageChange($event)"
+    ></mat-paginator>
     <div class="flex flex-row justify-between items-center">
       @if (hub) {
-        <button mat-raised-button color="primary" (click)="generateReport()">
-          Generate Report
-        </button>
+        @switch (hub) {
+          @case ("RSCM") {
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="generateReportRSCM()"
+            >
+              Generate Report
+            </button>
+          }
+          @case ("RSSARJITO") {
+            <div class="flex flex-col space-y-1">
+              <div class="flex flex-row space-x-1">
+                <button
+                  class="w-[200px]"
+                  mat-raised-button
+                  color="primary"
+                  (click)="generateReportRSSARJITO('en', 'crd')"
+                >
+                  CRD Positive (EN)
+                </button>
+                <button
+                  class="w-[200px]"
+                  mat-raised-button
+                  color="primary"
+                  (click)="generateReportRSSARJITO('id', 'crd')"
+                >
+                  CRD Positive (ID)
+                </button>
+              </div>
+              <div class="flex flex-row space-x-1">
+                <button
+                  class="w-[200px]"
+                  mat-raised-button
+                  color="primary"
+                  (click)="generateReportRSSARJITO('en', 'md')"
+                >
+                  DMD Positive (EN)
+                </button>
+                <button
+                  class="w-[200px]"
+                  mat-raised-button
+                  color="primary"
+                  (click)="generateReportRSSARJITO('id', 'md')"
+                >
+                  DMD Positive (ID)
+                </button>
+              </div>
+              <div class="flex flex-row space-x-1">
+                <button
+                  class="w-[200px]"
+                  mat-raised-button
+                  color="primary"
+                  (click)="generateReportRSSARJITO('en', 'generic')"
+                >
+                  Generic Positive (EN)
+                </button>
+                <button
+                  class="w-[200px]"
+                  mat-raised-button
+                  color="primary"
+                  (click)="generateReportRSSARJITO('id', 'generic')"
+                >
+                  Generic Positive (ID)
+                </button>
+              </div>
+            </div>
+          }
+        }
       } @else {
         <p>Lab configuration is not set. Please contact the administrator.</p>
       }
-      <mat-paginator
-        class="block"
-        #paginator
-        [pageSizeOptions]="[5, 10, 50]"
-        [pageSize]="pageSize"
-        length="9999"
-        (page)="pageChange($event)"
-      ></mat-paginator>
     </div>
   </mat-card-content>
 </mat-card>
@@ -83,9 +149,75 @@
       individual.
     </p>
     @if (hub) {
-      <button mat-raised-button color="primary" (click)="generateReport()">
-        Generate Report
-      </button>
+      @switch (hub) {
+        @case ("RSCM") {
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="generateReportRSCM()"
+          >
+            Generate Report
+          </button>
+        }
+        @case ("RSSARJITO") {
+          <div class="flex flex-col space-y-1">
+            <div class="flex flex-row space-x-1">
+              <button
+                class="w-[200px]"
+                mat-raised-button
+                color="primary"
+                (click)="generateReportRSSARJITO('en', 'crd')"
+              >
+                CRD Negative (EN)
+              </button>
+              <button
+                class="w-[200px]"
+                mat-raised-button
+                color="primary"
+                (click)="generateReportRSSARJITO('id', 'crd')"
+              >
+                CRD Negative (ID)
+              </button>
+            </div>
+            <div class="flex flex-row space-x-1">
+              <button
+                class="w-[200px]"
+                mat-raised-button
+                color="primary"
+                (click)="generateReportRSSARJITO('en', 'md')"
+              >
+                DMD Negative (EN)
+              </button>
+              <button
+                class="w-[200px]"
+                mat-raised-button
+                color="primary"
+                (click)="generateReportRSSARJITO('id', 'md')"
+              >
+                DMD Negative (ID)
+              </button>
+            </div>
+            <div class="flex flex-row space-x-1">
+              <button
+                class="w-[200px]"
+                mat-raised-button
+                color="primary"
+                (click)="generateReportRSSARJITO('en', 'generic')"
+              >
+                Generic Negative (EN)
+              </button>
+              <button
+                class="w-[200px]"
+                mat-raised-button
+                color="primary"
+                (click)="generateReportRSSARJITO('id', 'generic')"
+              >
+                Generic Negative (ID)
+              </button>
+            </div>
+          </div>
+        }
+      }
     } @else {
       <p>Lab configuration is not set. Please contact the administrator.</p>
     }

@@ -133,6 +133,7 @@ export class ResultsViewerComponent implements OnChanges, AfterViewInit {
     'Region',
     'Alt Allele',
     'Consequence',
+    'Variant Name',
     'Gene Name',
     'Gene ID',
     'Feature',
