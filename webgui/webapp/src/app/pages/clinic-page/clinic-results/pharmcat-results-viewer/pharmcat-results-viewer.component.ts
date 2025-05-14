@@ -131,13 +131,17 @@ export class PharmcatResultsViewerComponent {
     'selected',
     'Organisation',
     'Gene',
+    'Drug',
     'Alleles',
     'Phenotypes',
     'Variants',
     'Related Variants',
+    'PubMed IDs',
     'Implications',
     'Recommendation',
     'Dosing Information',
+    'Alternate Drug Available',
+    'Other Prescribing Guidance',
   ];
   protected variantColumns: string[] = [
     'Organisation',
