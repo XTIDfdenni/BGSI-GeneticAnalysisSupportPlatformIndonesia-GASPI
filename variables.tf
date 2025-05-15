@@ -10,6 +10,12 @@ variable "common-tags" {
   description = "A set of tags to attach to every created resource."
 }
 
+variable "svep-references-table-name" {
+  type        = string
+  description = "Name of the references table"
+  default     = "svep-references"
+}
+
 # portal variables
 variable "gaspi-guest-username" {
   type        = string
@@ -115,7 +121,7 @@ variable "hub_name" {
 
 variable "svep-filters" {
   type = object({
-    clinvar_exclude  = optional(list(string), [])
+    clinvar_exclude = optional(list(string), [])
     # highest consequence rank to include, e.g. 12 for protein_altering_variant.
     # see svep/lambda/pluginConsequence/consequence/constants.pm for values.
     consequence_rank = optional(number, 99)
