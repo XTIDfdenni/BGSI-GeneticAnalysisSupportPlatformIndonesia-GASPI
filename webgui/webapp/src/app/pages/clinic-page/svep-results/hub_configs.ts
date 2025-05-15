@@ -1,12 +1,10 @@
 export const CONFIGS: { [key: string]: any } = {
   RSCM: {
-    cols: ['ref', 'Alt Allele', 'Region', 'gt', 'clinSig', 'conditions'],
+    cols: ['Gene Name', 'Variant Name', 'gt', 'clinSig', 'conditions'],
   },
   RSSARJITO: {
     cols: [
-      'ref',
-      'Alt Allele',
-      'Region',
+      'Variant Name',
       'gt',
       'clinSig',
       'conditions',
