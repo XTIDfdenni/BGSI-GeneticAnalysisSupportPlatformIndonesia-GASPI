@@ -5,7 +5,17 @@ provider "aws" {
 data "aws_caller_identity" "this" {}
 
 locals {
-  clinic_mode    = contains(["RSUP", "RSCM"], var.hub_name) ? "svep" : contains(["RSPON", "RSIGNG", "RSJPD"], var.hub_name) ? "pgxflow" : null
+  pgxflow_hubs = [
+    "RSIGNG",
+    "RSJPD",
+    "RSPON",
+  ]
+  svep_hubs = [
+    "RSCM",
+    "RSSARDJITO",
+    "RSUP",
+  ]
+  clinic_mode    = contains(local.svep_hubs, var.hub_name) ? "svep" : contains(local.pgxflow_hubs, var.hub_name) ? "pgxflow" : null
   clinic_api_url = local.clinic_mode == "svep" ? module.svep[0].api_url : local.clinic_mode == "pgxflow" ? module.pgxflow[0].api_url : null
 }
 
