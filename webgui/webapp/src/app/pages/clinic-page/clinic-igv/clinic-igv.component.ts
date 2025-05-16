@@ -1,18 +1,13 @@
 import {
   Component,
-  Output,
-  EventEmitter,
   ViewChild,
   Injectable,
   ChangeDetectorRef,
 } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { catchError, of, Subject } from 'rxjs';
+import { catchError, lastValueFrom, of, Subject } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
-import { MatRadioModule } from '@angular/material/radio';
-import { DportalService } from 'src/app/services/dportal.service';
-import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import {
   MatPaginator,
   MatPaginatorIntl,
@@ -20,11 +15,14 @@ import {
   PageEvent,
 } from '@angular/material/paginator';
 import { isEmpty } from 'lodash';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+
+import { IgvViewerComponent } from './igv-viewer/igv-viewer.component';
+import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
+
+import { DportalService } from 'src/app/services/dportal.service';
 import { ToastrService } from 'ngx-toastr';
-import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
-import { ClinicService } from 'src/app/services/clinic.service';
-import { SelectedProjectType } from '../svep-submit.component';
-import { MatDialog } from '@angular/material/dialog';
 
 interface ProjectFile {
   filename: string;
@@ -38,15 +36,11 @@ interface Project {
   indexed: boolean;
 }
 
-export interface FileSelectEvent {
-  projectName: string;
-  vcf: string;
-}
-
-export interface SubmitQueryDialog {
-  jobName: string;
-  file: string;
-  projectName: string;
+export interface IIGVData {
+  projectName: string | null;
+  bamURL: string | null;
+  bamIndex: string | null;
+  filename?: string | null;
 }
 
 @Injectable()
@@ -70,52 +64,38 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
 }
 
 @Component({
-  selector: 'app-projects-list',
+  selector: 'app-igv-page',
   providers: [{ provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl }],
   standalone: true,
   imports: [
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatRadioModule,
     MatPaginatorModule,
-    ComponentSpinnerComponent,
     MatTooltip,
-    MatTooltipModule,
+    ComponentSpinnerComponent,
+    MatCardModule,
+    IgvViewerComponent,
   ],
-  templateUrl: './projects-list.component.html',
-  styleUrl: './projects-list.component.scss',
+  templateUrl: './clinic-igv.component.html',
+  styleUrl: './clinic-igv.component.scss',
 })
-export class ProjectsListComponent {
-  @Output() filesSelected = new EventEmitter<FileSelectEvent>();
-  @Output() selectProject = new EventEmitter<SelectedProjectType>();
-
+export class ClinicIGVComponent {
   loading = true;
   dataSource = new MatTableDataSource<Project>();
-  displayedColumns: string[] = ['name', 'description', 'files', 'actions'];
-  assignTo: string | null = null;
-  viewUsers: string | null = null;
-  projectName: string | null = null;
-  vcfFile: string | null = null;
-  submitQueryDialog: SubmitQueryDialog = {
-    jobName: '',
-    file: '',
-    projectName: '',
-  };
+  displayedColumns: string[] = ['name', 'description', 'files'];
 
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
   private isEmptyLastPage = false;
-  protected submissionStarted = false;
+  protected igvData: IIGVData | null = null;
 
   constructor(
     private dps: DportalService,
     private tstr: ToastrService,
     private cd: ChangeDetectorRef,
-    private cs: ClinicService,
-    private dg: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -130,6 +110,52 @@ export class ProjectsListComponent {
         this.list(event.pageIndex);
       }
     });
+  }
+
+  async handleSelectDataIGV(projectName: any, fileName: any) {
+    const bamURL = await this.handleGetPrefixURL(projectName, fileName);
+    const bamIndex = await this.handleGetPrefixURL(
+      projectName,
+      fileName + '.bai',
+    );
+    this.igvData = {
+      projectName: projectName || '',
+      bamURL: bamURL || '',
+      bamIndex: bamIndex || '',
+      filename: fileName,
+    };
+  }
+
+  async handleGetPrefixURL(
+    project: string,
+    prefix: string,
+  ): Promise<string | null> {
+    try {
+      const url: string | null = await lastValueFrom(
+        this.dps
+          .getMyProjectFile(project, prefix)
+          .pipe(catchError(() => of(null))),
+      );
+
+      if (!url) {
+        this.tstr.error('Unable to sign file.', 'Error');
+        return null;
+      }
+
+      let remainingAttempts = 3;
+
+      while (remainingAttempts > 0) {
+        if (url) return url; //return value
+        remainingAttempts--;
+        await new Promise((resolve) => setTimeout(resolve, 1000)); //add delay
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error fetching URL:', error);
+      this.tstr.error('Error while signing file.', 'Error');
+      return null;
+    }
   }
 
   list(page: number) {
@@ -156,24 +182,21 @@ export class ProjectsListComponent {
           this.dataSource.data = [];
         } else {
           this.dataSource.data = response.data.map((project: any) => {
-            const vcfFiles = project.files.filter(
-              (file: string) =>
-                file.endsWith('.vcf.gz') || file.endsWith('.bcf.gz'),
+            const vcfFiles = project.files.filter((file: string) =>
+              file.endsWith('.bam'),
             );
             const filesWithStatus = vcfFiles.map((file: string) => {
-              const hasIndex =
-                project.files.includes(`${file}.tbi`) ||
-                project.files.includes(`${file}.csi`);
+              const hasIndex = project.files.includes(`${file}.bai`);
               return {
                 filename: file,
                 disabled: !hasIndex,
               };
             });
+
             return {
               name: project.name,
               description: project.description,
               files: filesWithStatus,
-              action: '',
               indexed: false,
             };
           });
@@ -201,36 +224,14 @@ export class ProjectsListComponent {
     }
   }
 
-  showQC(filename: string, projectName: string) {
-    const disabled = this.findDisableStatus(filename);
-    if (!disabled) {
-      const selectedProject: SelectedProjectType = {
-        projectName: projectName,
-        fileName: filename,
-      };
-      this.selectProject.emit(selectedProject);
+  tooltipMessage(status: boolean) {
+    if (status) {
+      return `Can't display to IGV, because no index of bam/sam files`;
     }
+    return 'View to IGV';
   }
 
-  findDisableStatus(fileToFind: string) {
-    const foundFile: any = this.dataSource.data
-      .flatMap((group) => group.files)
-      .find((file) => file.filename === fileToFind);
-
-    return foundFile.disabled;
-  }
-
-  async openJobDialog(file: string, projectName: string) {
-    const { SubmitQueryDialogComponent } = await import(
-      './submit-query-dialog/submit-query-dialog.component'
-    );
-
-    this.dg.open(SubmitQueryDialogComponent, {
-      data: {
-        file: file,
-        projectName: projectName,
-        list: () => this.list(0),
-      },
-    });
+  handleBackToFiles() {
+    this.igvData = null;
   }
 }

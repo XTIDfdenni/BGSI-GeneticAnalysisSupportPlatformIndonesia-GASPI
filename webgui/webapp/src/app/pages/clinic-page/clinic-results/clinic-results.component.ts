@@ -14,7 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
-import { ResultsViewerComponent } from './results-viewer/results-viewer.component';
+import { SvepResultsViewerComponent } from './svep-results-viewer/svep-results-viewer.component';
+import { PharmcatResultsViewerComponent } from './pharmcat-results-viewer/pharmcat-results-viewer.component';
+import { LookupResultsViewerComponent } from './lookup-results-viewer/lookup-results-viewer.component';
 import { MatCardModule } from '@angular/material/card';
 import { DportalService } from 'src/app/services/dportal.service';
 import { AnnotationViewerComponent } from './annotation-viewer/annotation-viewer.component';
@@ -23,6 +25,7 @@ import { ListJobComponent } from './list-project-id/list-project-id.component';
 import { MatIconModule } from '@angular/material/icon';
 import { SavedForReportingViewerComponent } from './saved-for-reporting-viewer/saved-for-reporting-viewer.component';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 
 interface Project {
   name: string;
@@ -38,7 +41,9 @@ interface Project {
     MatFormFieldModule,
     ReactiveFormsModule,
     MatInputModule,
-    ResultsViewerComponent,
+    SvepResultsViewerComponent,
+    PharmcatResultsViewerComponent,
+    LookupResultsViewerComponent,
     AnnotationViewerComponent,
     MatCardModule,
     MatOptionModule,
@@ -49,10 +54,11 @@ interface Project {
     SavedForReportingViewerComponent,
   ],
   providers: [],
-  templateUrl: './svep-results.component.html',
-  styleUrl: './svep-results.component.scss',
+  templateUrl: './clinic-results.component.html',
+  styleUrl: './clinic-results.component.scss',
 })
-export class SvepResultsComponent implements OnInit, OnDestroy {
+export class ClinicResultsComponent implements OnInit, OnDestroy {
+  protected hubName: string = environment.hub_name;
   protected requestIdFormControl: FormControl<string>;
   protected projectNameFormControl: FormControl<string>;
   protected requestId: string | null = null;
@@ -61,7 +67,7 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
   protected myProjects: Project[] = [];
   private paramSubscription: Subscription | null = null;
   filteredOptions: Observable<Project[]> | undefined;
-  @ViewChild(ListJobComponent) svepIGVComponent!: ListJobComponent;
+  @ViewChild(ListJobComponent) clinicIGVComponent!: ListJobComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -88,7 +94,7 @@ export class SvepResultsComponent implements OnInit, OnDestroy {
 
   loadListData() {
     if (this.projectName === this.projectNameFormControl.value) {
-      this.svepIGVComponent.refresh();
+      this.clinicIGVComponent.refresh();
     } else {
       this.router.navigate([], {
         relativeTo: this.route,
