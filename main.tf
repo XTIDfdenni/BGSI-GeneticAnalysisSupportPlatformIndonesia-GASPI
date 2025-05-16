@@ -4,6 +4,21 @@ provider "aws" {
 
 data "aws_caller_identity" "this" {}
 
+locals {
+  pgxflow_hubs = [
+    "RSIGNG",
+    "RSJPD",
+    "RSPON",
+  ]
+  svep_hubs = [
+    "RSCM",
+    "RSSARDJITO",
+    "RSUP",
+  ]
+  clinic_mode    = contains(local.svep_hubs, var.hub_name) ? "svep" : contains(local.pgxflow_hubs, var.hub_name) ? "pgxflow" : null
+  clinic_api_url = local.clinic_mode == "svep" ? module.svep[0].api_url : local.clinic_mode == "pgxflow" ? module.pgxflow[0].api_url : null
+}
+
 
 module "cognito" {
   source                   = "./cognito"
@@ -18,6 +33,29 @@ module "cognito" {
 
   common-tags = merge(var.common-tags, {
     "NAME" = "cognito-infrastructure"
+  })
+}
+
+module "pgxflow" {
+  count = local.clinic_mode == "pgxflow" ? 1 : 0
+
+  source                         = "./pgxflow"
+  region                         = var.region
+  data-portal-bucket-name        = module.sbeacon.data-portal-bucket
+  data-portal-bucket-arn         = module.sbeacon.data-portal-bucket-arn
+  method-max-request-rate        = var.pgxflow-method-max-request-rate
+  method-queue-size              = var.pgxflow-method-queue-size
+  web_acl_arn                    = module.security.web_acl_arn
+  cognito-user-pool-arn          = module.cognito.cognito_user_pool_arn
+  hub_name                       = var.hub_name
+  pgxflow_configuration          = var.pgxflow_configuration
+  dynamo-project-users-table     = module.sbeacon.dynamo-project-users-table
+  dynamo-project-users-table-arn = module.sbeacon.dynamo-project-users-table-arn
+  dynamo-clinic-jobs-table       = module.sbeacon.dynamo-clinic-jobs-table
+  dynamo-clinic-jobs-table-arn   = module.sbeacon.dynamo-clinic-jobs-table-arn
+
+  common-tags = merge(var.common-tags, {
+    "NAME" = "pgxflow-backend"
   })
 }
 
@@ -59,6 +97,8 @@ module "sbeacon" {
 }
 
 module "svep" {
+  count = local.clinic_mode == "svep" ? 1 : 0
+
   source                             = "./svep"
   region                             = var.region
   data_portal_bucket_name            = module.sbeacon.data-portal-bucket
@@ -83,6 +123,11 @@ module "svep" {
   })
 }
 
+moved {
+  from = module.svep
+  to   = module.svep[0]
+}
+
 module "webgui" {
   source                  = "./webgui/terraform-aws"
   region                  = var.region
@@ -92,7 +137,8 @@ module "webgui" {
   user_pool_web_client_id = module.cognito.cognito_client_id
   data_portal_bucket      = module.sbeacon.data-portal-bucket
   api_endpoint_sbeacon    = module.sbeacon.api_url
-  api_endpoint_svep       = module.svep.api_url
+  api_endpoint_clinic     = local.clinic_api_url
+  clinic_mode             = local.clinic_mode
   bui-ssm-parameter-name  = var.bui-ssm-parameter-name
   web_acl_arn             = module.security.web_acl_arn
   hub_name                = var.hub_name
