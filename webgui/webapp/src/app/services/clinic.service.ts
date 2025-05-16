@@ -236,4 +236,14 @@ export class ClinicService {
       ),
     );
   }
+
+  deleteFailedJob(project: string, jobId: string) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/delete-job/${jobId}`,
+        {},
+      ),
+    );
+  }
 }
