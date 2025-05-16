@@ -102,6 +102,7 @@ export class ListJobComponent implements OnChanges, OnInit {
     'job_status',
     'job_name',
     'job_id',
+    'action',
   ];
   JobStatus = JobStatus;
   jobStatusOptions = ['all', ...Object.values(JobStatus)];
@@ -277,5 +278,25 @@ export class ListJobComponent implements OnChanges, OnInit {
         errorMessage: error,
       },
     });
+  }
+
+  deleteJob(projectName: string, jobID: string) {
+    this.loading = true;
+    this.cs
+      .deleteFailedJob(projectName, jobID)
+      .pipe(
+        catchError((error) => {
+          this.tstr.error('API request failed', error);
+          return of(null);
+        }),
+      )
+      .subscribe((response: any) => {
+        console.log(response);
+        if (response.success) {
+          this.tstr.success(response.message, 'Success');
+          this.list(0, '', this.jobStatusOptions[0]);
+        }
+        this.loading = false;
+      });
   }
 }

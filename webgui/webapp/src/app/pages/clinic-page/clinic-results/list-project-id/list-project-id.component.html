@@ -34,7 +34,6 @@
               </div>
             </button>
           </div>
-
         </div>
         <br />
         <table mat-table [dataSource]="dataSource">
@@ -69,7 +68,7 @@
           <ng-container matColumnDef="job_id">
             <th mat-header-cell *matHeaderCellDef>Job ID</th>
             <td mat-cell *matCellDef="let element">
-              <div class="file-row flex">
+              <div class="file-row flex items-center gap-2">
                 <div
                   class="flex my-1"
                   aria-label="Example tooltip"
@@ -95,6 +94,20 @@
                   </div>
                 </div>
               </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              @if (element.job_status === JobStatus.FAILED) {
+                <button
+                  mat-raised-button
+                  color="warn"
+                  (click)="deleteJob(projectName, element.job_id)"
+                >
+                  Delete
+                </button>
+              }
             </td>
           </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
