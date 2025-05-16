@@ -3,7 +3,7 @@ import { MatCardModule } from '@angular/material/card';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, lastValueFrom, of } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
-import { SelectedProjectType } from '../svep-submit.component';
+import { SelectedProjectType } from '../clinic-submit.component';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 
 export interface FileSelectEvent {

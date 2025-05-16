@@ -24,7 +24,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from 'src/environments/environment';
 import { ClinicService } from 'src/app/services/clinic.service';
-import { SelectedProjectType } from '../svep-submit.component';
+import { SelectedProjectType } from '../clinic-submit.component';
 
 interface ProjectFile {
   filename: string;
@@ -216,7 +216,7 @@ export class ProjectsListComponent {
       const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${file}`;
 
       this.cs
-        .submitSvepJob(s3URI, projectName!)
+        .submitClinicJob(s3URI, projectName!)
         .pipe(
           catchError((e) => {
             const errorMessage =
