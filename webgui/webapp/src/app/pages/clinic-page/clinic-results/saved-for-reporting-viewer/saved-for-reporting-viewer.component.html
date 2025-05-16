@@ -76,6 +76,15 @@
               Generate Report
             </button>
           }
+          @case ("RSPON") {
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="generateReportRSPON()"
+            >
+              Generate Report
+            </button>
+          }
           @case ("RSSARJITO") {
             <div class="flex flex-col space-y-1">
               <div class="flex flex-row space-x-1">
@@ -216,6 +225,9 @@
               </button>
             </div>
           </div>
+        }
+        @case ("RSPON") {
+          <p>RSPON Lab does not support negative reporting.</p>
         }
       }
     } @else {

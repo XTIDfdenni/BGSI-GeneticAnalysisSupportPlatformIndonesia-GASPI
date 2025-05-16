@@ -1,4 +1,7 @@
 export const CONFIGS: { [key: string]: any } = {
+  RSPON: {
+    cols: ['Alleles', 'Phenotypes'],
+  },
   RSCM: {
     cols: ['Gene Name', 'Variant Name', 'gt', 'clinSig', 'conditions'],
   },
