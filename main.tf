@@ -112,6 +112,11 @@ module "svep" {
   })
 }
 
+moved {
+  from = module.svep
+  to   = module.svep[0]
+}
+
 module "webgui" {
   source                  = "./webgui/terraform-aws"
   region                  = var.region
