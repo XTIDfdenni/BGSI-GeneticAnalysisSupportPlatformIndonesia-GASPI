@@ -97,15 +97,20 @@
             </td>
           </ng-container>
           <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef></th>
+            <th mat-header-cell *matHeaderCellDef>Action</th>
             <td mat-cell *matCellDef="let element">
-              @if (element.job_status === JobStatus.FAILED) {
+              @if (
+                element.job_status === JobStatus.FAILED &&
+                (auth.userGroups | async)!.has("administrators")
+              ) {
                 <button
-                  mat-raised-button
+                  mat-mini-fab
                   color="warn"
+                  class="flex items-center"
                   (click)="deleteJob(projectName, element.job_id)"
+                  matTooltip="Delete file"
                 >
-                  Delete
+                  <mat-icon>delete</mat-icon>
                 </button>
               }
             </td>

@@ -37,6 +37,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { AuthService } from 'src/app/services/auth.service';
+import { AsyncPipe } from '@angular/common';
 
 interface Project {
   job_id: string;
@@ -89,6 +91,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatFormFieldModule,
     ReactiveFormsModule,
     MatSelectModule,
+    AsyncPipe,
   ],
   templateUrl: './list-project-id.component.html',
   styleUrl: './list-project-id.component.scss',
@@ -126,6 +129,7 @@ export class ListJobComponent implements OnChanges, OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dg: MatDialog,
+    protected auth: AuthService,
   ) {}
 
   ngOnInit(): void {
