@@ -89,7 +89,7 @@ module "sbeacon" {
   web_acl_arn                            = module.security.web_acl_arn
   hub_name                               = var.hub_name
   svep-references-table-name             = var.svep-references-table-name
-  svep-temp-arn                          = module.svep.svep-temp-bucket-arn
+  svep-temp-arn                          = length(flatten([module.svep[*].svep-temp-bucket-arn])) > 0 ? module.svep[0].svep-temp-bucket-arn : null
 
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
@@ -117,6 +117,7 @@ module "svep" {
   hub_name                           = var.hub_name
   filters                            = var.svep-filters
   svep-references-table-name         = var.svep-references-table-name
+
 
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"
