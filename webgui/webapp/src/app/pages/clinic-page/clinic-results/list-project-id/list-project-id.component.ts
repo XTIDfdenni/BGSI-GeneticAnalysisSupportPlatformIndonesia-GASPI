@@ -87,8 +87,6 @@ export class ListJobComponent implements OnChanges, OnInit {
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
-  private isEmptyLastPage = false;
-  private paramSubscription: Subscription | null = null;
 
   constructor(
     private cs: ClinicService,
@@ -101,6 +99,7 @@ export class ListJobComponent implements OnChanges, OnInit {
 
   ngOnInit(): void {
     this.list(0);
+    this.dataSource.paginator = this.paginator;
     this.cd.detectChanges();
 
     this.paginator.page.subscribe((event: PageEvent) => {
@@ -114,12 +113,8 @@ export class ListJobComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(): void {
-    this.refresh();
-  }
-
-  ngOnDestroy() {
-    if (this.paramSubscription) {
-      this.paramSubscription.unsubscribe();
+    if (this.paginator) {
+      this.refresh();
     }
   }
 
@@ -135,15 +130,13 @@ export class ListJobComponent implements OnChanges, OnInit {
   }
 
   list(page: number) {
-    this.loading = true;
-
-    if (this.isEmptyLastPage && this.paginator.pageIndex > 0) {
+    if (!this.pageTokens.get(page) && page > 0) {
       this.paginator.pageIndex--;
       this.tstr.warning('No more items to show', 'Warning');
-      this.loading = false;
       return;
     }
 
+    this.loading = true;
     this.cs
       .getMyJobsID(this.pageSize, this.pageTokens.get(page), this.projectName)
       .pipe(
@@ -153,15 +146,29 @@ export class ListJobComponent implements OnChanges, OnInit {
         }),
       )
       .subscribe((response: any) => {
-        if (!response.success) {
+        if (!response) {
+          this.tstr.error('API request failed', 'Error');
+          this.dataSource.data = [];
+        } else if (!response.success) {
           this.tstr.error('API request failed', 'Error');
           this.dataSource.data = [];
         } else {
+          //handle if there no data on next page (set page index and last page to prev value)
+          if (
+            response &&
+            response.jobs.length <= 0 &&
+            this.paginator.pageIndex > 0
+          ) {
+            this.paginator.pageIndex--;
+            this.tstr.warning('No more items to show', 'Warning');
+            this.loading = false;
+            return;
+          }
+
           this.dataSource.data = response.jobs;
 
           // set next page token
           this.pageTokens.set(page + 1, response.last_evaluated_key);
-          this.isEmptyLastPage = isEmpty(response.last_evaluated_key);
         }
         this.loading = false;
       });

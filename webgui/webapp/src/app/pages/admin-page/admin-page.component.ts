@@ -103,9 +103,7 @@ export class AdminPageComponent implements OnInit {
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
-  // private pageTokens: (string | null)[] = [];
   private pageTokens = new Map<number, string>();
-  private lastPage: number = 0;
 
   constructor(
     private adminServ: AdminService,
