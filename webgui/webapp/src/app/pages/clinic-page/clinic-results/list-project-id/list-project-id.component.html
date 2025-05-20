@@ -3,12 +3,37 @@
     <div class="">
       <div>
         <app-component-spinner [loading]="loading" />
-        <div class="flex flex-row-reverse space-x-[10px]">
-          <button mat-mini-fab color="primary" (click)="refresh()">
-            <div>
-              <mat-icon>refresh</mat-icon>
-            </div>
-          </button>
+        <div class="flex gap-3 mt-2">
+          <div class="w-1/4">
+            <mat-form-field class="w-full">
+              <mat-label>Search</mat-label>
+              <input
+                matInput
+                type="text"
+                [formControl]="searchControl"
+                placeholder="Job Name"
+              />
+            </mat-form-field>
+          </div>
+          <div class="w-1/4">
+            <mat-form-field class="w-full">
+              <mat-label>Job Status</mat-label>
+              <mat-select class="capitalize" [formControl]="statusControl">
+                @for (status of jobStatusOptions; track status) {
+                  <mat-option class="capitalize" [value]="status">
+                    {{ status }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="flex-grow text-right">
+            <button mat-mini-fab color="primary" (click)="refresh()">
+              <div>
+                <mat-icon>refresh</mat-icon>
+              </div>
+            </button>
+          </div>
         </div>
         <br />
         <table mat-table [dataSource]="dataSource">
@@ -36,12 +61,14 @@
               </div>
             </td>
           </ng-container>
-
-          <!-- Files Column -->
+          <ng-container matColumnDef="job_name">
+            <th mat-header-cell *matHeaderCellDef>Job Name</th>
+            <td mat-cell *matCellDef="let element">{{ element.job_name }}</td>
+          </ng-container>
           <ng-container matColumnDef="job_id">
             <th mat-header-cell *matHeaderCellDef>Job ID</th>
             <td mat-cell *matCellDef="let element">
-              <div class="file-row flex">
+              <div class="file-row flex items-center gap-2">
                 <div
                   class="flex my-1"
                   aria-label="Example tooltip"
@@ -69,7 +96,25 @@
               </div>
             </td>
           </ng-container>
-
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Action</th>
+            <td mat-cell *matCellDef="let element">
+              @if (
+                element.job_status === JobStatus.FAILED &&
+                (auth.userGroups | async)!.has("administrators")
+              ) {
+                <button
+                  mat-mini-fab
+                  color="warn"
+                  class="flex items-center"
+                  (click)="deleteJob(projectName, element.job_id)"
+                  matTooltip="Delete file"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              }
+            </td>
+          </ng-container>
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>

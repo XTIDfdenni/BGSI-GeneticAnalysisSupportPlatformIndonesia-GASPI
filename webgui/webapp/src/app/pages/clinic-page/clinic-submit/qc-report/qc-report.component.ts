@@ -87,7 +87,17 @@ export class QcReportComponent {
                 e?.response?.data?.error?.errorMessage ||
                 'Something went wrong when loading image . Please try again later.';
               this.tstr.error(errorMessage, `Error: ${item.key} image`);
-              return of(null);
+              const errData = {
+                message: errorMessage,
+                images: {
+                  [item.key]: {
+                    description: this.handleErrDecription(
+                      e?.response?.data?.body?.error_type,
+                    ),
+                  },
+                },
+              };
+              return of(errData);
             }),
           ),
       ),
@@ -100,6 +110,9 @@ export class QcReportComponent {
         const key = this.listQC[index].key;
         if (res?.images?.[key]) {
           const imageInfo = res.images[key];
+          if (imageInfo.description) {
+            return (this.listQC[index].desc = imageInfo.description);
+          }
 
           this.listQC[index].title = imageInfo.title;
           this.listQC[index].url = imageInfo.url;
@@ -110,5 +123,18 @@ export class QcReportComponent {
       this.tstr.error('Unexpected error during QC generation.', 'Error');
     }
     this.loading = false;
+  }
+
+  handleErrDecription(err: string): string {
+    const value = err.toLowerCase();
+    switch (value) {
+      case 'no_data':
+        return 'Report failed to generate, missing field on file.';
+      case 'vcfstat_failed':
+        return 'Vcfstat failed to generate report.';
+
+      default:
+        return 'Report failed to generate.';
+    }
   }
 }

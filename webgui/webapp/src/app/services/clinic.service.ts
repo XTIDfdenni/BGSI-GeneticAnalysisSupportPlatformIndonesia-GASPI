@@ -49,6 +49,8 @@ export class ClinicService {
     limit?: number,
     last_evaluated_key?: string | null,
     project?: string,
+    search?: string,
+    job_status?: string,
   ) {
     console.log('get list jobs id');
     return from(
@@ -59,13 +61,15 @@ export class ClinicService {
           queryStringParameters: {
             ...(limit !== undefined && limit !== null ? { limit } : {}),
             ...(last_evaluated_key ? { last_evaluated_key } : {}),
+            ...(search ? { search } : {}),
+            ...(job_status !== 'all' ? { job_status } : {}),
           },
         },
       ),
     );
   }
 
-  submitClinicJob(location: string, projectName: string) {
+  submitSvepJob(location: string, projectName: string, jobName: string) {
     let pathPart: string;
     switch (environment.hub_name) {
       case 'RSCM':
@@ -87,7 +91,7 @@ export class ClinicService {
         const userId = credentials.identityId;
         return from(
           API.post(environment.api_endpoint_clinic.name, pathPart, {
-            body: { location, projectName, userId },
+            body: { location, projectName, userId, jobName },
           }),
         );
       }),
@@ -260,6 +264,16 @@ export class ClinicService {
             ...args,
           },
         },
+      ),
+    );
+  }
+
+  deleteFailedJob(project: string, jobId: string) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/delete-job/${jobId}`,
+        {},
       ),
     );
   }

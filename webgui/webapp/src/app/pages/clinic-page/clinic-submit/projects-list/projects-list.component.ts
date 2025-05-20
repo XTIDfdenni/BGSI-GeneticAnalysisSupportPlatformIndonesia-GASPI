@@ -22,8 +22,8 @@ import {
 import { isEmpty } from 'lodash';
 import { ToastrService } from 'ngx-toastr';
 import { MatTooltip, MatTooltipModule } from '@angular/material/tooltip';
-import { environment } from 'src/environments/environment';
 import { ClinicService } from 'src/app/services/clinic.service';
+import { MatDialog } from '@angular/material/dialog';
 import { SelectedProjectType } from '../clinic-submit.component';
 
 interface ProjectFile {
@@ -41,6 +41,12 @@ interface Project {
 export interface FileSelectEvent {
   projectName: string;
   vcf: string;
+}
+
+export interface SubmitQueryDialog {
+  jobName: string;
+  file: string;
+  projectName: string;
 }
 
 @Injectable()
@@ -91,6 +97,11 @@ export class ProjectsListComponent {
   viewUsers: string | null = null;
   projectName: string | null = null;
   vcfFile: string | null = null;
+  submitQueryDialog: SubmitQueryDialog = {
+    jobName: '',
+    file: '',
+    projectName: '',
+  };
 
   protected pageSize = 5;
   @ViewChild('paginator')
@@ -103,6 +114,7 @@ export class ProjectsListComponent {
     private tstr: ToastrService,
     private cd: ChangeDetectorRef,
     private cs: ClinicService,
+    private dg: MatDialog,
   ) {}
 
   ngOnInit(): void {
@@ -167,7 +179,6 @@ export class ProjectsListComponent {
                 disabled: !hasIndex,
               };
             });
-
             return {
               name: project.name,
               description: project.description,
@@ -218,36 +229,17 @@ export class ProjectsListComponent {
     return foundFile.disabled;
   }
 
-  submit(file: string, projectName: string) {
-    this.submissionStarted = true;
+  async openJobDialog(file: string, projectName: string) {
+    const { SubmitQueryDialogComponent } = await import(
+      './submit-query-dialog/submit-query-dialog.component'
+    );
 
-    if (file) {
-      const s3URI = `s3://${environment.storage.dataPortalBucket}/projects/${projectName}/project-files/${file}`;
-
-      this.cs
-        .submitClinicJob(s3URI, projectName!)
-        .pipe(
-          catchError((e) => {
-            const errorMessage =
-              e.response?.data?.error?.errorMessage ||
-              'Something went wrong when initaiting the job. Please try again later.';
-            this.tstr.error(errorMessage, 'Error');
-            this.submissionStarted = false;
-            return of(null);
-          }),
-        )
-        .subscribe((response: any) => {
-          if (response) {
-            this.tstr.success(
-              'Displaying results takes time according to the size of your data. Once completed, we will send you a notification via email.',
-              'Success',
-            );
-            this.list(0);
-          }
-        });
-    } else {
-      this.tstr.warning('No file selected', 'Warning');
-      this.submissionStarted = false;
-    }
+    this.dg.open(SubmitQueryDialogComponent, {
+      data: {
+        file: file,
+        projectName: projectName,
+        list: () => this.list(0),
+      },
+    });
   }
 }

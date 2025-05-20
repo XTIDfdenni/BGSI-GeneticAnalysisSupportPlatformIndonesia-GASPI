@@ -169,6 +169,16 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     'Allele Count',
     'Allele Number',
     'SIFT (max)',
+    'Global Allele Frequency',
+    'KHV',
+    'Mis Z',
+    'Mis o/e',
+    'Mis o/e lower CI',
+    'Mis o/e upper CI',
+    'pLI',
+    'pLOF o/e',
+    'pLOF o/e upper CI',
+    'pLOF o/e lower CI',
   ];
   filterValues: { [key: string]: string } = {};
   filterMasterData: { [key: string]: any[] } = {};
@@ -338,6 +348,7 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
           });
         return row;
       });
+    console.log(lines);
     // this.dataRows.next(this.originalRows);
     this.setFilter();
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
