@@ -89,7 +89,6 @@ export class ClinicIGVComponent {
   @ViewChild('paginator')
   paginator!: MatPaginator;
   private pageTokens = new Map<number, string>();
-  private isEmptyLastPage = false;
   protected igvData: IIGVData | null = null;
 
   constructor(
@@ -159,15 +158,14 @@ export class ClinicIGVComponent {
   }
 
   list(page: number) {
-    this.loading = true;
-
-    if (this.isEmptyLastPage && this.paginator.pageIndex > 0) {
+    // not the first page but the page token is not set
+    if (!this.pageTokens.get(page) && page > 0) {
       this.paginator.pageIndex--;
       this.tstr.warning('No more items to show', 'Warning');
-      this.loading = false;
       return;
     }
 
+    this.loading = true;
     this.dps
       .getMyProjects(this.pageSize, this.pageTokens.get(page))
       .pipe(
@@ -177,10 +175,22 @@ export class ClinicIGVComponent {
         }),
       )
       .subscribe((response: any) => {
-        if (!response.data) {
+        if (!response) {
           this.tstr.error('API request failed', 'Error');
           this.dataSource.data = [];
         } else {
+          // handle if there no data on next page (set page index and last page to prev value)
+          if (
+            response &&
+            response.data.length <= 0 &&
+            this.paginator.pageIndex > 0
+          ) {
+            this.paginator.pageIndex--;
+            this.tstr.warning('No more items to show', 'Warning');
+            this.loading = false;
+            return;
+          }
+
           this.dataSource.data = response.data.map((project: any) => {
             const vcfFiles = project.files.filter((file: string) =>
               file.endsWith('.bam'),
@@ -203,7 +213,6 @@ export class ClinicIGVComponent {
 
           // set next page token
           this.pageTokens.set(page + 1, response.last_evaluated_key);
-          this.isEmptyLastPage = isEmpty(response.last_evaluated_key);
         }
         this.loading = false;
       });

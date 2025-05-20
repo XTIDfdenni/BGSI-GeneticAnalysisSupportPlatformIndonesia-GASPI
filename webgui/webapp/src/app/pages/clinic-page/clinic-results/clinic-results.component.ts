@@ -67,7 +67,7 @@ export class ClinicResultsComponent implements OnInit, OnDestroy {
   protected myProjects: Project[] = [];
   private paramSubscription: Subscription | null = null;
   filteredOptions: Observable<Project[]> | undefined;
-  @ViewChild(ListJobComponent) clinicIGVComponent!: ListJobComponent;
+  @ViewChild(ListJobComponent) jobListViewer!: ListJobComponent;
 
   constructor(
     private fb: FormBuilder,
@@ -94,7 +94,7 @@ export class ClinicResultsComponent implements OnInit, OnDestroy {
 
   loadListData() {
     if (this.projectName === this.projectNameFormControl.value) {
-      this.clinicIGVComponent.refresh();
+      this.jobListViewer.refresh();
     } else {
       this.router.navigate([], {
         relativeTo: this.route,
