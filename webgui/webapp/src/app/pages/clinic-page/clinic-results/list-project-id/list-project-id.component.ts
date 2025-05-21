@@ -300,7 +300,7 @@ export class ListJobComponent implements OnChanges, OnInit {
 
     const dialog = this.dg.open(ActionConfirmationDialogComponent, {
       data: {
-        title: 'Delete User Folder',
+        title: 'Delete Failed Job',
         message: `Are you sure you want to delete ${jobName}?`,
       },
     });
