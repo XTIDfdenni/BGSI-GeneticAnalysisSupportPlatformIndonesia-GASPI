@@ -15,8 +15,11 @@ locals {
     "RSSARDJITO",
     "RSUP",
   ]
-  clinic_mode    = contains(local.svep_hubs, var.hub_name) ? "svep" : contains(local.pgxflow_hubs, var.hub_name) ? "pgxflow" : null
-  clinic_api_url = local.clinic_mode == "svep" ? module.svep[0].api_url : local.clinic_mode == "pgxflow" ? module.pgxflow[0].api_url : null
+  clinic_mode             = contains(local.svep_hubs, var.hub_name) ? "svep" : contains(local.pgxflow_hubs, var.hub_name) ? "pgxflow" : null
+  clinic_api_url          = local.clinic_mode == "svep" ? module.svep[0].api_url : local.clinic_mode == "pgxflow" ? module.pgxflow[0].api_url : null
+  clinic_temp_bucket_name = local.clinic_mode == "svep" ? module.svep[0].temp-bucket-name : local.clinic_mode == "pgxflow" ? module.pgxflow[0].temp-bucket-name : null
+  clinic_temp_bucket_arn  = local.clinic_mode == "svep" ? module.svep[0].temp-bucket-arn : local.clinic_mode == "pgxflow" ? module.pgxflow[0].temp-bucket-arn : null
+
 }
 
 
@@ -90,7 +93,8 @@ module "sbeacon" {
   web_acl_arn                            = module.security.web_acl_arn
   hub_name                               = var.hub_name
   svep-references-table-name             = var.svep-references-table-name
-  # svep-temp-arn                          = module.svep[0].svep-temp-bucket-arn
+  clinic-temp-bucket-name                = local.clinic_temp_bucket_name
+  clinic-temp-bucket-arn                 = local.clinic_temp_bucket_arn
 
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
