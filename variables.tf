@@ -12,8 +12,14 @@ variable "common-tags" {
 
 variable "svep-references-table-name" {
   type        = string
-  description = "Name of the references table"
+  description = "Name of the sVEP references table"
   default     = "svep-references"
+}
+
+variable "pgxflow-references-table-name" {
+  type        = string
+  description = "Name of the PGxFlow references table"
+  default     = "pgxflow-references"
 }
 
 # portal variables
