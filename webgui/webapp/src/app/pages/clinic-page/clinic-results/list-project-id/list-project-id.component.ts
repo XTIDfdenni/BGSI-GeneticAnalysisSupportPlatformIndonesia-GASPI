@@ -39,6 +39,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from 'src/app/services/auth.service';
 import { AsyncPipe } from '@angular/common';
+import dayjs from 'dayjs';
 
 interface Project {
   job_id: string;
@@ -105,6 +106,7 @@ export class ListJobComponent implements OnChanges, OnInit {
     'job_status',
     'job_name',
     'job_id',
+    'created_at',
     'action',
   ];
   JobStatus = JobStatus;
@@ -243,7 +245,16 @@ export class ListJobComponent implements OnChanges, OnInit {
             return;
           }
 
-          this.dataSource.data = response.jobs;
+          this.dataSource.data = response.jobs.map((job: any) => {
+            return {
+              job_id: job.job_id,
+              input_vcf: job.input_vcf,
+              job_status: job.job_status,
+              error_message: job.error_message,
+              failed_step: job.failed_step,
+              created_at: dayjs(job.created_at).format('DD/MM/YYYY'),
+            };
+          });
 
           // set next page token
           this.pageTokens.set(page + 1, response.last_evaluated_key);
