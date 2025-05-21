@@ -382,4 +382,14 @@ export class PharmcatResultsViewerComponent {
     this.diplotypeDataRows.next(this.diplotypeOriginalRows);
     this.variantDataRows.next(this.variantOriginalRows);
   }
+
+  handleRedirectUrl(column: string, value: string) {
+    const urlMap: Record<string, string> = {
+      'PubMed IDs': `https://pubmed.ncbi.nlm.nih.gov/${value}/`,
+      Variants: `https://www.ncbi.nlm.nih.gov/snp/${value}`,
+    };
+
+    const url = urlMap[column];
+    window.open(url, '_blank');
+  }
 }
