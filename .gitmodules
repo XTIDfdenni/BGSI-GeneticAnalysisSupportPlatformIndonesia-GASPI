@@ -12,4 +12,4 @@
 
 [submodule "report_templates"]
 	path = report_templates
-	url = https://github.com/GSI-Xapiens-CSIRO/report_templates
+	url = https://github.com/GSI-Xapiens-CSIRO/report_templates.git
