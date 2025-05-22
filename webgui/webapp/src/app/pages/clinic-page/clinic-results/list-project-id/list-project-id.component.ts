@@ -304,23 +304,40 @@ export class ListJobComponent implements OnChanges, OnInit {
     });
   }
 
-  deleteJob(projectName: string, jobID: string) {
-    this.loading = true;
-    this.cs
-      .deleteFailedJob(projectName, jobID)
-      .pipe(
-        catchError((error) => {
-          this.tstr.error('API request failed', error);
-          return of(null);
-        }),
-      )
-      .subscribe((response: any) => {
-        console.log(response);
-        if (response.success) {
-          this.tstr.success(response.message, 'Success');
-          this.list(0, '', this.jobStatusOptions[0]);
-        }
-        this.loading = false;
-      });
+  async deleteJob(projectName: string, jobID: string, jobName: string) {
+    const { ActionConfirmationDialogComponent } = await import(
+      'src/app/components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialog = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Delete Failed Job',
+        message: `Are you sure you want to delete ${jobName}?`,
+      },
+    });
+
+    dialog.afterClosed().subscribe((result) => {
+      if (result) {
+        this.loading = true;
+        this.cs
+          .deleteFailedJob(projectName, jobID)
+          .pipe(
+            catchError((error) => {
+              this.tstr.error('API request failed', error);
+              this.loading = false;
+              return of(null);
+            }),
+          )
+          .subscribe((response: any) => {
+            if (response.success) {
+              this.tstr.success(response.message, 'Success');
+              this.list(0, '', this.jobStatusOptions[0]);
+            } else {
+              this.tstr.error('API request failed', response.message);
+            }
+            this.loading = false;
+          });
+      }
+    });
   }
 }
