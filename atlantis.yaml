@@ -94,7 +94,7 @@ projects:
   execution_order_group: 8
   autoplan:
     when_modified: *tf_files
-  workflow: uat03-workflow
+  workflow: uat02-workflow
 - name: gxc-uat03
   branch: /uat03/
   dir: .
