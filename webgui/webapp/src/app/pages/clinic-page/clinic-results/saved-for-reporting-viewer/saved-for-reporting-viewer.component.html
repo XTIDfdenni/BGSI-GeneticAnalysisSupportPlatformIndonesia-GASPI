@@ -76,6 +76,15 @@
               Generate Report
             </button>
           }
+          @case ("RSIGNG") {
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="generateReportRSIGNG()"
+            >
+              Generate Report
+            </button>
+          }
           @case ("RSPON") {
             <button
               mat-raised-button
@@ -228,6 +237,9 @@
         }
         @case ("RSPON") {
           <p>RSPON Lab does not support negative reporting.</p>
+        }
+        @case ("RSIGNG") {
+          <p>RSIGNG Lab does not support negative reporting.</p>
         }
       }
     } @else {

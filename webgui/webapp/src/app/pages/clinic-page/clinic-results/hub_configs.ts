@@ -5,6 +5,15 @@ export const CONFIGS: { [key: string]: any } = {
   RSCM: {
     cols: ['Gene Name', 'Variant Name', 'gt', 'clinSig', 'conditions'],
   },
+  RSIGNG: {
+    cols: [
+      'Drugs',
+      'Gene',
+      'Variant',
+      'Phenotype Categories',
+      'Recommendation',
+    ],
+  },
   RSSARJITO: {
     cols: [
       'Variant Name',
