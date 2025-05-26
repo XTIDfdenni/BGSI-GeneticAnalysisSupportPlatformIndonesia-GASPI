@@ -152,7 +152,7 @@
       </mat-accordion>
     </div>
     <!-- @if (dataRows.value.length > 0) { -->
-    <div class="mb-2">
+    <!-- <div class="mb-2">
       <strong>Click on table headers to sort</strong>
     </div>
     <div
@@ -255,11 +255,38 @@
       #paginator
       hidePageSize
       pageSize="1"
+      [length]="resultsLength"8
+      [pageIndex]="pageIndex"
+      (page)="pageChange($event)"
+    >
+    </mat-paginator> -->
+
+    <!-- } -->
+
+    <div class="w-full">
+      <cdk-virtual-scroll-viewport [style.height.px]="900" class="no-scrollbar">
+        @if (rows.length > 0) {
+          <div class="flex flex-col gap-2">
+            @for (row of rows; track row) {
+              <box-data-component
+                [row]="row"
+                [expanded]="expandedMap.get(row.id) ?? false"
+                (panelToggled)="onToggle(row.id, $event)"
+              />
+            }
+          </div>
+        }
+      </cdk-virtual-scroll-viewport>
+    </div>
+    <mat-paginator
+      showFirstLastButtons
+      #paginator
+      hidePageSize
+      pageSize="1"
       [length]="resultsLength"
       [pageIndex]="pageIndex"
       (page)="pageChange($event)"
     >
     </mat-paginator>
-    <!-- } -->
   </mat-card-content>
 </mat-card>
