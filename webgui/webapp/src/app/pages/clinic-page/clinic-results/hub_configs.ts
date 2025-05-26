@@ -14,7 +14,7 @@ export const CONFIGS: { [key: string]: any } = {
       'Recommendation',
     ],
   },
-  RSSARJITO: {
+  RSSARDJITO: {
     cols: [
       'Variant Name',
       'gt',

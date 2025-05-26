@@ -235,7 +235,7 @@ export class SavedForReportingViewerComponent
       });
   }
 
-  generateReportRSSARJITO(lang: string, mode: string) {
+  generateReportRSSARDJITO(lang: string, mode: string) {
     this.ss.start();
     this.cs
       .generateReport(this.projectName, this.requestId, { lang, mode })
