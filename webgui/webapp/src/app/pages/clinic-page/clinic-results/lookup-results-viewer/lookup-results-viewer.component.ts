@@ -118,9 +118,20 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     'chr',
     'start',
     'end',
-    'Overlapped Count',
-    'In FORNAS',
-    'In Top 12',
+    'refChr',
+    'VCF pos',
+    'VCF ref',
+    'VCF alt',
+    'AF (Afr)',
+    'AF (Eas)',
+    'AF (Fin)',
+    'AF (Nfe)',
+    'AF (Sas)',
+    'AF (Amr)',
+    'AF',
+    'AC',
+    'AN',
+    'Max sift',
   ];
   filterValues: { [key: string]: string } = {};
   filterMasterData: { [key: string]: any[] } = {};
