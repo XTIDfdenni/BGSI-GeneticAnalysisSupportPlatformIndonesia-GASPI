@@ -66,7 +66,7 @@ export class SubmitQueryDialogComponent {
       this.loading = true;
 
       this.cs
-        .submitSvepJob(
+        .submitClinicJob(
           s3URI,
           this.data.projectName!,
           this.jobForm.value.jobName,
