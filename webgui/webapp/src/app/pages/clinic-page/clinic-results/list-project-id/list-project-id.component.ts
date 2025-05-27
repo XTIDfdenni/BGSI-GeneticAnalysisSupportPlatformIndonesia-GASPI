@@ -247,11 +247,7 @@ export class ListJobComponent implements OnChanges, OnInit {
 
           this.dataSource.data = response.jobs.map((job: any) => {
             return {
-              job_id: job.job_id,
-              input_vcf: job.input_vcf,
-              job_status: job.job_status,
-              error_message: job.error_message,
-              failed_step: job.failed_step,
+              ...job,
               created_at: dayjs(job.created_at).format('DD/MM/YYYY'),
             };
           });
