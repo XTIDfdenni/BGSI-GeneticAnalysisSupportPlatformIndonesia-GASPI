@@ -170,3 +170,15 @@ variable "pgxflow_configuration" {
   default     = null
   nullable    = true
 }
+
+variable "lookup_configuration" {
+  type = object({
+    assoc_matrix_filename = string
+    chr_header            = string
+    start_header          = string
+    end_header            = string
+  })
+  description = "Filename and header information (chr, start, end) for the association matrix"
+  default     = null
+  nullable    = true
+}
