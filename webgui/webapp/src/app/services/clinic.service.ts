@@ -111,28 +111,28 @@ export class ClinicService {
     chromosome: string | null = null,
     page: number | null = null,
     position: number | null = null,
+    pathPart: string | null = null,
   ): Observable<any> {
     const params = {
       ...(chromosome && { chromosome }),
       ...(page && { page }),
       ...(position && { position }),
     };
-    let pathPart: string;
-    switch (environment.hub_name) {
-      case 'RSCM':
-      case 'RSSARDJITO':
-        pathPart = 'results';
-        break;
-      case 'RSPON':
-        pathPart = 'pipeline_pharmcat/results';
-        break;
-      case 'RSIGNG':
-        pathPart = 'pipeline_lookup/results';
-        break;
-      default:
-        throw new Error(`Unsupported hub_name: ${environment.hub_name}`);
-    }
 
+    const getPathForHub = (hubName: string, customPath: string | null) => {
+      const defaultPaths: Record<string, string> = {
+        RSCM: 'results',
+        RSSARDJITO: 'results',
+        RSPON: 'pipeline_pharmcat/results',
+        RSIGNG: 'pipeline_lookup/results',
+      };
+      if (hubName === 'RSJPD' && customPath) {
+        return customPath;
+      }
+      return defaultPaths[hubName] || 'results';
+    };
+
+    pathPart = getPathForHub(environment.hub_name, pathPart);
     return from(
       API.get(environment.api_endpoint_clinic.name, pathPart, {
         queryStringParameters: {

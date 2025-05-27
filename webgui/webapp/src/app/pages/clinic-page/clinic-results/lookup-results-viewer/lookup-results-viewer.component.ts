@@ -262,7 +262,14 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     this.dataRows.next([]);
     this.ss.start();
     this.cs
-      .getClinicResults(requestId, projectName, chromosome, page, position)
+      .getClinicResults(
+        requestId,
+        projectName,
+        chromosome,
+        page,
+        position,
+        'pipeline_lookup/results',
+      )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
         if (!data) {
