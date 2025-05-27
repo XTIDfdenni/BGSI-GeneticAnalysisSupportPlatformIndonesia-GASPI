@@ -218,6 +218,10 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  handleSelectionChange(row: any, isChecked: boolean): void {
+    this.cs.selection(row, isChecked);
+  }
+
   async openAnnotateDialog() {
     const { AddAnnotationDialogComponent } = await import(
       '../add-annotation-dialog/add-annotation-dialog.component'
