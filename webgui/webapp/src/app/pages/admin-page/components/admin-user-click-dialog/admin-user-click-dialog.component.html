@@ -98,19 +98,19 @@
           </mat-error>
         </mat-form-field>
 
-        <div class="flex space-x-2">
-          <span>Estimated Cost* : </span>
-          <span class="font font-semibold">${{ costEstimation }} / Month</span>
-        </div>
+          <div class="flex space-x-2">
+            <span>Estimated Cost* : </span>
+            <span class="font font-semibold">${{ costEstimation }} / Month</span>
+          </div>
 
-        <div class="text-red-500 text-sm flex space-x-2">
-          <span
-            >*Disclaimer : This above cost is an approximate and rounded off
-            value</span
-          >
-        </div>
+          <div class="text-red-500 text-sm flex space-x-2">
+            <span
+              >*Disclaimer : This above cost is an approximate and rounded off
+              value</span
+            >
+          </div>
 
-        <h4>Notebook Options</h4>
+          <label>Notebook Options:</label>
 
           <mat-radio-group formControlName="notebookRole" class="notebook-radio-group">
             <mat-radio-button [value]="noteBookRoleValue.ADVANCED" class="notebook-radio-option">

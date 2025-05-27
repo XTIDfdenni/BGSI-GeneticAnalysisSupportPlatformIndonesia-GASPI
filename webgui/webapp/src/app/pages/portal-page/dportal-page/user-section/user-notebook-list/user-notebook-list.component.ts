@@ -28,6 +28,7 @@ import {
   filter,
   firstValueFrom,
   of,
+  timer,
 } from 'rxjs';
 import { NotebookItemComponent } from './notebook-item/notebook-item.component';
 import {
@@ -103,12 +104,12 @@ export class UserNotebookListComponent implements OnInit {
 
     this.onChangesCalculatePrice();
 
-    // Make sure to generate instance name when the route changes
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.generateInstanceName();
-      });
+    timer(500).subscribe(() => this.generateInstanceName());
+  }
+
+  refresh() {
+    this.list();
+    timer(500).subscribe(() => this.generateInstanceName());
   }
 
   // Generate instance name based on the current role
