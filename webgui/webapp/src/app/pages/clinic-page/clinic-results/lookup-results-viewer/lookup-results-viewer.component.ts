@@ -351,4 +351,14 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
       option.toLowerCase().includes(filterValue),
     );
   }
+
+  async loadPubMedIds(rsid: string) {
+    const { PubmedIdDialogComponent } = await import(
+      '../pubmed-id-dialog/pubmed-id-dialog.component'
+    );
+
+    this.dg.open(PubmedIdDialogComponent, {
+      data: { rsid },
+    });
+  }
 }
