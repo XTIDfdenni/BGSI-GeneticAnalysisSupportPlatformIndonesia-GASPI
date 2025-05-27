@@ -12,7 +12,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ClinicService } from 'src/app/services/clinic.service';
+import { ClinicService } from '../../../../../services/clinic.service';
+import { PopOverComponent } from './pop-over/pop-over.component';
 
 @Component({
   selector: 'box-data-component',
@@ -24,6 +25,7 @@ import { ClinicService } from 'src/app/services/clinic.service';
     MatIconModule,
     MatTooltipModule,
     MatCheckboxModule,
+    PopOverComponent,
   ],
   templateUrl: './box-data.component.html',
   styleUrl: './box-data.component.scss',
@@ -35,9 +37,6 @@ export class BoxDataComponent {
 
   readonly panelOpenState = signal(false);
   constructor(protected cs: ClinicService) {}
-  ngAfterViewInit(): void {
-    console.log(this.row['pubmed']);
-  }
 
   showTooltip(message: string) {
     return `Secondary analysis on this variants reports "${message}" `;
@@ -61,11 +60,6 @@ export class BoxDataComponent {
       .map((id) => id.trim())
       .filter((id) => id !== '');
   }
-
-  // handleRedirectUrl(value: string) {
-  //   const url = `https://pubmed.ncbi.nlm.nih.gov/${value}/`;
-  //   window.open(url, '_blank');
-  // }
 
   handleRedirectUrl(column: string, value: string) {
     const urlMap: Record<string, string> = {

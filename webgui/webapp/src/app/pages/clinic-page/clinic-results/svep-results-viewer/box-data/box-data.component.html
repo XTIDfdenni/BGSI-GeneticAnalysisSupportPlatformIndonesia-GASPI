@@ -13,11 +13,14 @@
         <mat-panel-title>
           <div class="flex items-center w-full font-normal">
             <div class="flex flex-1 flex-row items-center gap-2">
-              @if (1 === 1) {
+              @if (!["PASS", "-", ""].includes(row["filter"])) {
                 <div
-                  class="flex justify-center items-center bg-red-600 rounded-full"
+                  class="flex justify-center items-center rounded-full"
                   [matTooltip]="showTooltip(row['filter'])"
                   style="width: 30px; height: 30px"
+                  [style.background]="
+                    row['filter'] === '.' ? '#4b5563' : '#dc2626'
+                  "
                 >
                   <mat-icon class="text-white">priority_high</mat-icon>
                 </div>
@@ -42,7 +45,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
       <div
-        class="data-row border-0 border-t-2 border-gray-300 border-dashed pt-2 flex flex-col gap-2"
+        class="data-row border-0 border-t-2 border-gray-300 border-dashed pt-2 flex flex-col gap-2 no-scrollbar"
         style="height: 300px; overflow: scroll"
       >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -281,7 +284,7 @@
 
           <!-- Add more cards as needed -->
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-2">
           <!-- Card 1 -->
           <div class="bg-purple-50 p-4 rounded-xl shadow-md">
             <div class="font-semibold text-lg mb-2 border-bottom">
@@ -387,6 +390,31 @@
                     (click)="handleRedirectUrl('pubmed', id)"
                   >
                     {{ id }}
+                  </div>
+                }
+
+                @for (
+                  id of splitPubMedArray(row["pubmed"]).slice(0, 6);
+                  track id
+                ) {
+                  <div
+                    class="pub-med p-1 cursor-pointer rounded-md flex justify-center items-center"
+                    (click)="handleRedirectUrl('pubmed', id)"
+                  >
+                    {{ id }}
+                  </div>
+                }
+                <!-- code here  -->
+                @if (splitPubMedArray(row["pubmed"]).length > 6) {
+                  <div class="relative">
+                    <pop-over-component
+                      [data]="
+                        splitPubMedArray(row['pubmed']).slice(
+                          6,
+                          splitPubMedArray(row['pubmed']).length
+                        )
+                      "
+                    />
                   </div>
                 }
               </div>
