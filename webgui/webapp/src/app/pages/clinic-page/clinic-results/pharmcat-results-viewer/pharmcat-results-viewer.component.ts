@@ -152,6 +152,16 @@ export class PharmcatResultsViewerComponent {
     'Alleles',
     'Related Diplotypes',
     'Zygosity',
+    'AF (Afr)',
+    'AF (Eas)',
+    'AF (Fin)',
+    'AF (Nfe)',
+    'AF (Sas)',
+    'AF (Amr)',
+    'AF',
+    'AC',
+    'AN',
+    'Max sift',
   ];
   protected diplotypeOriginalRows: any[] = [];
   protected diplotypeDataRows = new BehaviorSubject<any[]>([]);
