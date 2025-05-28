@@ -342,7 +342,14 @@ export class PharmcatResultsViewerComponent {
     this.variantDataRows.next([]);
     this.ss.start();
     this.cs
-      .getClinicResults(requestId, projectName, null, page, null)
+      .getClinicResults(
+        requestId,
+        projectName,
+        null,
+        page,
+        null,
+        'pipeline_pharmcat/results',
+      )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
         if (!data) {
