@@ -11,11 +11,7 @@
   align-content: space-between;
   justify-content: space-between;
   width: 100%;
-  // div {
-  //   flex: 1;
-  //   color: #4e4e4e;
-  //   font-size: 0.8rem;
-  // }
+  font-size: 0.75rem;
 }
 
 .row-content > div:first-child {
@@ -53,4 +49,8 @@
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
+}
+
+.bgCard {
+  background: #f3f5f8;
 }
