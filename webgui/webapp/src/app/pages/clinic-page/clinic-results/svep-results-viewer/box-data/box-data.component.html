@@ -37,7 +37,10 @@
             </div>
             <div class="flex-1 flex flex-col gap-1">
               <div>clinSign</div>
-              <div class="title-accordion">
+              <div
+                class="title-accordion"
+                [style.color]="handleColorClignsign(row['clinSig'])"
+              >
                 {{ row["clinSig"] }}
               </div>
             </div>
@@ -50,8 +53,8 @@
       >
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Card 1 -->
-          <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-            <div class="font-semibold text-lg mb-2 border-bottom">
+          <div class="bgCard p-4 rounded-xl shadow-md">
+            <div class="font-semibold text-base mb-2 border-bottom">
               Variant Information
             </div>
             <div class="flex flex-col gap-1">
@@ -122,8 +125,8 @@
           </div>
 
           <!-- Card 2 -->
-          <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-            <div class="font-semibold text-lg mb-2 border-bottom">
+          <div class="bgCard p-4 rounded-xl shadow-md">
+            <div class="font-semibold text-base mb-2 border-bottom">
               Sequence Information
             </div>
             <div class="flex flex-col gap-1">
@@ -188,8 +191,8 @@
           </div>
 
           <!-- Card 3 -->
-          <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-            <div class="font-semibold text-lg mb-2 border-bottom">
+          <div class="bgCard p-4 rounded-xl shadow-md">
+            <div class="font-semibold text-base mb-2 border-bottom">
               <div>Allele Frequency</div>
               <div class="flex flex-row text-sm text-primary-50 mb-2 gap-4">
                 <div class="flex-1">gnomAD</div>
@@ -286,8 +289,8 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-2">
           <!-- Card 1 -->
-          <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-            <div class="font-semibold text-lg mb-2 border-bottom">
+          <div class="bgCard p-4 rounded-xl shadow-md">
+            <div class="font-semibold text-base mb-2 border-bottom">
               Resources
             </div>
             <div class="flex flex-col gap-1">
@@ -328,8 +331,8 @@
           </div>
 
           <!-- Card 2 -->
-          <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-            <div class="font-semibold text-lg mb-2 border-bottom">
+          <div class="bgCard p-4 rounded-xl shadow-md">
+            <div class="font-semibold text-base mb-2 border-bottom">
               Constraints
             </div>
             <div class="flex flex-col gap-1">
@@ -364,8 +367,8 @@
 
           <!-- Card 3 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-              <div class="font-semibold text-lg mb-2 border-bottom">
+            <div class="bgCard p-4 rounded-xl shadow-md">
+              <div class="font-semibold text-base mb-2 border-bottom">
                 Computational Predictions
               </div>
               <div class="flex flex-col gap-1">
@@ -379,22 +382,13 @@
             </div>
 
             <!-- Card 2 -->
-            <div class="bg-purple-50 p-4 rounded-xl shadow-md">
-              <div class="font-semibold text-lg mb-2 border-bottom">
+            <div class="bgCard p-4 rounded-xl shadow-md">
+              <div class="font-semibold text-base mb-2 border-bottom">
                 Publication Media
               </div>
               <div class="grid grid-cols-2 gap-2">
-                @for (id of splitPubMedArray(row["pubmed"]); track id) {
-                  <div
-                    class="pub-med p-1 cursor-pointer rounded-md"
-                    (click)="handleRedirectUrl('pubmed', id)"
-                  >
-                    {{ id }}
-                  </div>
-                }
-
                 @for (
-                  id of splitPubMedArray(row["pubmed"]).slice(0, 6);
+                  id of splitPubMedArray(row["pubmed"]).slice(0, 8);
                   track id
                 ) {
                   <div
@@ -405,12 +399,12 @@
                   </div>
                 }
                 <!-- code here  -->
-                @if (splitPubMedArray(row["pubmed"]).length > 6) {
+                @if (splitPubMedArray(row["pubmed"]).length > 8) {
                   <div class="relative">
                     <pop-over-component
                       [data]="
                         splitPubMedArray(row['pubmed']).slice(
-                          6,
+                          8,
                           splitPubMedArray(row['pubmed']).length
                         )
                       "
