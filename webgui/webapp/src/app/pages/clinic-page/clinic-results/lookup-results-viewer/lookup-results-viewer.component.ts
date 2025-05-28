@@ -102,19 +102,18 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
   protected results: LookupResult | null = null;
   protected columns: string[] = [
     'selected',
-    'No',
     'PharmGKB ID',
     'Level',
     'Variant',
     'Gene',
-    'Drugs',
     'Alleles',
-    'Allele Function',
+    'Ref/Alt',
+    'Zygosity',
+    'Drugs',
     'Phenotype Categories',
-    'Phenotype',
     'Implication',
-    'Recommendation',
-    'Pediatric',
+    'Phenotype',
+    'PMIDs',
     'chr',
     'start',
     'end',
@@ -218,6 +217,10 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  handleSelectionChange(row: any, isChecked: boolean): void {
+    this.cs.selection(row, isChecked);
+  }
+
   async openAnnotateDialog() {
     const { AddAnnotationDialogComponent } = await import(
       '../add-annotation-dialog/add-annotation-dialog.component'
@@ -258,7 +261,14 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     this.dataRows.next([]);
     this.ss.start();
     this.cs
-      .getClinicResults(requestId, projectName, chromosome, page, position)
+      .getClinicResults(
+        requestId,
+        projectName,
+        chromosome,
+        page,
+        position,
+        'pipeline_lookup/results',
+      )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
         if (!data) {

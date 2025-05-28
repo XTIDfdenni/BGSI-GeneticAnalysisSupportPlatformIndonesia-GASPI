@@ -132,7 +132,7 @@
             <td mat-cell *matCellDef="let row">
               <div class="flex flex-row items-center">
                 <mat-checkbox
-                  (change)="cs.selection(row, $event.checked)"
+                  (change)="handleSelectionChange(row, $event.checked)"
                   [checked]="
                     (cs.selectedVariants | async)!.has(cs.hashRow(row))
                   "
