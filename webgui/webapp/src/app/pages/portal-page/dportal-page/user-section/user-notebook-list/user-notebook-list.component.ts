@@ -42,6 +42,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { UserQuotaService } from 'src/app/services/userquota.service';
 import { NotebookRole } from 'src/app/pages/admin-page/components/enums';
 import { Router, NavigationEnd } from '@angular/router';
+import { MatTooltip } from '@angular/material/tooltip';
 
 export type InstanceName = string;
 
@@ -65,6 +66,7 @@ export interface InstanceStartInfo {
     MatInputModule,
     NotebookItemComponent,
     MatExpansionModule,
+    MatTooltip,
   ],
   templateUrl: './user-notebook-list.component.html',
   styleUrl: './user-notebook-list.component.scss',
