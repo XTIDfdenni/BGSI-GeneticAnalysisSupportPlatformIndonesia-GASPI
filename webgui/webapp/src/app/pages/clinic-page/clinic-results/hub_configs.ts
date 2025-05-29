@@ -27,4 +27,7 @@ export const CONFIGS: { [key: string]: any } = {
       'Amino Acid Change',
     ],
   },
+  RSJPD: {
+    cols: ['Gene', 'Alleles', 'Phenotypes', 'Zygosity', 'Phenotype Categories'],
+  },
 };

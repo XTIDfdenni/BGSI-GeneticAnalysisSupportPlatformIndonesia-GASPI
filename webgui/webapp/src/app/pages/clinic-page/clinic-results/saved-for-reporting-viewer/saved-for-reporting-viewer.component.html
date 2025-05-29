@@ -76,6 +76,15 @@
               Generate Report
             </button>
           }
+          @case ("RSJPD") {
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="generateReportRSJPD()"
+            >
+              Generate Report
+            </button>
+          }
           @case ("RSIGNG") {
             <button
               mat-raised-button
@@ -240,6 +249,9 @@
         }
         @case ("RSIGNG") {
           <p>RSIGNG Lab does not support negative reporting.</p>
+        }
+        @case ("RSJPD") {
+          <p>RSJPD Lab does not support negative reporting.</p>
         }
       }
     } @else {
