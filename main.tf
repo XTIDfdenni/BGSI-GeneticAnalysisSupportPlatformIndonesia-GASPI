@@ -51,7 +51,7 @@ module "pgxflow" {
   web_acl_arn                    = module.security.web_acl_arn
   cognito-user-pool-arn          = module.cognito.cognito_user_pool_arn
   hub_name                       = var.hub_name
-  pgxflow_configuration          = var.pgxflow_configuration
+  pharmcat_configuration         = var.pharmcat_configuration
   lookup_configuration           = var.lookup_configuration
   dynamo-project-users-table     = module.sbeacon.dynamo-project-users-table
   dynamo-project-users-table-arn = module.sbeacon.dynamo-project-users-table-arn

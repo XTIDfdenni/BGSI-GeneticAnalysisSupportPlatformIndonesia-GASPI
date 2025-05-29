@@ -157,7 +157,7 @@ variable "svep-filters" {
   nullable    = true
 }
 
-variable "pgxflow_configuration" {
+variable "pharmcat_configuration" {
   type = object({
     ORGANISATIONS = list(object({
       gene = string
@@ -167,8 +167,12 @@ variable "pgxflow_configuration" {
     DRUGS = list(string)
   })
   description = "List of gene-drug organisation associations, genes to filter, and drugs to filter"
-  default     = null
-  nullable    = true
+  default = {
+    ORGANISATIONS = []
+    GENES         = []
+    DRUGS         = []
+  }
+  nullable = true
 }
 
 variable "lookup_configuration" {
@@ -179,6 +183,11 @@ variable "lookup_configuration" {
     end_header            = string
   })
   description = "Filename and header information (chr, start, end) for the association matrix"
-  default     = null
-  nullable    = true
+  default = {
+    assoc_matrix_filename = ""
+    chr_header            = ""
+    start_header          = ""
+    end_header            = ""
+  }
+  nullable = true
 }
