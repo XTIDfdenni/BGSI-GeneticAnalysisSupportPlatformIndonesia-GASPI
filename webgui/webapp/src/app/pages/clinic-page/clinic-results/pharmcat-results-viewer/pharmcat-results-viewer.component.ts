@@ -163,6 +163,12 @@ export class PharmcatResultsViewerComponent {
     'AN',
     'Max sift',
   ];
+  protected messageColumns: string[] = [
+    'Organisation',
+    'Gene',
+    'Name',
+    'Message',
+  ];
   protected diplotypeOriginalRows: any[] = [];
   protected diplotypeDataRows = new BehaviorSubject<any[]>([]);
   protected diplotypeToVariantMap: Map<string, string[]> = new Map();
@@ -177,6 +183,10 @@ export class PharmcatResultsViewerComponent {
   protected variantCurrentRenderedRows: any[] = [];
   protected variantFilterField: FormControl = new FormControl('');
   protected variantScopeReduced: boolean = false;
+  protected messageOriginalRows: any[] = [];
+  protected messageDataRows = new BehaviorSubject<any[]>([]);
+  protected messageDataView = new Observable<any[]>();
+  protected messageCurrentRenderedRows: any[] = [];
   protected annotationForm: FormGroup = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -237,6 +247,20 @@ export class PharmcatResultsViewerComponent {
         const start = Math.max(0, value[1] - 10);
         const end = Math.min(value[0].length, value[1] + 100);
         this.variantCurrentRenderedRows = [...value[0].slice(start, end)];
+
+        // Update the datasource for the rendered range of data
+        return value[0].slice(start, end);
+      }),
+    );
+    this.messageDataView = combineLatest([
+      this.messageDataRows,
+      this.scrollStrategy.scrolledIndexChange,
+    ]).pipe(
+      map((value: any) => {
+        // Determine the start and end rendered range
+        const start = Math.max(0, value[1] - 10);
+        const end = Math.min(value[0].length, value[1] + 100);
+        this.messageCurrentRenderedRows = [...value[0].slice(start, end)];
 
         // Update the datasource for the rendered range of data
         return value[0].slice(start, end);
@@ -349,8 +373,10 @@ export class PharmcatResultsViewerComponent {
   refetch(requestId: string, projectName: string, page: number | null = null) {
     this.diplotypeOriginalRows = [];
     this.variantOriginalRows = [];
+    this.messageOriginalRows = [];
     this.diplotypeDataRows.next([]);
     this.variantDataRows.next([]);
+    this.messageDataRows.next([]);
     this.ss.start();
     this.cs
       .getClinicResults(
@@ -397,8 +423,18 @@ export class PharmcatResultsViewerComponent {
       return variantRow;
     });
 
+    const messages = resultJson.messages;
+    this.messageOriginalRows = messages.map((message: any) => {
+      const messageRow: any = {};
+      Object.values(message).forEach((v, i) => {
+        messageRow[this.messageColumns[i]] = v;
+      });
+      return messageRow;
+    });
+
     this.diplotypeDataRows.next(this.diplotypeOriginalRows);
     this.variantDataRows.next(this.variantOriginalRows);
+    this.messageDataRows.next(this.messageOriginalRows);
   }
 
   handleRedirectUrl(column: string, value: string) {
