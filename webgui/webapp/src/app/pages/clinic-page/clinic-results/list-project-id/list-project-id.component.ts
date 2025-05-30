@@ -215,10 +215,10 @@ export class ListJobComponent implements OnChanges, OnInit {
     if (!this.pageTokens.get(page) && page > 0) {
       this.paginator.pageIndex--;
       this.tstr.warning('No more items to show', 'Warning');
+      this.loading = false;
       return;
     }
 
-    this.loading = true;
     this.cs
       .getMyJobsID(
         this.pageSize,
