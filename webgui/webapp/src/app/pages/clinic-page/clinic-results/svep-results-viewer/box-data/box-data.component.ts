@@ -75,4 +75,15 @@ export class BoxDataComponent {
       `https://asia.ensembl.org/Homo_sapiens/Location/View?r=${value}`;
     window.open(url, '_blank');
   }
+
+  handleColorClignsign(value: string) {
+    const lowerValue = value.toLowerCase();
+    if (lowerValue.includes('pathogenic')) {
+      return '#FB1212';
+    } else if (lowerValue.includes('benign')) {
+      return '#49750C';
+    }
+
+    return '#FF8F73';
+  }
 }
