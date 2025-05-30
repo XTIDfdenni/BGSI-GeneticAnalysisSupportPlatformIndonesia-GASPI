@@ -40,6 +40,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from 'src/app/services/auth.service';
 import { AsyncPipe } from '@angular/common';
 import dayjs from 'dayjs';
+import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
+import { clinicResort } from 'src/app/utils/clinic';
 
 interface Project {
   job_id: string;
@@ -93,6 +95,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ReactiveFormsModule,
     MatSelectModule,
     AsyncPipe,
+    MatSortModule,
   ],
   templateUrl: './list-project-id.component.html',
   styleUrl: './list-project-id.component.scss',
@@ -114,6 +117,11 @@ export class ListJobComponent implements OnChanges, OnInit {
   protected pageSize = 5;
   @ViewChild('paginator')
   paginator!: MatPaginator;
+  @ViewChild(MatSort)
+  sort!: MatSort;
+
+  snapshotSorting: Sort | null = null;
+
   private pageTokens = new Map<number, string>();
 
   // Reactive form controls for search and status
@@ -252,6 +260,15 @@ export class ListJobComponent implements OnChanges, OnInit {
             };
           });
 
+          // keep sorting when data is changed
+          if (this.snapshotSorting) {
+            clinicResort(
+              this.dataSource.data,
+              this.snapshotSorting,
+              (sorted) => (this.dataSource.data = sorted),
+            );
+          }
+
           // set next page token
           this.pageTokens.set(page + 1, response.last_evaluated_key);
         }
@@ -263,6 +280,13 @@ export class ListJobComponent implements OnChanges, OnInit {
     this.pageTokens = new Map<number, string>();
     this.paginator.pageIndex = 0;
     this.pageSize = this.paginator.pageSize;
+  }
+
+  resort(sort: Sort) {
+    clinicResort(this.dataSource.data, sort, (sorted) => {
+      this.dataSource.data = sorted;
+      this.snapshotSorting = sort;
+    });
   }
 
   refresh() {
