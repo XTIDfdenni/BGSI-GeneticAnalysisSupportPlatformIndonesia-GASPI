@@ -6,17 +6,17 @@
   </mat-card>
   <mat-card class="mt-4">
     <mat-card-content>
-      <h2>Messages</h2>
+      <h2 class="text-warning-10">Warnings</h2>
       <div class="flex flex-row space-x-1, items-center mb-2">
-        @if (messageDataRows.value.length > 0) {
+        @if (warningDataRows.value.length > 0) {
           <mat-accordion class="w-full">
               <mat-expansion-panel>
                 <mat-expansion-panel-header>
-                  <mat-panel-title>Show messages</mat-panel-title>
+                  <mat-panel-title>Show warnings</mat-panel-title>
                 </mat-expansion-panel-header>
-                <cdk-virtual-scroll-viewport [style.height.px]="300" itemSize="48">
-                  <table mat-table [dataSource]="messageDataView" matSort>
-                    @for (column of messageColumns; track $index) {
+                <cdk-virtual-scroll-viewport [style.height.px]="400" itemSize="48">
+                  <table mat-table [dataSource]="warningDataView" matSort>
+                    @for (column of warningColumns; track $index) {
                       <ng-container [matColumnDef]="column">
                         <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap" mat-sort-header>
                           {{ column }}
@@ -26,13 +26,13 @@
                         </td>
                       </ng-container>
                     }
-                    <tr mat-header-row *matHeaderRowDef="messageColumns"></tr>
+                    <tr mat-header-row *matHeaderRowDef="warningColumns"></tr>
                     <ng-template
                       let-row
                       matRowDef
                       cdkVirtualFor
-                      [matRowDefColumns]="messageColumns"
-                      [cdkVirtualForOf]="messageDataRows.value"
+                      [matRowDefColumns]="warningColumns"
+                      [cdkVirtualForOf]="warningDataRows.value"
                     >
                       <tr mat-row></tr>
                     </ng-template>
@@ -41,7 +41,7 @@
               </mat-expansion-panel>
           </mat-accordion>
         } @else {
-          <p>No messages to show</p>  
+          <p>No warnings to show</p>  
         }
       </div>
       <h2>Diplotypes Table</h2>
