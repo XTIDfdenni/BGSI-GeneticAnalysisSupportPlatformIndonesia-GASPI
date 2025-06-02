@@ -26,6 +26,13 @@
         >
           Filter
         </button>
+        <button
+          mat-raised-button
+          style="background: #ffa705"
+          (click)="clearFilter()"
+        >
+          Clear Filter
+        </button>
       } @else {
         <mat-form-field class="w-[200px]" [subscriptSizing]="'dynamic'">
           <mat-label>Chromosome</mat-label>
