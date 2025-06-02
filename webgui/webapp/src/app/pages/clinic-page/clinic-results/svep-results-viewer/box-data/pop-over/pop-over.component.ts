@@ -6,11 +6,12 @@ import {
   Input,
   ViewChild,
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'pop-over-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatButtonModule],
   templateUrl: './pop-over.component.html',
   styleUrl: './pop-over.component.scss',
 })

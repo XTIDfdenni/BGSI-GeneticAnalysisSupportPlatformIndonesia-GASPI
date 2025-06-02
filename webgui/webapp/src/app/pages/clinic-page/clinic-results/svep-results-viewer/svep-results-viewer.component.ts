@@ -286,6 +286,11 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     }
   }
 
+  clearFilter() {
+    this.filterField.reset();
+    this.dataRows.next(this.originalRows);
+  }
+
   async openAnnotateDialog() {
     const { AddAnnotationDialogComponent } = await import(
       '../add-annotation-dialog/add-annotation-dialog.component'
@@ -388,9 +393,11 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     //add dinamic filter
     const filterKey = this.advancedFilter.value;
     if (this.filterValues.hasOwnProperty(filterKey) || filterKey === '') {
+      this.advancedFilter.reset(); //reset filter if the filter same
       return;
     }
     this.filterValues = { ...this.filterValues, [filterKey]: '' };
+    this.advancedFilter.reset(); //reset filed after filter selected
   }
 
   setMasterData() {
