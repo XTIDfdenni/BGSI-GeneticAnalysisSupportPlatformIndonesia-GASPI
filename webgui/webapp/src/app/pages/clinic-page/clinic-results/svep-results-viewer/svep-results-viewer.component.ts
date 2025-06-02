@@ -58,6 +58,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { COLUMNS } from '../hub_configs';
+import { environment } from 'src/environments/environment';
 type SVEPResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -128,58 +130,7 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   readonly panelOpenState = signal(false);
   protected results: SVEPResult | null = null;
-  protected columns: string[] = [
-    'selected',
-    'Rank',
-    'Region',
-    'Alt Allele',
-    'Consequence',
-    'Variant Name',
-    'Gene Name',
-    'Gene ID',
-    'Feature',
-    'Transcript ID & Version',
-    'Transcript Biotype',
-    'Exon Number',
-    'Amino Acid Change',
-    'Codon Change',
-    'Strand',
-    'Transcript Support Level',
-    'ref',
-    'gt',
-    'qual',
-    'filter',
-    'variationId',
-    'rsId',
-    'omimId',
-    'classification',
-    'conditions',
-    'clinSig',
-    'reviewStatus',
-    'lastEvaluated',
-    'accession',
-    'pubmed',
-    'Allele Frequency (African)',
-    'Allele Frequency (East Asian)',
-    'Allele Frequency (Finnish)',
-    'Allele Frequency (Non-Finnish European)',
-    'Allele Frequency (South Asian)',
-    'Allele Frequency (Admixed American)',
-    'Allele Frequency (Global)',
-    'Allele Count',
-    'Allele Number',
-    'SIFT (max)',
-    'Global Allele Frequency',
-    'KHV',
-    'Mis Z',
-    'Mis o/e',
-    'Mis o/e lower CI',
-    'Mis o/e upper CI',
-    'pLI',
-    'pLOF o/e',
-    'pLOF o/e upper CI',
-    'pLOF o/e lower CI',
-  ];
+  protected columns: string[] = COLUMNS[environment.hub_name].svepCols;
   filterValues: { [key: string]: string } = {};
   filterMasterData: { [key: string]: any[] } = {};
   protected originalRows: any[] = [];

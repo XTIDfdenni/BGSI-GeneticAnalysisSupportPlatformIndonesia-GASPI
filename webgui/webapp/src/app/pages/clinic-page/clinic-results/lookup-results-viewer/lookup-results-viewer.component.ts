@@ -53,6 +53,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { environment } from 'src/environments/environment';
+import { COLUMNS } from '../hub_configs';
 type LookupResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -100,38 +102,7 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
   @ViewChild(MatSort) sort!: MatSort;
   readonly panelOpenState = signal(false);
   protected results: LookupResult | null = null;
-  protected columns: string[] = [
-    'selected',
-    'PharmGKB ID',
-    'Level',
-    'Variant',
-    'Gene',
-    'Alleles',
-    'Ref/Alt',
-    'Zygosity',
-    'Drugs',
-    'Phenotype Categories',
-    'Implication',
-    'Phenotype',
-    'PMIDs',
-    'chr',
-    'start',
-    'end',
-    'refChr',
-    'VCF pos',
-    'VCF ref',
-    'VCF alt',
-    'AF (Afr)',
-    'AF (Eas)',
-    'AF (Fin)',
-    'AF (Nfe)',
-    'AF (Sas)',
-    'AF (Amr)',
-    'AF',
-    'AC',
-    'AN',
-    'Max sift',
-  ];
+  protected columns: string[] = COLUMNS[environment.hub_name].lookupCols;
   filterValues: { [key: string]: string } = {};
   filterMasterData: { [key: string]: any[] } = {};
   protected originalRows: any[] = [];

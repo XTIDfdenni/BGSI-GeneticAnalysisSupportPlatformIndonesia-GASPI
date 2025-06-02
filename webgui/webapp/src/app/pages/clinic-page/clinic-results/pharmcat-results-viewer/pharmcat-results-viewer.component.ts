@@ -59,7 +59,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { has } from 'lodash';
+import { COLUMNS } from '../hub_configs';
+import { environment } from 'src/environments/environment';
 type PharmcatResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -127,48 +128,12 @@ export class PharmcatResultsViewerComponent {
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   protected results: PharmcatResult | null = null;
-  protected diplotypeColumns: string[] = [
-    'selected',
-    'Organisation',
-    'Gene',
-    'Drug',
-    'Alleles',
-    'Phenotypes',
-    'Variants',
-    'Related Variants',
-    'PubMed IDs',
-    'Implications',
-    'Recommendation',
-    'Dosing Information',
-    'Alternate Drug Available',
-    'Other Prescribing Guidance',
-  ];
-  protected variantColumns: string[] = [
-    'Organisation',
-    'Gene',
-    'Position',
-    'RSID',
-    'Call',
-    'Alleles',
-    'Related Diplotypes',
-    'Zygosity',
-    'AF (Afr)',
-    'AF (Eas)',
-    'AF (Fin)',
-    'AF (Nfe)',
-    'AF (Sas)',
-    'AF (Amr)',
-    'AF',
-    'AC',
-    'AN',
-    'Max sift',
-  ];
-  protected messageColumns: string[] = [
-    'Organisation',
-    'Gene',
-    'Name',
-    'Message',
-  ];
+  protected diplotypeColumns: string[] =
+    COLUMNS[environment.hub_name].pharmcatCols.diplotypeCols;
+  protected variantColumns: string =
+    COLUMNS[environment.hub_name].pharmcatCols.variantCols;
+  protected messageColumns: string[] =
+    COLUMNS[environment.hub_name].pharmcatCols.messageCols;
   protected diplotypeOriginalRows: any[] = [];
   protected diplotypeDataRows = new BehaviorSubject<any[]>([]);
   protected diplotypeToVariantMap: Map<string, string[]> = new Map();
