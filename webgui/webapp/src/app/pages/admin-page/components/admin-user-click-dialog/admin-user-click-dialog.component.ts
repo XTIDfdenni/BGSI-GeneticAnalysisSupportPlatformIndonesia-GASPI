@@ -38,6 +38,7 @@ import {
 import { UserQuotaService } from 'src/app/services/userquota.service';
 import { NotebookRole } from '../enums';
 import { MatRadioModule } from '@angular/material/radio';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-admin-user-click-dialog',
@@ -81,6 +82,7 @@ export class AdminUserClickDialogComponent implements OnInit {
     private uq: UserQuotaService,
     private aws: AwsService,
     private dg: MatDialog,
+    private tstr: ToastrService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.form = this.fb.group({
@@ -246,7 +248,18 @@ export class AdminUserClickDialogComponent implements OnInit {
         this.as
           .deleteUser(this.data.email)
           .pipe(catchError(() => of(null)))
-          .subscribe(() => {
+          .subscribe((res: null | { success: boolean; message: string }) => {
+            let deleted = false;
+            if (!res) {
+              this.tstr.error(
+                'Operation failed, please try again later',
+                'Error',
+              );
+            } else if (!res.success) {
+              this.tstr.error(res.message, 'Error');
+            } else {
+              this.tstr.success('User deleted successfully', 'Success');
+            }
             this.loading = false;
             this.dialogRef.close({ reload: true });
           });
