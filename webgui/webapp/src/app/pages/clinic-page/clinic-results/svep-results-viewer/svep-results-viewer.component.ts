@@ -58,6 +58,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { BoxDataComponent } from './box-data/box-data.component';
 import { COLUMNS } from '../hub_configs';
 import { environment } from 'src/environments/environment';
 type SVEPResult = {
@@ -111,6 +112,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatIconModule,
     MatTooltipModule,
     MatAutocompleteModule,
+    BoxDataComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -153,6 +155,9 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
   protected resultsLength = 0;
   protected pageIndex = 0;
   filteredColumns: Observable<string[]> | undefined;
+  rows: any[] = [];
+
+  expandedMap = new Map<string, boolean>();
 
   constructor(
     protected cs: ClinicService,
@@ -193,6 +198,7 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
       startWith(''),
       map((value) => this._filter(value || '')),
     );
+    this.dataView.subscribe((rows) => (this.rows = rows));
   }
 
   pageChange(event: PageEvent) {
@@ -229,6 +235,11 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     } else {
       this.dataRows.next(this.originalRows);
     }
+  }
+
+  clearFilter() {
+    this.filterField.reset();
+    this.dataRows.next(this.originalRows);
   }
 
   async openAnnotateDialog() {
@@ -299,7 +310,6 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
           });
         return row;
       });
-    console.log(lines);
     // this.dataRows.next(this.originalRows);
     this.setFilter();
     this.chromosomeField.setValue(result.chromosome, { emitEvent: false });
@@ -334,9 +344,11 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     //add dinamic filter
     const filterKey = this.advancedFilter.value;
     if (this.filterValues.hasOwnProperty(filterKey) || filterKey === '') {
+      this.advancedFilter.reset(); //reset filter if the filter same
       return;
     }
     this.filterValues = { ...this.filterValues, [filterKey]: '' };
+    this.advancedFilter.reset(); //reset filed after filter selected
   }
 
   setMasterData() {
@@ -408,5 +420,9 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     return this.columns.filter((option) =>
       option.toLowerCase().includes(filterValue),
     );
+  }
+
+  onToggle(rowId: string, expanded: boolean) {
+    this.expandedMap.set(rowId, expanded);
   }
 }
