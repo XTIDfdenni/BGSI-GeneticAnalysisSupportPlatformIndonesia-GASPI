@@ -19,8 +19,8 @@ locals {
   clinic_api_url          = local.clinic_mode == "svep" ? module.svep[0].api_url : local.clinic_mode == "pgxflow" ? module.pgxflow[0].api_url : null
   clinic_temp_bucket_name = local.clinic_mode == "svep" ? module.svep[0].temp-bucket-name : local.clinic_mode == "pgxflow" ? module.pgxflow[0].temp-bucket-name : null
   clinic_temp_bucket_arn  = local.clinic_mode == "svep" ? module.svep[0].temp-bucket-arn : local.clinic_mode == "pgxflow" ? module.pgxflow[0].temp-bucket-arn : null
-  clinic_region_bucket_name = module.svep[0].temp-bucket-name || null
-  clinic_region_bucket_arn = module.svep[0].temp-bucket-arn || null
+  clinic_region_bucket_name = module.svep[0].region-bucket-name || null
+  clinic_region_bucket_arn = module.svep[0].region-bucket-arn || null
 }
 
 
