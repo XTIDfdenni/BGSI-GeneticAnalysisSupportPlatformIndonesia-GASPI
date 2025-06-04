@@ -37,7 +37,7 @@ export const COLUMNS: { [key: string]: any } = {
         'AN',
         'Max sift',
       ],
-      messageCols: ['Organisation', 'Gene', 'Name', 'Message'],
+      warningCols: ['Organisation', 'Gene', 'Name', 'Message'],
     },
   },
   RSCM: {
@@ -221,7 +221,7 @@ export const COLUMNS: { [key: string]: any } = {
         'AN',
         'Max sift',
       ],
-      messageCols: ['Organisation', 'Gene', 'Name', 'Message'],
+      warningCols: ['Organisation', 'Gene', 'Name', 'Message'],
     },
     lookupCols: [
       'selected',
