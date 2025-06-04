@@ -61,6 +61,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { COLUMNS } from '../hub_configs';
 import { environment } from 'src/environments/environment';
+import { BoxDataComponent } from './box-data/box-data.component';
 type PharmcatResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -110,6 +111,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatIconModule,
     MatTooltipModule,
     MatAutocompleteModule,
+    BoxDataComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -163,6 +165,7 @@ export class PharmcatResultsViewerComponent {
   protected Object = Object;
   protected resultsLength = 0;
   protected pageIndex = 0;
+  rows: any[] = [];
 
   constructor(
     protected cs: ClinicService,
@@ -231,6 +234,7 @@ export class PharmcatResultsViewerComponent {
         return value[0].slice(start, end);
       }),
     );
+    this.diplotypeDataView.subscribe((rows) => (this.rows = rows));
   }
 
   pageChange(event: PageEvent) {
@@ -275,7 +279,7 @@ export class PharmcatResultsViewerComponent {
     this.cdr.detectChanges();
   }
 
-  filterRelatedVariants(mappingIds: string[]) {
+  filterRelatedVariants = (mappingIds: string[]) => {
     this.variantScopeReduced = true;
     this.variantFilterField.setValue('');
     const terms = mappingIds;
@@ -283,7 +287,7 @@ export class PharmcatResultsViewerComponent {
       this.variantDataRows.next(filtered);
     });
     this.cdr.detectChanges();
-  }
+  };
 
   resetRelatedVariants() {
     this.resetVariants();
@@ -400,15 +404,5 @@ export class PharmcatResultsViewerComponent {
     this.diplotypeDataRows.next(this.diplotypeOriginalRows);
     this.variantDataRows.next(this.variantOriginalRows);
     this.warningDataRows.next(this.warningOriginalRows);
-  }
-
-  handleRedirectUrl(column: string, value: string) {
-    const urlMap: Record<string, string> = {
-      'PubMed IDs': `https://pubmed.ncbi.nlm.nih.gov/${value}/`,
-      Variants: `https://www.ncbi.nlm.nih.gov/snp/${value}`,
-    };
-
-    const url = urlMap[column];
-    window.open(url, '_blank');
   }
 }
