@@ -280,6 +280,7 @@ export class PharmcatResultsViewerComponent {
   }
 
   filterRelatedVariants = (mappingIds: string[]) => {
+    console.log('filterRelatedVariants', mappingIds);
     this.variantScopeReduced = true;
     this.variantFilterField.setValue('');
     const terms = mappingIds;
@@ -298,15 +299,19 @@ export class PharmcatResultsViewerComponent {
     // Absorb all related variants in a checked diplotype row for annotation/reporting
     let diplotypeRow: any = { ...row };
     // TODO uncomment this when related variants are needed for reporting
-    // if (isChecked && row['Related Variants']) {
-    //   const relatedVariants = this.variantOriginalRows.filter((variant) => {
-    //     return (
-    //       variant['Related Diplotypes'] &&
-    //       row['Related Variants'].includes(variant['Related Diplotypes'])
-    //     );
-    //   });
-    //   diplotypeRow['Related Variants'] = relatedVariants;
-    // }
+    if (isChecked && row['Related Variants']) {
+      const relatedVariants = this.variantOriginalRows.filter((variant) => {
+        return (
+          variant['Related Diplotypes'] &&
+          row['Related Variants'].includes(variant['Related Diplotypes'])
+        );
+      });
+      if (!diplotypeRow['Zygosity'] && relatedVariants.length > 0) {
+        diplotypeRow['Zygosity'] = relatedVariants.map(
+          (variant) => variant['Zygosity'],
+        );
+      }
+    }
     this.cs.selection(diplotypeRow, isChecked);
   }
 
