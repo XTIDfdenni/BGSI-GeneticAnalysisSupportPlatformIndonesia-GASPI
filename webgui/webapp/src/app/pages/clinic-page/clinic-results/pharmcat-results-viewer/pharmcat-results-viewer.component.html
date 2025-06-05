@@ -119,7 +119,11 @@
               @for (row of rows; track row) {
                 <app-rspon-box-data-view
                   [row]="row"
-                  [filterFn]="filterRelatedVariants"
+                  [selected]="
+                    (cs.selectedVariants | async)!.has(cs.hashRow(row))
+                  "
+                  (change)="handleSelectionChange(row, $event)"
+                  (filter)="filterRelatedVariants($event)"
                 />
               }
             </div>
