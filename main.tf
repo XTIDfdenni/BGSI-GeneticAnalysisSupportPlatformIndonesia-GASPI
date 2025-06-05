@@ -110,24 +110,24 @@ module "sbeacon" {
 module "svep" {
   count = local.clinic_mode == "svep" ? 1 : 0
 
-  source                             = "./svep"
-  region                             = var.region
-  data_portal_bucket_name            = module.sbeacon.data-portal-bucket
-  data_portal_bucket_arn             = module.sbeacon.data-portal-bucket-arn
-  method-max-request-rate            = var.svep-method-max-request-rate
-  method-queue-size                  = var.svep-method-queue-size
-  web_acl_arn                        = module.security.web_acl_arn
-  cognito-user-pool-arn              = module.cognito.cognito_user_pool_arn
-  dynamo-project-users-table         = module.sbeacon.dynamo-project-users-table
-  dynamo-project-users-table-arn     = module.sbeacon.dynamo-project-users-table-arn
-  dynamo-clinic-jobs-table           = module.sbeacon.dynamo-clinic-jobs-table
-  dynamo-clinic-jobs-table-arn       = module.sbeacon.dynamo-clinic-jobs-table-arn
-  dynamo-clinic-jobs-stream-arn      = module.sbeacon.dynamo-clinic-jobs-stream-arn
-  svep-job-email-lambda-function-arn = module.cognito.svep_job_email_lambda_function_arn
-  cognito-user-pool-id               = module.cognito.cognito_user_pool_id
-  hub_name                           = var.hub_name
-  filters                            = var.svep-filters
-  svep-references-table-name         = var.svep-references-table-name
+  source                               = "./svep"
+  region                               = var.region
+  data_portal_bucket_name              = module.sbeacon.data-portal-bucket
+  data_portal_bucket_arn               = module.sbeacon.data-portal-bucket-arn
+  method-max-request-rate              = var.svep-method-max-request-rate
+  method-queue-size                    = var.svep-method-queue-size
+  web_acl_arn                          = module.security.web_acl_arn
+  cognito-user-pool-arn                = module.cognito.cognito_user_pool_arn
+  dynamo-project-users-table           = module.sbeacon.dynamo-project-users-table
+  dynamo-project-users-table-arn       = module.sbeacon.dynamo-project-users-table-arn
+  dynamo-clinic-jobs-table             = module.sbeacon.dynamo-clinic-jobs-table
+  dynamo-clinic-jobs-table-arn         = module.sbeacon.dynamo-clinic-jobs-table-arn
+  dynamo-clinic-jobs-stream-arn        = module.sbeacon.dynamo-clinic-jobs-stream-arn
+  clinic-job-email-lambda-function-arn = module.cognito.clinic_job_email_lambda_function_arn
+  cognito-user-pool-id                 = module.cognito.cognito_user_pool_id
+  hub_name                             = var.hub_name
+  filters                              = var.svep-filters
+  svep-references-table-name           = var.svep-references-table-name
 
 
   common-tags = merge(var.common-tags, {
