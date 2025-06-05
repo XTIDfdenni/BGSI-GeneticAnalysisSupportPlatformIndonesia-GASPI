@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import {
@@ -17,7 +17,13 @@ import {
   Validators,
 } from '@angular/forms';
 import { AdminService } from 'src/app/pages/admin-page/services/admin.service';
-import { catchError, debounceTime, distinctUntilChanged, of } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+  Subscription,
+} from 'rxjs';
 import * as _ from 'lodash';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -49,11 +55,12 @@ import { NotebookRole } from '../enums'; // adjust the path if needed
   styleUrls: ['./admin-create-user-dialog.component.scss'],
   providers: [AdminService],
 })
-export class AdminCreateUserComponent implements OnInit {
+export class AdminCreateUserComponent implements OnInit, OnDestroy {
   protected loading = false;
   protected newUserForm: FormGroup;
   protected costEstimation: number | null = 0;
   noteBookRoleValue = NotebookRole;
+  emailFormFieldSubscription: Subscription | undefined;
 
   constructor(
     public dialogRef: MatDialogRef<AdminCreateUserComponent>,
@@ -81,6 +88,21 @@ export class AdminCreateUserComponent implements OnInit {
 
   ngOnInit(): void {
     this.onChangeCalculateCost();
+    this.emailFormFieldSubscription = this.newUserForm.controls[
+      'email'
+    ]?.valueChanges.subscribe((value: string | null) => {
+      if (value && value !== value.toLowerCase()) {
+        this.newUserForm.controls['email']?.setValue(value.toLowerCase(), {
+          emitEvent: false,
+        });
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.emailFormFieldSubscription) {
+      this.emailFormFieldSubscription.unsubscribe();
+    }
   }
 
   onChangeCalculateCost() {
