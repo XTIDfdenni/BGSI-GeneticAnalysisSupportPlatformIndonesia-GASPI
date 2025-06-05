@@ -298,8 +298,7 @@ export class PharmcatResultsViewerComponent {
   handleSelectionChange(row: any, isChecked: boolean): void {
     // Absorb all related variants in a checked diplotype row for annotation/reporting
     let diplotypeRow: any = { ...row };
-    // TODO uncomment this when related variants are needed for reporting
-    if (isChecked && row['Related Variants']) {
+    if (row['Related Variants']) {
       const relatedVariants = this.variantOriginalRows.filter((variant) => {
         return (
           variant['Related Diplotypes'] &&
