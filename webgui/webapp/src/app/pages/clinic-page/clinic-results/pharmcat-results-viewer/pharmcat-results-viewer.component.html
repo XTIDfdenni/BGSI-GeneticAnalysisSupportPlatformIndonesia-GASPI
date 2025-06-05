@@ -117,7 +117,7 @@
           @if (rows.length > 0) {
             <div class="flex flex-col gap-2">
               @for (row of rows; track row) {
-                <box-data-component-rspon
+                <app-rspon-box-data-view
                   [row]="row"
                   [filterFn]="filterRelatedVariants"
                 />

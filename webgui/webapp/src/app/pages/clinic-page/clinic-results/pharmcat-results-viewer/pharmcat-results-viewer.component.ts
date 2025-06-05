@@ -61,7 +61,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { COLUMNS } from '../hub_configs';
 import { environment } from 'src/environments/environment';
-import { BoxDataComponent } from './box-data/box-data.component';
+import { RsponBoxDataViewComponent } from './rspon-box-data-view/rspon-box-data-view.component';
 type PharmcatResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -111,7 +111,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatIconModule,
     MatTooltipModule,
     MatAutocompleteModule,
-    BoxDataComponent,
+    RsponBoxDataViewComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },

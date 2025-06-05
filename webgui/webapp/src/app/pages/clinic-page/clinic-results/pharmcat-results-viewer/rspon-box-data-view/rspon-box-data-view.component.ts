@@ -9,7 +9,7 @@ import { ClinicService } from '../../../../../services/clinic.service';
 import { PopOverComponent } from '../../svep-results-viewer/box-data/pop-over/pop-over.component';
 
 @Component({
-  selector: 'box-data-component-rspon',
+  selector: 'app-rspon-box-data-view',
   standalone: true,
   imports: [
     MatButtonModule,
@@ -20,10 +20,10 @@ import { PopOverComponent } from '../../svep-results-viewer/box-data/pop-over/po
     MatCheckboxModule,
     PopOverComponent,
   ],
-  templateUrl: './box-data.component.html',
-  styleUrl: './box-data.component.scss',
+  templateUrl: './rspon-box-data-view.component.html',
+  styleUrl: './rspon-box-data-view.component.scss',
 })
-export class BoxDataComponent {
+export class RsponBoxDataViewComponent {
   @Input() row: any = null;
   @Input() filterFn!: (mappingIds: string[]) => void;
 
