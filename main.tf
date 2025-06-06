@@ -63,6 +63,7 @@ module "pgxflow" {
   common-tags = merge(var.common-tags, {
     "NAME" = "pgxflow-backend"
   })
+  common-tags-backup = var.common-tags-backup
 }
 
 module "security" {
@@ -101,6 +102,7 @@ module "sbeacon" {
   common-tags = merge(var.common-tags, {
     "NAME" = "sbeacon-backend"
   })
+  common-tags-backup = var.common-tags-backup
 }
 
 module "svep" {
@@ -129,6 +131,7 @@ module "svep" {
   common-tags = merge(var.common-tags, {
     "NAME" = "svep-backend"
   })
+  common-tags-backup = var.common-tags-backup
 }
 
 moved {

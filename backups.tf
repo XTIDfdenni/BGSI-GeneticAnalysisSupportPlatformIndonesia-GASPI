@@ -23,6 +23,8 @@ resource "aws_backup_plan" "gaspi_backup_plan" {
       delete_after = 30
     }
   }
+
+  tags = var.common-tags
 }
 
 #

@@ -10,6 +10,14 @@ variable "common-tags" {
   description = "A set of tags to attach to every created resource."
 }
 
+variable "common-tags-backup" {
+  type        = map(string)
+  description = "Tags needed to enable and configure backups."
+  default     = {
+    backup = "true"
+  }
+}
+
 variable "svep-references-table-name" {
   type        = string
   description = "Name of the sVEP references table"
