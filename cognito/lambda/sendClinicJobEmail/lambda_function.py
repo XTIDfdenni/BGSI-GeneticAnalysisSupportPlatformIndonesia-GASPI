@@ -24,7 +24,7 @@ def lambda_handler(event, context):
 
         response = ssm_client.get_parameter(Name=BUI_SSM_PARAM_NAME)
         beacon_ui_url = response.get("Parameter", {}).get("Value", "")
-        svep_ui_url = f"{beacon_ui_url}/clinic/svep-results"
+        clinic_ui_url = f"{beacon_ui_url}/clinic/clinic-results"
         beacon_img_url = f"{beacon_ui_url}/assets/images/sbeacon.png"
 
         subject = "Clinical Result of"
@@ -33,7 +33,7 @@ def lambda_handler(event, context):
         if job_status == "completed":
             subject += f" {project_name} has completed"
 
-            body_message += f"<p><b>Please load the results on the VEP Results page </b> or click the link <a href='{svep_ui_url}'>here</a>.</p>"
+            body_message += f"<p><b>Please load the results on the Clinic Results page </b> or click the link <a href='{clinic_ui_url}'>here</a>.</p>"
         elif job_status == "failed":
             subject += f" {project_name} is failed"
 
