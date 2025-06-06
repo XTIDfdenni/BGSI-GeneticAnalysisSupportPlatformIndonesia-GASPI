@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 
 import boto3
 from markupsafe import escape
@@ -112,12 +113,14 @@ def lambda_handler(event, context):
         }
 
     except ValueError as e:
+        traceback.print_exc()
         return {
             "statusCode": 400,
             "success": False,
             "message": str(e),
         }
     except Exception as e:
+        traceback.print_exc()
         return {
             "statusCode": 500,
             "success": False,
