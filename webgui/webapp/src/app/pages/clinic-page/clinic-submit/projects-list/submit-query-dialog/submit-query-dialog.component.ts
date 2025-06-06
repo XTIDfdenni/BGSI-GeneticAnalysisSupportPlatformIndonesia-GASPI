@@ -84,10 +84,16 @@ export class SubmitQueryDialogComponent {
         )
         .subscribe((response: any) => {
           if (response) {
-            if (!response.Success) {
-              this.tstr.error(response.Response, 'Error');
+            const responses = Array.isArray(response) ? response : [response];
+            const allSuccessful = responses.every((res) => res && res.Success);
+            if (!allSuccessful) {
+              const failedResponse = responses.find(
+                (res) => !res || !res.Success,
+              );
+              const errorMessage =
+                failedResponse?.Response || 'Job submission failed';
+              this.tstr.error(errorMessage, 'Error');
               this.loading = false;
-
               return;
             }
 
