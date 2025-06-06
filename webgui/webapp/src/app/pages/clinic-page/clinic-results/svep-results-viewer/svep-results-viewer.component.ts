@@ -5,6 +5,7 @@ import {
   Injectable,
   Input,
   OnChanges,
+  OnInit,
   signal,
   SimpleChanges,
   ViewChild,
@@ -125,7 +126,9 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   templateUrl: './svep-results-viewer.component.html',
   styleUrl: './svep-results-viewer.component.scss',
 })
-export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
+export class SvepResultsViewerComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator') paginator!: MatPaginator;
@@ -173,6 +176,13 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     clinicResort(snapshot, sort, (sorted) => this.dataRows.next(sorted));
   }
 
+  ngOnInit(): void {
+    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || '')),
+    );
+  }
+
   ngAfterViewInit(): void {
     this.scrollStrategy.setScrollHeight(52, 56);
     this.dataView = combineLatest([
@@ -194,10 +204,6 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
       // if chromosome or page change we clear position
       this.basePositionField.setValue('');
     });
-    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filter(value || '')),
-    );
     this.dataView.subscribe((rows) => (this.rows = rows));
   }
 

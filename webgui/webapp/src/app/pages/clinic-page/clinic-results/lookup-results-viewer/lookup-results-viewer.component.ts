@@ -9,6 +9,7 @@ import {
   SimpleChanges,
   ViewChild,
   ChangeDetectorRef,
+  OnInit,
 } from '@angular/core';
 import { CommonModule, KeyValue } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
@@ -22,6 +23,7 @@ import {
   of,
   startWith,
   Subject,
+  tap,
 } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { clinicFilter, clinicResort } from 'src/app/utils/clinic';
@@ -96,7 +98,9 @@ type LookupResult = {
   templateUrl: './lookup-results-viewer.component.html',
   styleUrl: './lookup-results-viewer.component.scss',
 })
-export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
+export class LookupResultsViewerComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild(MatSort) sort!: MatSort;
@@ -141,6 +145,13 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     clinicResort(snapshot, sort, (sorted) => this.dataRows.next(sorted));
   }
 
+  ngOnInit(): void {
+    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || '')),
+    );
+  }
+
   ngAfterViewInit(): void {
     this.scrollStrategy.setScrollHeight(52, 56);
     this.dataView = combineLatest([
@@ -156,10 +167,6 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
         // Update the datasource for the rendered range of data
         return value[0].slice(start, end);
       }),
-    );
-    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filter(value || '')),
     );
   }
 
