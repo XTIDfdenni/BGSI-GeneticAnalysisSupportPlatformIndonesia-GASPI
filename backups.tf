@@ -14,13 +14,38 @@ resource "aws_backup_plan" "gaspi_backup_plan" {
   name = "gaspi_backup_plan"
 
   rule {
-    rule_name         = "gaspi_backup_rule"
+    rule_name         = "daily"
     target_vault_name = aws_backup_vault.gaspi_backup_vault.name
+    schedule          = "cron(0 19 * * ? *)" # Every day at 19:00 UTC
+    lifecycle {
+      delete_after = 7
+    }
+  }
 
-    schedule = "cron(0 19 * * ? *)"
-
+  rule {
+    rule_name         = "weekly"
+    target_vault_name = aws_backup_vault.gaspi_backup_vault.name
+    schedule          = "cron(0 20 ? * SUN *)" # Every Sunday at 20:00 UTC
     lifecycle {
       delete_after = 30
+    }
+  }
+
+  rule {
+    rule_name         = "monthly"
+    target_vault_name = aws_backup_vault.gaspi_backup_vault.name
+    schedule          = "cron(0 21 1 * ? *)" # 1st of every month at 21:00 UTC
+    lifecycle {
+      delete_after = 365
+    }
+  }
+
+  rule {
+    rule_name         = "yearly"
+    target_vault_name = aws_backup_vault.gaspi_backup_vault.name
+    schedule          = "cron(0 22 1 1 ? *)" # 1st January every year at 22:00 UTC
+    lifecycle {
+      delete_after = 3650
     }
   }
 
