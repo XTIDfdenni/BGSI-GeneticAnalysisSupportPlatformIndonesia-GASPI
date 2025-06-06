@@ -17,8 +17,8 @@ locals {
   ]
   clinic_mode              = contains(local.svep_hubs, var.hub_name) ? "svep" : contains(local.pgxflow_hubs, var.hub_name) ? "pgxflow" : null
   clinic_api_url           = local.clinic_mode == "svep" ? module.svep[0].api_url : local.clinic_mode == "pgxflow" ? module.pgxflow[0].api_url : null
-  clinic_temp_bucket_names = local.clinic_mode == "svep" ? [module.svep[0].temp-bucket-name, module.svep[0].region-bucket-name] : local.clinic_mode == "pgxflow" ? [module.pgxflow[0].backend_bucket_name] : null
-  clinic_temp_bucket_arns  = local.clinic_mode == "svep" ? [module.svep[0].temp-bucket-arn, module.svep[0].region-bucket-arn] : local.clinic_mode == "pgxflow" ? [module.pgxflow[0].backend_bucket_arn] : null
+  clinic_temp_bucket_names = local.clinic_mode == "svep" ? [module.svep[0].temp-bucket-name, module.svep[0].region-bucket-name] : local.clinic_mode == "pgxflow" ? [module.pgxflow[0].backend-bucket-name] : null
+  clinic_temp_bucket_arns  = local.clinic_mode == "svep" ? [module.svep[0].temp-bucket-arn, module.svep[0].region-bucket-arn] : local.clinic_mode == "pgxflow" ? [module.pgxflow[0].backend-bucket-arn] : null
 }
 
 
