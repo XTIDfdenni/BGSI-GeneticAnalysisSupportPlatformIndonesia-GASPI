@@ -78,6 +78,16 @@ resource "aws_iam_role_policy_attachment" "gaspi_backup_role_attachment" {
   role       = aws_iam_role.gaspi_backup_role.name
 }
 
+resource "aws_iam_role_policy_attachment" "gaspi_backup_s3_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForS3Backup"
+  role       = aws_iam_role.gaspi_backup_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "gaspi_restore_s3_policy_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSBackupServiceRolePolicyForS3Restore"
+  role       = aws_iam_role.gaspi_backup_role.name
+}
+
 resource "aws_backup_selection" "gaspi_backup_selection" {
   iam_role_arn = aws_iam_role.gaspi_backup_role.arn
   name         = "gaspi_backup_resource_selection"
