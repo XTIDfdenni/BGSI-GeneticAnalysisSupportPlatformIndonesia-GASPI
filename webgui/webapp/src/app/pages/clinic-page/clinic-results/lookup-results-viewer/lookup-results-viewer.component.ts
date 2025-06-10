@@ -349,6 +349,15 @@ export class LookupResultsViewerComponent
     );
   }
 
+  handleRedirectUrl(column: string, value: string) {
+    const urlMap: Record<string, string> = {
+      Variant: `https://www.ncbi.nlm.nih.gov/snp/${value}`,
+    };
+
+    const url = urlMap[column];
+    window.open(url, '_blank');
+  }
+
   async loadPubMedIds(rsid: string) {
     const { PubmedIdDialogComponent } = await import(
       '../pubmed-id-dialog/pubmed-id-dialog.component'
