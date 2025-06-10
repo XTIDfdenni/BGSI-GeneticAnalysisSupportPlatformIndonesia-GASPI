@@ -39,10 +39,10 @@ def lambda_handler(event, context):
             subject += f" {project_name} is failed"
 
             body_message += "<p><b>We are sorry that the result generated failed</b>, please check your VCF file again.</p>"
-        #elif job_status == "pending":
-        #    subject += f" {project_name} pending and job deleted"
-        #
-        #    body_message += "<p>We apologize that the generated result failed, please double check your VCF file. We have also removed the job from the list.</p>"
+        elif job_status == "pending":
+            subject += f" {project_name} pending and job deleted"
+        
+            body_message += "<p>We apologize that the generated result failed, please double check your VCF file. We have also removed the job from the list.</p>"
 
         body_html = f"""
 <html>
