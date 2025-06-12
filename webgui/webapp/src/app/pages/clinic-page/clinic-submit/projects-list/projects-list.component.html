@@ -48,7 +48,7 @@
               <img width="25rem" src="../../../../../assets/images/dna.png" />
             </div>
             <div
-              (click)="!file.disabled && openJobDialog(file.filename, element.name)"
+              (click)="!file.disabled && showQC(file.filename, element.name)"
               class="bg-primary-50 flex justify-center items-center rounded-full w-8 h-8 shadow-xl overflow-hidden cursor-pointer"
               matTooltip="See QC Report"
               aria-label="See QC Report"
