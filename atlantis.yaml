@@ -29,7 +29,6 @@ projects:
   plan_requirements: [approved]
   apply_requirements: [approved]
   workflow: hub01-workflow
-  clone_depth: 0
 
 - name: gxc-xapiens
   branch: /xapiens/
@@ -43,7 +42,6 @@ projects:
   plan_requirements: [approved]
   apply_requirements: [approved]
   workflow: hub02-workflow
-  clone_depth: 0
 
 - name: gxc-hub01
   branch: /hub01/
@@ -54,7 +52,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub01-workflow
-  clone_depth: 0
 
 - name: gxc-hub02
   branch: /hub02/
@@ -65,7 +62,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub02-workflow
-  clone_depth: 0
 
 - name: gxc-hub03
   branch: /hub03/
@@ -76,7 +72,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub03-workflow
-  clone_depth: 0
 
 - name: gxc-hub04
   branch: /hub04/
@@ -87,7 +82,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: hub04-workflow
-  clone_depth: 0
 
 - name: gxc-uat01
   branch: /uat01/
@@ -98,7 +92,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: uat01-workflow
-  clone_depth: 0
 
 - name: gxc-uat02
   branch: /uat02/
@@ -109,7 +102,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: uat02-workflow
-  clone_depth: 0
 
 - name: gxc-uat03
   branch: /uat03/
@@ -120,7 +112,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: uat03-workflow
-  clone_depth: 0
 
 - name: gxc-uat04
   branch: /uat04/
@@ -131,7 +122,6 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: uat04-workflow
-  clone_depth: 0
 
 - name: gxc-uat05
   branch: /uat05/
@@ -142,4 +132,3 @@ projects:
   autoplan:
     when_modified: *tf_files
   workflow: uat05-workflow
-  clone_depth: 0
