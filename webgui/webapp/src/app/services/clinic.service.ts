@@ -71,7 +71,12 @@ export class ClinicService {
     );
   }
 
-  submitClinicJob(location: string, projectName: string, jobName: string) {
+  submitClinicJob(
+    location: string,
+    projectName: string,
+    jobName: string,
+    missingToRef: boolean,
+  ) {
     const pathMap: Record<string, string[]> = {
       RSCM: ['submit'],
       RSSARDJITO: ['submit'],
@@ -86,7 +91,14 @@ export class ClinicService {
       switchMap((credentials) => {
         const userId = credentials.identityId;
         const requestId = environment.hub_name === 'RSJPD' ? ulid() : null;
-        const body = { location, projectName, userId, jobName, requestId };
+        const body = {
+          location,
+          projectName,
+          userId,
+          jobName,
+          requestId,
+          missingToRef,
+        };
 
         const requests = paths.map((path: string) =>
           from(API.post(environment.api_endpoint_clinic.name, path, { body })),
