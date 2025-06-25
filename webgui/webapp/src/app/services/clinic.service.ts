@@ -117,6 +117,23 @@ export class ClinicService {
     );
   }
 
+  getQCNotes(projectName: string, fileName: string) {
+    return from(
+      API.get(environment.api_endpoint_clinic.name, 'qcnotes', {
+        queryStringParameters: { projectName, fileName },
+      }),
+    );
+  }
+
+  updateQCNotes(projectName: string, fileName: string, notes: string) {
+    return from(
+      API.post(environment.api_endpoint_clinic.name, 'qcnotes', {
+        queryStringParameters: { projectName, fileName },
+        body: notes,
+      }),
+    );
+  }
+
   getClinicResults(
     requestId: string,
     projectName: string,
