@@ -159,15 +159,17 @@
       </mat-accordion>
     </div>
 
-    <div class="w-full">
+    <div class="w-full" id="myTarget">
       <cdk-virtual-scroll-viewport [style.height.px]="900" class="no-scrollbar">
         @if (rows.length > 0) {
           <div class="flex flex-col gap-2">
             @for (row of rows; track row) {
               <box-data-component
                 [row]="row"
+                [rows]="rows"
                 [expanded]="expandedMap.get(row.id) ?? false"
                 (panelToggled)="onToggle(row.id, $event)"
+                [isSelected]="handleIsSelected(row)"
               />
             }
           </div>

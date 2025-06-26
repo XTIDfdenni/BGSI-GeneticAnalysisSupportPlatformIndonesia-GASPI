@@ -47,6 +47,16 @@
           >
           <br />
         </div>
+        <div>
+          <button
+            mat-raised-button
+            color="primary"
+            class="flex items-center"
+            (click)="handleSelectAnotation(annot)"
+          >
+            Select
+          </button>
+        </div>
         @if (!$last) {
           <div class="w-full h-1 bg-primary-60 my-2"></div>
         }
