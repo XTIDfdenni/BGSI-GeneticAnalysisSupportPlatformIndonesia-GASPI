@@ -16,6 +16,7 @@ export interface QCItem {
   desc: string;
   key: string;
   url?: string;
+  status: 'error' | 'failed' | 'success';
 }
 
 @Component({
@@ -34,26 +35,31 @@ export class QcReportComponent {
       title: 'Histogram : Variant Quality Score Distributions',
       desc: 'Here is the histogram representing the distribution of variant quality scores. The x-axis shows the quality score ranges, and the y-axis represents the number of variants in each range.',
       key: 'qc_hc',
+      status: 'success',
     },
     {
       title: 'Scatter Plot : Low Variant Flagging',
       desc: 'Here is the scatter plot for Low-Variant Flagging, where each point represents a variant with its quality score (QUAL) on the x-axis and depth (DP) on the y-axis. Low-quality variants could be flagged based on predefined thresholds.',
       key: 'low_var',
+      status: 'success',
     },
     {
       title: 'Boxplot: Genotype Quality',
       desc: 'Here is the bar graph: Genotype Quality, where each genomic position (POS) on the x-axis has a distribution of genotype quality (QUAL) values on the y-axis. The bar shows the median, quartiles, and potential outliers for each position',
       key: 'gq',
+      status: 'success',
     },
     {
       title: 'Histogram or density plot: Allele Frequency',
       desc: 'Here is the Histogram/Density Plot: Allele Frequency, showing the distribution of allele frequencies. The histogram bars represent the count of variants in each frequency range, while the smooth density curve helps visualize the overall distribution trend.',
       key: 'alle_freq',
+      status: 'success',
     },
     {
       title: 'Only with SNPs PASS all filters',
       desc: `Here is the Bar Chart: Number of Substitutions of SNPs (Passed Variants).The X-axis represents different types of SNP substitutions (Transitions and Transversions).The Y-axis represents the count of passed variants for each substitution type.`,
       key: 'snp_pass',
+      status: 'success',
     },
   ];
 
@@ -107,18 +113,28 @@ export class QcReportComponent {
       const results = await Promise.all(jobPromises);
 
       results.forEach((res, index) => {
-        const key = this.listQC[index].key;
-        if (res?.images?.[key]) {
-          const imageInfo = res.images[key];
-          if (imageInfo.description) {
-            return (this.listQC[index].desc = imageInfo.description);
-          }
+        const listItem = this.listQC[index];
+        const key = listItem?.key;
 
-          this.listQC[index].title = imageInfo.title;
-          this.listQC[index].url = imageInfo.url;
+        const images = res?.images || {};
+        const imageInfo = images[key];
+
+        if (!listItem) return;
+        if (!key) return;
+
+        if (imageInfo) {
+          if (imageInfo.description) {
+            listItem.desc = imageInfo.description;
+            listItem.status = 'error';
+          } else {
+            listItem.title = imageInfo.title || 'Untitled';
+            listItem.url = imageInfo.url || '';
+          }
+        } else {
+          listItem.desc = 'Your VCF file did not provide any results.';
+          listItem.status = 'failed';
         }
       });
-      // this.loading = false;
     } catch (error) {
       this.tstr.error('Unexpected error during QC generation.', 'Error');
     }
