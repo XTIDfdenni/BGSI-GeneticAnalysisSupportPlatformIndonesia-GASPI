@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import {
   Component,
+  EventEmitter,
   Injectable,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  Output,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -23,6 +25,7 @@ import { catchError, of, Subject, Subscription } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SpinnerService } from 'src/app/services/spinner.service';
 import { ToastrService } from 'ngx-toastr';
+import { SvepResultsViewerComponent } from '../svep-results-viewer/svep-results-viewer.component';
 
 type ClinicalAnnotation = {
   name: string;
@@ -71,6 +74,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   styleUrl: './annotation-viewer.component.scss',
 })
 export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
+  @Output() dataSent = new EventEmitter<any>(); // array of objects
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild('paginator')
@@ -79,6 +83,7 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
   protected pageSize = 5;
   private pageTokens = new Map<number, any>();
   private annotationChangedSubscription: Subscription | null = null;
+  @Output() selectAnotation = new EventEmitter<any>();
 
   constructor(
     private cs: ClinicService,
@@ -126,6 +131,10 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
     } else {
       this.list(event.pageIndex);
     }
+  }
+
+  handleSelectAnotation(data: any) {
+    this.selectAnotation.emit(data.variants[0]);
   }
 
   async deleteAnnotation(name: string) {
@@ -187,6 +196,7 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
             return;
           }
           this.annotations = res.annotations;
+          this.dataSent.emit(res.annotations);
           // set next page token
           this.pageTokens.set(page + 1, res.last_evaluated_key);
         }
