@@ -28,16 +28,19 @@
             </button>
           </div>
           @for (info of variant.variants; track $index; let itemLast = $last) {
-            @for (item of info | keyvalue; track $index) {
-              {{ item.key }}: {{ item.value }}
-              @if (!$last) {
-                |
+            <span class="font-semibold">•</span>
+            <span>
+              @for (item of info | keyvalue; track $index) {
+                {{ item.key }}: {{ item.value }}
+                @if (!$last) {
+                  |
+                }
               }
-            }
+            </span>
             <br />
             @if (variant.annotations[$index]) {
               <span class="ml-4"
-                >Annotation: {{ variant.annotations[$index] }}</span
+                >- Annotations: {{ variant.annotations[$index] }}</span
               >
               <br />
             }
