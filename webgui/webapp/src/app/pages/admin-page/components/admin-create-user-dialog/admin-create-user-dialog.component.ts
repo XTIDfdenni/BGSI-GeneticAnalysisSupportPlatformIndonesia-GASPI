@@ -88,6 +88,7 @@ export class AdminCreateUserComponent implements OnInit, OnDestroy {
       quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
       notebookRole: [NotebookRole.BASIC, Validators.required], // default role
       institutionType: [UserInstitutionType.INTERNAL, Validators.required], // default institution type
+      institutionName: ['', Validators.required],
     });
   }
 
@@ -167,7 +168,11 @@ export class AdminCreateUserComponent implements OnInit, OnDestroy {
 
   addUserInstitution(sub: string): void {
     this.ui
-      .storeUserInfo(sub, this.newUserForm.value.institutionType)
+      .storeUserInfo(
+        sub,
+        this.newUserForm.value.institutionType,
+        this.newUserForm.value.institutionName,
+      )
       .pipe(catchError(() => of(null)));
   }
 

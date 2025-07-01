@@ -96,6 +96,7 @@ export class AdminUserClickDialogComponent implements OnInit {
       quotaQueryCount: ['', [Validators.required, Validators.min(0)]],
       notebookRole: [NotebookRole.BASIC, Validators.required], // default role
       institutionType: [UserInstitutionType.INTERNAL, Validators.required], // default institution type
+      institutionName: ['', Validators.required],
     });
   }
 
@@ -213,6 +214,7 @@ export class AdminUserClickDialogComponent implements OnInit {
             notebookRole: data.Usage.notebookRole || '',
             institutionType:
               userInfo?.data?.institutionType || UserInstitutionType.INTERNAL,
+            institutionName: userInfo?.data?.institutionName || '',
           });
         }
 
@@ -301,7 +303,11 @@ export class AdminUserClickDialogComponent implements OnInit {
 
   updateUserInstitution() {
     return this.ui
-      .storeUserInfo(this.data.sub, this.form.value.institutionType)
+      .storeUserInfo(
+        this.data.sub,
+        this.form.value.institutionType,
+        this.form.value.institutionName,
+      )
       .pipe(catchError(() => of(null)));
   }
 

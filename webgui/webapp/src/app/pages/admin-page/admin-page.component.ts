@@ -104,7 +104,8 @@ export class AdminPageComponent implements OnInit {
     'Size Quota/Usage',
     'Query Quota/Usage',
     'Est Cost',
-    'Institution',
+    'Institution Type',
+    'Institution Name',
     'Confirmed',
     'MFA Active',
   ];
@@ -275,6 +276,7 @@ export class AdminPageComponent implements OnInit {
             const userSize = user.Usage?.quotaSize;
             const userInfo = user.UserInfo || {
               institutionType: '',
+              institutionName: '',
             };
 
             return {
@@ -307,7 +309,8 @@ export class AdminPageComponent implements OnInit {
               Confirmed:
                 _.get(user, 'UserStatus') === 'CONFIRMED' ? 'Yes' : 'No',
               'MFA Active': _.get(user, 'MFA', []).length > 0 ? 'Yes' : 'No',
-              Institution: _.capitalize(userInfo.institutionType),
+              'Institution Type': _.capitalize(userInfo.institutionType),
+              'Institution Name': userInfo.institutionName,
               usageCount,
               usageSize,
               userQuotaCount,

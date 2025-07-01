@@ -147,7 +147,22 @@
               External
             </mat-radio-button>
           </mat-radio-group>
+
+          <mat-form-field class="pb-2">
+            <mat-label>Institution Name</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="institutionName"
+            />
+            <mat-error>
+              Field is required
+            </mat-error>
+          </mat-form-field>
         </div>
+
+
+
       </div>
     </form>
     <br />

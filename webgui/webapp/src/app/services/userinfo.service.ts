@@ -19,12 +19,13 @@ export class UserInfoService {
     );
   }
 
-  storeUserInfo(uid: string, institutionType: string) {
+  storeUserInfo(uid: string, institutionType: string, institutionName: string) {
     return from(
       API.post(environment.api_endpoint_sbeacon.name, `dportal/userinfo`, {
         body: {
           uid,
           institutionType,
+          institutionName,
         },
       }),
     );
