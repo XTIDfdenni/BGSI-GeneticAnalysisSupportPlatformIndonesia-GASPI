@@ -9,6 +9,7 @@ import {
   SimpleChanges,
   ViewChild,
   ChangeDetectorRef,
+  OnInit,
 } from '@angular/core';
 import { CommonModule, KeyValue } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
@@ -22,6 +23,7 @@ import {
   of,
   startWith,
   Subject,
+  tap,
 } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { clinicFilter, clinicResort } from 'src/app/utils/clinic';
@@ -35,7 +37,6 @@ import {
 } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { HelpTextComponent } from '../help-text/help-text.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -74,7 +75,6 @@ type LookupResult = {
     ReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
-    HelpTextComponent,
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -96,7 +96,9 @@ type LookupResult = {
   templateUrl: './lookup-results-viewer.component.html',
   styleUrl: './lookup-results-viewer.component.scss',
 })
-export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
+export class LookupResultsViewerComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @ViewChild(MatSort) sort!: MatSort;
@@ -141,6 +143,13 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     clinicResort(snapshot, sort, (sorted) => this.dataRows.next(sorted));
   }
 
+  ngOnInit(): void {
+    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || '')),
+    );
+  }
+
   ngAfterViewInit(): void {
     this.scrollStrategy.setScrollHeight(52, 56);
     this.dataView = combineLatest([
@@ -156,10 +165,6 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
         // Update the datasource for the rendered range of data
         return value[0].slice(start, end);
       }),
-    );
-    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filter(value || '')),
     );
   }
 
@@ -342,6 +347,15 @@ export class LookupResultsViewerComponent implements OnChanges, AfterViewInit {
     return this.columns.filter((option) =>
       option.toLowerCase().includes(filterValue),
     );
+  }
+
+  handleRedirectUrl(column: string, value: string) {
+    const urlMap: Record<string, string> = {
+      Variant: `https://www.ncbi.nlm.nih.gov/snp/${value}`,
+    };
+
+    const url = urlMap[column];
+    window.open(url, '_blank');
   }
 
   async loadPubMedIds(rsid: string) {

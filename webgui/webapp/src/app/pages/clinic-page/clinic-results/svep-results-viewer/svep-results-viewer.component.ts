@@ -5,6 +5,7 @@ import {
   Injectable,
   Input,
   OnChanges,
+  OnInit,
   signal,
   SimpleChanges,
   ViewChild,
@@ -40,7 +41,6 @@ import {
 } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { HelpTextComponent } from '../help-text/help-text.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -102,7 +102,6 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
-    HelpTextComponent,
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -126,7 +125,9 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   templateUrl: './svep-results-viewer.component.html',
   styleUrl: './svep-results-viewer.component.scss',
 })
-export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
+export class SvepResultsViewerComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
   @Input() listData: any = []; // receive data from parent
@@ -178,6 +179,13 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
     clinicResort(snapshot, sort, (sorted) => this.dataRows.next(sorted));
   }
 
+  ngOnInit(): void {
+    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(value || '')),
+    );
+  }
+
   ngAfterViewInit(): void {
     this.scrollStrategy.setScrollHeight(52, 56);
     this.dataView = combineLatest([
@@ -199,10 +207,6 @@ export class SvepResultsViewerComponent implements OnChanges, AfterViewInit {
       // if chromosome or page change we clear position
       this.basePositionField.setValue('');
     });
-    this.filteredColumns = this.advancedFilter.valueChanges.pipe(
-      startWith(''),
-      map((value) => this._filter(value || '')),
-    );
     this.dataView.subscribe((rows) => (this.rows = rows));
   }
 

@@ -41,7 +41,6 @@ import {
 } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { HelpTextComponent } from '../help-text/help-text.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -61,7 +60,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { COLUMNS } from '../hub_configs';
 import { environment } from 'src/environments/environment';
-import { BoxDataComponent } from './box-data/box-data.component';
+import { RsponBoxDataViewComponent } from './rspon-box-data-view/rspon-box-data-view.component';
 type PharmcatResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -101,7 +100,6 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     ReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
-    HelpTextComponent,
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
@@ -111,7 +109,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatIconModule,
     MatTooltipModule,
     MatAutocompleteModule,
-    BoxDataComponent,
+    RsponBoxDataViewComponent,
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MyCustomPaginatorIntl },
@@ -280,6 +278,7 @@ export class PharmcatResultsViewerComponent {
   }
 
   filterRelatedVariants = (mappingIds: string[]) => {
+    console.log('filterRelatedVariants', mappingIds);
     this.variantScopeReduced = true;
     this.variantFilterField.setValue('');
     const terms = mappingIds;
@@ -297,16 +296,19 @@ export class PharmcatResultsViewerComponent {
   handleSelectionChange(row: any, isChecked: boolean): void {
     // Absorb all related variants in a checked diplotype row for annotation/reporting
     let diplotypeRow: any = { ...row };
-    // TODO uncomment this when related variants are needed for reporting
-    // if (isChecked && row['Related Variants']) {
-    //   const relatedVariants = this.variantOriginalRows.filter((variant) => {
-    //     return (
-    //       variant['Related Diplotypes'] &&
-    //       row['Related Variants'].includes(variant['Related Diplotypes'])
-    //     );
-    //   });
-    //   diplotypeRow['Related Variants'] = relatedVariants;
-    // }
+    if (row['Related Variants']) {
+      const relatedVariants = this.variantOriginalRows.filter((variant) => {
+        return (
+          variant['Related Diplotypes'] &&
+          row['Related Variants'].includes(variant['Related Diplotypes'])
+        );
+      });
+      if (!diplotypeRow['Zygosity'] && relatedVariants.length > 0) {
+        diplotypeRow['Zygosity'] = relatedVariants.map(
+          (variant) => variant['Zygosity'],
+        );
+      }
+    }
     this.cs.selection(diplotypeRow, isChecked);
   }
 

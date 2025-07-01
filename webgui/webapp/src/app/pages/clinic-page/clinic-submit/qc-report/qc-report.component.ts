@@ -5,6 +5,10 @@ import { catchError, lastValueFrom, of } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
 import { SelectedProjectType } from '../clinic-submit.component';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 
 export interface FileSelectEvent {
   projectName: string;
@@ -23,7 +27,14 @@ export interface QCItem {
   selector: 'qc-report',
   providers: [],
   standalone: true,
-  imports: [MatCardModule, ComponentSpinnerComponent],
+  imports: [
+    MatCardModule,
+    ComponentSpinnerComponent,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    FormsModule,
+  ],
   templateUrl: './qc-report.component.html',
   styleUrl: './qc-report.component.scss',
 })
@@ -64,6 +75,9 @@ export class QcReportComponent {
   ];
 
   loading = false;
+  notes = 'Loading...';
+  editNotes = false;
+  editNotesText = '';
 
   constructor(
     private tstr: ToastrService,
@@ -74,6 +88,54 @@ export class QcReportComponent {
   ngOnInit(): void {
     this.cd.detectChanges();
     this.runAllQC();
+    this.cs
+      .getQCNotes(this.qcData.projectName || '', this.qcData.fileName || '')
+      .pipe(
+        catchError((e) => {
+          const errorMessage =
+            e?.response?.data?.error?.errorMessage ||
+            'Something went wrong when loading QC notes. Please try again later.';
+          this.tstr.error(errorMessage, 'Error: QC Notes');
+          return of(null);
+        }),
+      )
+      .subscribe((notes) => {
+        if (notes) {
+          console.log('QC Notes:', notes);
+          this.notes = notes.notes || '';
+        } else {
+          this.notes = 'Failed to load notes.';
+        }
+      });
+  }
+
+  saveNotes(): void {
+    const notes = this.editNotesText.trim();
+
+    this.cs
+      .updateQCNotes(
+        this.qcData.projectName || '',
+        this.qcData.fileName || '',
+        notes,
+      )
+      .pipe(
+        catchError((e) => {
+          const errorMessage =
+            e?.response?.data?.error?.errorMessage ||
+            'Something went wrong when saving QC notes. Please try again later.';
+          this.tstr.error(errorMessage, 'Error: Save Notes');
+          return of(null);
+        }),
+      )
+      .subscribe((res) => {
+        if (res) {
+          this.notes = notes;
+          this.tstr.success('Notes saved successfully.', 'Success');
+          this.editNotes = false;
+        } else {
+          this.tstr.error('Failed to save notes.', 'Error');
+        }
+      });
   }
 
   async runAllQC(): Promise<void> {

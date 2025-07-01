@@ -1,8 +1,5 @@
 <div class="mb-2 flex flex-row items-center w-full">
-  <mat-checkbox
-    (change)="cs.selection(row, $event.checked)"
-    [checked]="(cs.selectedVariants | async)!.has(cs.hashRow(row))"
-  >
+  <mat-checkbox (change)="change.emit($event.checked)" [checked]="selected">
   </mat-checkbox>
   <mat-accordion style="width: 100%" class="mr-2">
     <mat-expansion-panel
@@ -102,7 +99,7 @@
               <div class="flex items-center justify-center">
                 <a
                   class="text-blue-500 hover:underline cursor-pointer"
-                  (click)="triggerFilter(row['Related Variants'])"
+                  (click)="filter.emit(row['Related Variants'])"
                   >See related variants
                 </a>
               </div>
