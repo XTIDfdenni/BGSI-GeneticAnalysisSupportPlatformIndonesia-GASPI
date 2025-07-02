@@ -61,6 +61,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BoxDataComponent } from './box-data/box-data.component';
 import { COLUMNS } from '../hub_configs';
 import { environment } from 'src/environments/environment';
+import { isEqual } from 'lodash';
 type SVEPResult = {
   url?: string;
   pages: { [key: string]: number };
@@ -129,6 +130,9 @@ export class SvepResultsViewerComponent
 {
   @Input({ required: true }) requestId!: string;
   @Input({ required: true }) projectName!: string;
+  @Input() listData: any = []; // receive data from parent
+  @Input() selectedData: any = []; // receive data from parent
+
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   readonly panelOpenState = signal(false);
@@ -157,6 +161,7 @@ export class SvepResultsViewerComponent
   protected pageIndex = 0;
   filteredColumns: Observable<string[]> | undefined;
   rows: any[] = [];
+  protected listAnotation: any = [];
 
   expandedMap = new Map<string, boolean>();
 
@@ -273,6 +278,11 @@ export class SvepResultsViewerComponent
         ? changes['projectName'].currentValue
         : this.projectName,
     );
+
+    const listData = this.listData.map((e: any) => {
+      return e.variants[0];
+    });
+    this.listAnotation = listData;
   }
 
   refetch(
@@ -332,6 +342,18 @@ export class SvepResultsViewerComponent
     });
 
     this.dataRows.next(filtered);
+  }
+
+  filterByAnotation(data: any) {
+    //reset all filter
+    this.clearFilter();
+    this.filterValues = {};
+
+    this.dataRows.next([data]);
+    const el = document.getElementById('myTarget');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   resetFilter() {
@@ -428,5 +450,10 @@ export class SvepResultsViewerComponent
 
   onToggle(rowId: string, expanded: boolean) {
     this.expandedMap.set(rowId, expanded);
+  }
+
+  handleIsSelected(row: any) {
+    const exists = this.listAnotation.some((item: any) => isEqual(item, row));
+    return exists;
   }
 }

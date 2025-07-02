@@ -8,6 +8,8 @@
     <mat-expansion-panel
       (opened)="togglePanel(true)"
       (closed)="togglePanel(false)"
+      [expanded]="isSingleData()"
+      [style.border]="isSelected ? '2px solid green' : 'none'"
     >
       <mat-expansion-panel-header style="padding: 1rem">
         <mat-panel-title>

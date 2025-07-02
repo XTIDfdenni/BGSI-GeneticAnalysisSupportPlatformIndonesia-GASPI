@@ -29,7 +29,13 @@
             </div>
             <div
               class="text-lg text-black h-full"
-              [style.color]="item.url ? 'gray' : '#950606'"
+              [style.color]="
+                item.status === 'failed'
+                  ? '#FACD15'
+                  : item.status === 'error'
+                    ? '#950606'
+                    : 'gray'
+              "
               [style.font-weight]="item.url ? '' : '600'"
             >
               {{ item.desc }}
