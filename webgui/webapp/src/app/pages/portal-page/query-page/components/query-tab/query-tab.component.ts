@@ -355,7 +355,6 @@ export class QueryTabComponent implements OnInit, AfterViewInit, OnDestroy {
     result$
       .pipe(
         catchError((err: any) => {
-          console.log(err);
           if (err?.code === 'ERR_NETWORK') {
             this.tstr.error(
               'API request failed. Please check your network connectivity.',
