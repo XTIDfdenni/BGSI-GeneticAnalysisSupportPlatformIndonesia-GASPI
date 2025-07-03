@@ -134,7 +134,7 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   handleSelectAnotation(data: any) {
-    this.selectAnotation.emit(data.variants[0]);
+    this.selectAnotation.emit(data.variants);
   }
 
   async deleteAnnotation(name: string) {
@@ -196,10 +196,18 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
             return;
           }
           this.annotations = res.annotations;
-          this.dataSent.emit(res.annotations);
+          this.handleListVariants(res);
           // set next page token
           this.pageTokens.set(page + 1, res.last_evaluated_key);
         }
       });
+  }
+
+  handleListVariants(data: any) {
+    const allVariants: any[] = [];
+    data.annotations.map((e: any) => {
+      allVariants.push(...e?.variants);
+    });
+    this.dataSent.emit(allVariants);
   }
 }
