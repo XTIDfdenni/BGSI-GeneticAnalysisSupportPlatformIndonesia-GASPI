@@ -161,7 +161,6 @@ export class SvepResultsViewerComponent
   protected pageIndex = 0;
   filteredColumns: Observable<string[]> | undefined;
   rows: any[] = [];
-  protected listAnotation: any = [];
 
   expandedMap = new Map<string, boolean>();
 
@@ -278,11 +277,6 @@ export class SvepResultsViewerComponent
         ? changes['projectName'].currentValue
         : this.projectName,
     );
-
-    const listData = this.listData.map((e: any) => {
-      return e.variants[0];
-    });
-    this.listAnotation = listData;
   }
 
   refetch(
@@ -344,12 +338,21 @@ export class SvepResultsViewerComponent
     this.dataRows.next(filtered);
   }
 
+  findMatchingVariants(firstArray: any[], secondArray: any[]): any[] {
+    return firstArray.filter((item1) => {
+      return secondArray.some((item2) => {
+        return Object.keys(item2).every((key) => item1[key] === item2[key]);
+      });
+    });
+  }
+
   filterByAnotation(data: any) {
     //reset all filter
     this.clearFilter();
     this.filterValues = {};
+    const filteredByAnnot = this.findMatchingVariants(this.originalRows, data);
 
-    this.dataRows.next([data]);
+    this.dataRows.next(filteredByAnnot);
     const el = document.getElementById('myTarget');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -452,8 +455,15 @@ export class SvepResultsViewerComponent
     this.expandedMap.set(rowId, expanded);
   }
 
+  //function to check is row contains in listAnotation with dynamic attributes
+  checkRow(listData: any[], row: any): boolean {
+    return listData.some((variant) =>
+      Object.keys(variant).every((key) => variant[key] === row[key]),
+    );
+  }
+
   handleIsSelected(row: any) {
-    const exists = this.listAnotation.some((item: any) => isEqual(item, row));
-    return exists;
+    const result = this.checkRow(this.listData, row);
+    return result || false;
   }
 }
