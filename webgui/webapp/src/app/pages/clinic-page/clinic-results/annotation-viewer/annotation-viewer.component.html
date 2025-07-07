@@ -32,6 +32,15 @@
               }
               <button
                 mat-mini-fab
+                matTooltip="Add to reporting"
+                color="primary"
+                class="flex items-center"
+                (click)="openAddToReportingDialog(annot.variants)"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+              <button
+                mat-mini-fab
                 matTooltip="Delete annotations"
                 color="primary"
                 class="flex items-center"
