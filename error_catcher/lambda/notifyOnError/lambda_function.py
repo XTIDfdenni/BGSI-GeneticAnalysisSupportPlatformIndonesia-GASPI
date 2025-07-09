@@ -87,7 +87,7 @@ ERROR_FORMATS = [
     ),
     # REPORT RequestId: 2ef395ad-4666-4984-b282-5ce567ea718d\tDuration: 2000.00 ms\tBilled Duration: 2000 ms\tMemory Size: 4096 MB\tMax Memory Used: 147 MB\tStatus: timeout\n
     ErrorFormat(
-        "%^REPORT .+Status: timeout$%",
+        "%^REPORT .+Status: timeout%",
         format_error_timeout,
     ),
     # REPORT RequestId: 68038378-e817-489b-97dc-1709db3d7631\tDuration: 8948.73 ms\tBilled Duration: 8949 ms\tMemory Size: 2048 MB\tMax Memory Used: 2048 MB\tInit Duration: 495.04 ms\tStatus: error\tError Type: Runtime.OutOfMemory\n
