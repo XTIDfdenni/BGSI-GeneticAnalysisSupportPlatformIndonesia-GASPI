@@ -140,6 +140,20 @@ export class AnnotationViewerComponent implements OnChanges, OnInit, OnDestroy {
     this.selectAnotation.emit(data.variants);
   }
 
+  async openAddToReportingDialog(variants: any[]) {
+    const { AddToReportingDialogComponent } = await import(
+      '../add-to-reporting-dialog/add-to-reporting-dialog.component'
+    );
+
+    this.dg.open(AddToReportingDialogComponent, {
+      data: {
+        projectName: this.projectName,
+        requestId: this.requestId,
+        variants: [...variants], // sending a copy so that the dialog can modify it if needed
+      },
+    });
+  }
+
   async deleteAnnotation(name: string) {
     const { ActionConfirmationDialogComponent } = await import(
       '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'

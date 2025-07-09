@@ -1,9 +1,9 @@
-import { Component, Input, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, lastValueFrom, of } from 'rxjs';
 import { ClinicService } from 'src/app/services/clinic.service';
-import { SelectedProjectType } from '../clinic-submit.component';
 import { ComponentSpinnerComponent } from 'src/app/components/component-spinner/component-spinner.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -39,8 +39,8 @@ export interface QCItem {
   styleUrl: './qc-report.component.scss',
 })
 export class QcReportComponent {
-  @Input() qcData!: SelectedProjectType; // terima data dengan tipe QCData
-
+  protected projectName: string = '';
+  protected fileName: string = '';
   protected listQC: QCItem[] = [
     {
       title: 'Histogram : Variant Quality Score Distributions',
@@ -83,13 +83,18 @@ export class QcReportComponent {
     private tstr: ToastrService,
     private cs: ClinicService,
     private cd: ChangeDetectorRef,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    this.projectName =
+      this.route.snapshot.queryParamMap.get('projectName') || '';
+    this.fileName = this.route.snapshot.queryParamMap.get('fileName') || '';
     this.cd.detectChanges();
     this.runAllQC();
     this.cs
-      .getQCNotes(this.qcData.projectName || '', this.qcData.fileName || '')
+      .getQCNotes(this.projectName || '', this.fileName || '')
       .pipe(
         catchError((e) => {
           const errorMessage =
@@ -113,11 +118,7 @@ export class QcReportComponent {
     const notes = this.editNotesText.trim();
 
     this.cs
-      .updateQCNotes(
-        this.qcData.projectName || '',
-        this.qcData.fileName || '',
-        notes,
-      )
+      .updateQCNotes(this.projectName || '', this.fileName || '', notes)
       .pipe(
         catchError((e) => {
           const errorMessage =
@@ -144,11 +145,7 @@ export class QcReportComponent {
     const jobPromises = this.listQC.map((item) =>
       lastValueFrom(
         this.cs
-          .generateQC(
-            this.qcData.projectName || '',
-            this.qcData.fileName || '',
-            item.key,
-          )
+          .generateQC(this.projectName || '', this.fileName || '', item.key)
           .pipe(
             catchError((e) => {
               const errorMessage =
@@ -214,5 +211,9 @@ export class QcReportComponent {
       default:
         return 'Report failed to generate.';
     }
+  }
+
+  backToList() {
+    this.router.navigate(['/clinic/clinic-submit'], {});
   }
 }
