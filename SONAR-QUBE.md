@@ -24,7 +24,7 @@ This repository contains a shell script to scan your codebase using [SonarQube](
    ./sonar-scan.sh
    ```
 
-## ⚙️ Configuration
+## Configuration
 
 The script uses the following environment variables:
 
@@ -36,17 +36,7 @@ PROJECT_DIR=$(pwd)/webgui/webapp/
 
 You can edit these values at the top of `sonar-scan.sh` to match your setup.
 
-## 📁 Notes
+## Notes
 
 - Ensure the `PROJECT_DIR` contains a valid `sonar-project.properties` file or follows standard SonarScanner conventions.
 - Logs will show the current environment variables used during execution to help with debugging.
-
-## 🐳 Docker Info
-
-The script runs SonarScanner inside the official Docker container:
-
-```
-sonarsource/sonar-scanner-cli
-```
-
-Mounts your project directory and passes in required environment variables.
