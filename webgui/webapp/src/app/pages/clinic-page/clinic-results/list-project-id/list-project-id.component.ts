@@ -266,7 +266,7 @@ export class ListJobComponent implements OnChanges, OnInit {
               created_at: dayjs
                 .utc(job.created_at)
                 .tz(localTz) // Convert to local timezone
-                .format('DD/MM/YYYY hh:mm A'), // Add AM/PM format
+                .format('YYYY-MM-DD HH:mm:ss'),
             };
           });
 
