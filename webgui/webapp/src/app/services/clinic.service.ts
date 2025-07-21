@@ -276,4 +276,26 @@ export class ClinicService {
       ),
     );
   }
+
+  addValidation(project: string, jobId: string, name: string, comment: string) {
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants/${name}/validation`,
+        {
+          body: { comment },
+        },
+      ),
+    );
+  }
+
+  removeValidation(project: string, jobId: string, name: string) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/variants/${name}/validation`,
+        {},
+      ),
+    );
+  }
 }
