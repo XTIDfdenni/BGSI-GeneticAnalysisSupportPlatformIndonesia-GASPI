@@ -3,11 +3,11 @@ import { Injectable } from '@angular/core';
 import { API, Auth } from 'aws-amplify';
 import {
   BehaviorSubject,
-  forkJoin,
   from,
   map,
   Observable,
   of,
+  pipe,
   Subject,
   switchMap,
 } from 'rxjs';
@@ -140,30 +140,16 @@ export class ClinicService {
     chromosome: string | null = null,
     page: number | null = null,
     position: number | null = null,
-    pathPart: string | null = null,
+    pipeline: string | null = null,
   ): Observable<any> {
     const params = {
       ...(chromosome && { chromosome }),
       ...(page && { page }),
       ...(position && { position }),
+      ...(pipeline && { pipeline }),
     };
-
-    const getPathForHub = (hubName: string, customPath: string | null) => {
-      const defaultPaths: Record<string, string> = {
-        RSCM: 'results',
-        RSSARDJITO: 'results',
-        RSPON: 'pipeline_pharmcat/results',
-        RSIGNG: 'pipeline_lookup/results',
-      };
-      if (hubName === 'RSJPD' && customPath) {
-        return customPath;
-      }
-      return defaultPaths[hubName] || 'results';
-    };
-
-    pathPart = getPathForHub(environment.hub_name, pathPart);
     return from(
-      API.get(environment.api_endpoint_clinic.name, pathPart, {
+      API.get(environment.api_endpoint_clinic.name, 'results', {
         queryStringParameters: {
           request_id: requestId,
           project_name: projectName,
