@@ -11,7 +11,6 @@ import {
   Subject,
   switchMap,
 } from 'rxjs';
-import { ulid } from 'ulid';
 import { environment } from 'src/environments/environment';
 
 export type SelectedVariants = Map<string, string[]>;
@@ -77,34 +76,20 @@ export class ClinicService {
     jobName: string,
     missingToRef: boolean,
   ) {
-    const pathMap: Record<string, string[]> = {
-      RSCM: ['submit'],
-      RSSARDJITO: ['submit'],
-      RSPON: ['pipeline_pharmcat/submit'],
-      RSIGNG: ['pipeline_lookup/submit'],
-      RSJPD: ['pipeline_pharmcat/submit', 'pipeline_lookup/submit'],
-    };
-
-    const paths = pathMap[environment.hub_name];
-
     return from(Auth.currentCredentials()).pipe(
       switchMap((credentials) => {
         const userId = credentials.identityId;
-        const requestId = environment.hub_name === 'RSJPD' ? ulid() : null;
-        const body = {
-          location,
-          projectName,
-          userId,
-          jobName,
-          requestId,
-          missingToRef,
-        };
-
-        const requests = paths.map((path: string) =>
-          from(API.post(environment.api_endpoint_clinic.name, path, { body })),
+        return from(
+          API.post(environment.api_endpoint_clinic.name, 'submit', {
+            body: {
+              location,
+              projectName,
+              userId,
+              jobName,
+              missingToRef,
+            },
+          }),
         );
-
-        return requests.length === 1 ? requests[0] : forkJoin(requests);
       }),
     );
   }
