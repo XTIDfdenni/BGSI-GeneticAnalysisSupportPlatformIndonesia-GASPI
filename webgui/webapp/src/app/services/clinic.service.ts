@@ -95,7 +95,7 @@ export class ClinicService {
           location,
           projectName,
           userId,
-          jobName,
+          jobName: jobName.trim(),
           requestId,
           missingToRef,
         };
