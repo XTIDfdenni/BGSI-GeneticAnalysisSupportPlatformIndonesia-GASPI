@@ -322,7 +322,8 @@ resource "aws_cognito_user" "guest" {
   lifecycle {
     ignore_changes = [
       password,
-      attributes["identity_id"]
+      attributes["identity_id"],
+      attributes["is_medical_director"],
     ]
   }
 }
@@ -343,7 +344,8 @@ resource "aws_cognito_user" "admin" {
   lifecycle {
     ignore_changes = [
       password,
-      attributes["identity_id"]
+      attributes["identity_id"],
+      attributes["is_medical_director"],
     ]
   }
 }
