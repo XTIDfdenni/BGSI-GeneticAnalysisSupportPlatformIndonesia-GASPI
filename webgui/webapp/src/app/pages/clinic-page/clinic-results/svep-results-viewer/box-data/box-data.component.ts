@@ -44,6 +44,7 @@ export class BoxDataComponent implements OnInit {
   @Input() isSelected: boolean = false;
   @Output() panelToggled = new EventEmitter<boolean>();
 
+  exclamationMarkStatus = false;
   flagInfo: FlagInfo = {
     shouldShow: false,
     color: '#4b5563',
@@ -55,6 +56,15 @@ export class BoxDataComponent implements OnInit {
   constructor(protected cs: ClinicService) {}
 
   ngOnInit(): void {
+    console.log('BoxDataComponent initialized with row:', {
+      dp: this.row['dp'],
+      gq: this.row['gq'],
+      mq: this.row['mq'],
+      qd: this.row['qd'],
+      qual: this.row['qual'],
+      filter: this.row['filter'],
+    });
+
     this.generateFlagInfo();
   }
 
@@ -91,9 +101,14 @@ export class BoxDataComponent implements OnInit {
       }
     });
 
-    // Only show flag if filter is not PASS, "-", or ""
+    // Check filter condition
     const filterValue = this.row['filter'];
-    const shouldShowFlag = !['PASS', '-', ''].includes(filterValue);
+    const hasFilterIssue = ![thresholds.filter, '-', ''].includes(filterValue);
+    const hasScoreIssues = belowThreshold.length > 0;
+    const hasMissingKeys = missingKeys.length > 0;
+
+    // Show flag if there are ANY issues: filter, score, or missing keys
+    const shouldShowFlag = hasFilterIssue || hasScoreIssues || hasMissingKeys;
 
     // Determine flag status
     this.flagInfo = this.determineFlagInfo(
@@ -101,7 +116,9 @@ export class BoxDataComponent implements OnInit {
       missingKeys,
       shouldShowFlag,
       filterValue,
+      hasFilterIssue,
     );
+    this.exclamationMarkStatus = this.flagInfo.shouldShow;
   }
 
   private determineFlagInfo(
@@ -109,8 +126,9 @@ export class BoxDataComponent implements OnInit {
     missingKeys: string[],
     shouldShowFlag: boolean,
     filterValue: string,
+    hasFilterIssue: boolean,
   ): FlagInfo {
-    // Only show flag if filter condition is met
+    // Don't show flag if no issues at all
     if (!shouldShowFlag) {
       return {
         shouldShow: false,
@@ -119,31 +137,34 @@ export class BoxDataComponent implements OnInit {
       };
     }
 
-    // Generate filter message
-    const filterMessage = this.getFilterMessage(filterValue);
+    // Generate messages
+    const messages: string[] = [];
 
-    // Generate score and missing key messages
-    const scoreMessage =
-      belowThreshold.length > 0
-        ? `The Result Score ${belowThreshold.join(
-            ', ',
-          )} is less than minimum Score`
-        : '';
+    // Add filter message only if filter has issues
+    if (hasFilterIssue) {
+      messages.push(this.getFilterMessage(filterValue));
+    }
 
-    const missingMessage =
-      missingKeys.length > 0
-        ? `The Key ${missingKeys.join(', ')} is missing in vcf file`
-        : '';
+    // Add score message if there are threshold violations
+    if (belowThreshold.length > 0) {
+      messages.push(
+        `The Result Score ${belowThreshold.join(
+          ', ',
+        )} is less than minimum Score`,
+      );
+    }
 
-    // Combine messages
-    const messages = [filterMessage, scoreMessage, missingMessage].filter(
-      (msg) => msg !== '',
-    );
+    // Add missing keys message if there are missing values
+    if (missingKeys.length > 0) {
+      messages.push(`The Key ${missingKeys.join(', ')} is missing in vcf file`);
+    }
+
     const fullMessage = messages.join(' and ');
 
     // Determine color based on content
-    // Gray only if ALL issues are missing keys (no score issues)
-    const isGrayFlag = belowThreshold.length === 0 && missingKeys.length > 0;
+    // Gray only if ALL issues are missing keys (no score issues and no filter issues)
+    const isGrayFlag =
+      belowThreshold.length === 0 && !hasFilterIssue && missingKeys.length > 0;
 
     return {
       shouldShow: true,
@@ -181,6 +202,13 @@ export class BoxDataComponent implements OnInit {
 
   shouldShowFlag(): boolean {
     return this.flagInfo.shouldShow;
+  }
+
+  // Keep existing methods
+  generateExclamationMarkStatus() {
+    // This method is now replaced by generateFlagInfo()
+    // Keeping for backward compatibility if called elsewhere
+    this.generateFlagInfo();
   }
 
   togglePanel(opened: boolean) {
