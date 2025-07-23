@@ -94,6 +94,10 @@ export const COLUMNS: { [key: string]: any } = {
       'pLOF o/e',
       'pLOF o/e upper CI',
       'pLOF o/e lower CI',
+      'dp',
+      'gq',
+      'mq',
+      'qd',
     ],
   },
   RSIGNG: {
@@ -183,6 +187,10 @@ export const COLUMNS: { [key: string]: any } = {
       'pLOF o/e',
       'pLOF o/e upper CI',
       'pLOF o/e lower CI',
+      'dp',
+      'gq',
+      'mq',
+      'qd',
     ],
   },
   RSJPD: {
