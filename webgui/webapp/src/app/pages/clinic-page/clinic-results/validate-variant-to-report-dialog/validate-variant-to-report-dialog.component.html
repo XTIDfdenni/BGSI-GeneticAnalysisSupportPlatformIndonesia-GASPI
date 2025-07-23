@@ -1,4 +1,8 @@
-<h1 mat-dialog-title>Validate the selected variants</h1>
+@if (data.name) {
+  <h1 mat-dialog-title>Validate the selected variants</h1>
+} @else {
+  <h1 mat-dialog-title>Validate reporting with no variants</h1>
+}
 <div mat-dialog-content>
   <form [formGroup]="validationForm">
     <mat-form-field class="w-full my-1">

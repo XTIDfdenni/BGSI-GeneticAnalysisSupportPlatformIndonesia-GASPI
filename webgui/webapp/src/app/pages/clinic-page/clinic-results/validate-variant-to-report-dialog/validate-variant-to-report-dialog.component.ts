@@ -45,7 +45,7 @@ export class ValidateVariantToReportDialogComponent {
     private ss: SpinnerService,
     public dialogRef: MatDialogRef<ValidateVariantToReportDialogComponent>,
     @Inject(MAT_DIALOG_DATA)
-    public data: { projectName: string; requestId: string; name: string },
+    public data: { projectName: string; requestId: string; name?: string },
   ) {}
 
   saveValidation() {
@@ -57,23 +57,43 @@ export class ValidateVariantToReportDialogComponent {
     }
 
     this.ss.start();
-    this.cs
-      .addValidation(
-        this.data.projectName,
-        this.data.requestId,
-        this.data.name,
-        comment,
-      )
-      .pipe(catchError((err) => of(err)))
-      .subscribe((data) => {
-        if (!data) {
-          this.tstr.error('Failed to save validation', 'Error');
-        } else {
-          this.tstr.success('Validation saved', 'Success');
-          this.cs.savedVariantsChanged.next();
-          this.dialogRef.close();
-        }
-        this.ss.end();
-      });
+    if (this.data.name) {
+      this.cs
+        .addValidation(
+          this.data.projectName,
+          this.data.requestId,
+          this.data.name,
+          comment,
+        )
+        .pipe(catchError((err) => of(err)))
+        .subscribe((data) => {
+          if (!data) {
+            this.tstr.error('Failed to save validation', 'Error');
+          } else {
+            this.tstr.success('Validation saved', 'Success');
+            this.cs.savedVariantsChanged.next();
+            this.dialogRef.close();
+          }
+          this.ss.end();
+        });
+    } else {
+      this.cs
+        .addNoVariantsValidation(
+          this.data.projectName,
+          this.data.requestId,
+          comment,
+        )
+        .pipe(catchError((err) => of(err)))
+        .subscribe((data) => {
+          if (!data) {
+            this.tstr.error('Failed to save validation', 'Error');
+          } else {
+            this.tstr.success('Validation saved', 'Success');
+            this.cs.savedVariantsChanged.next();
+            this.dialogRef.close();
+          }
+          this.ss.end();
+        });
+    }
   }
 }

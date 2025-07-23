@@ -110,6 +110,16 @@ export class ClinicService {
     );
   }
 
+  getClinicJob(project: string, jobId: string) {
+    return from(
+      API.get(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}`,
+        {},
+      ),
+    );
+  }
+
   updateQCNotes(projectName: string, fileName: string, notes: string) {
     return from(
       API.post(environment.api_endpoint_clinic.name, 'qcnotes', {
@@ -294,6 +304,28 @@ export class ClinicService {
       API.del(
         environment.api_endpoint_sbeacon.name,
         `dportal/projects/${project}/clinical-workflows/${jobId}/variants/${name}/validation`,
+        {},
+      ),
+    );
+  }
+
+  addNoVariantsValidation(project: string, jobId: string, comment: string) {
+    return from(
+      API.post(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/validation`,
+        {
+          body: { comment },
+        },
+      ),
+    );
+  }
+
+  removeNoVariantsValidation(project: string, jobId: string) {
+    return from(
+      API.del(
+        environment.api_endpoint_sbeacon.name,
+        `dportal/projects/${project}/clinical-workflows/${jobId}/validation`,
         {},
       ),
     );
