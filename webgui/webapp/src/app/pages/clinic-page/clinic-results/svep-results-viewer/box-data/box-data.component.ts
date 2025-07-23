@@ -55,15 +55,6 @@ export class BoxDataComponent implements OnInit {
   constructor(protected cs: ClinicService) {}
 
   ngOnInit(): void {
-    console.log('BoxDataComponent initialized with row:', {
-      dp: this.row['dp'],
-      gq: this.row['gq'],
-      mq: this.row['mq'],
-      qd: this.row['qd'],
-      qual: this.row['qual'],
-      filter: this.row['filter'],
-    });
-
     this.generateFlagInfo();
   }
 
