@@ -162,9 +162,14 @@ export class BoxDataComponent implements OnInit {
     const fullMessage = messages.join(' and ');
 
     // Determine color based on content
-    // Gray only if ALL issues are missing keys (no score issues and no filter issues)
+    // Gray if filter is missing AND all score values are missing (no actual score violations)
+    const filterIsMissing =
+      filterValue === '.' ||
+      filterValue === '' ||
+      filterValue === null ||
+      filterValue === undefined;
     const isGrayFlag =
-      belowThreshold.length === 0 && !hasFilterIssue && missingKeys.length > 0;
+      filterIsMissing && belowThreshold.length === 0 && missingKeys.length > 0;
 
     return {
       shouldShow: true,
