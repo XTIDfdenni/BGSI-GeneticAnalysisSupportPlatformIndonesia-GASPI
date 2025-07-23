@@ -17,15 +17,52 @@
       @for (variant of variants; track $index) {
         <div>
           <div class="flex flex-row justify-between items-center">
-            <h3>{{ variant.comment }}</h3>
-            <button
-              mat-mini-fab
-              color="primary"
-              class="flex items-center"
-              (click)="deleteSavedVariants(variant.name)"
-            >
-              <mat-icon>delete</mat-icon>
-            </button>
+            <h3>
+              @if (variant.validatedByMedicalDirector) {
+                <span matTooltip="Validated by medical director">✅</span>
+              } @else {
+                <span matTooltip="Not validated by medical director">❌</span>
+              }
+              {{ variant.comment }}
+            </h3>
+
+            <div class="flex flex-row space-x-2 items-center">
+              @if (
+                (auth.user | async)?.attributes[
+                  "custom:is_medical_director"
+                ] === "true"
+              ) {
+                @if (!variant.validatedByMedicalDirector) {
+                  <button
+                    mat-mini-fab
+                    matTooltip="Validate variant"
+                    color="primary"
+                    class="flex items-center"
+                    (click)="addValidation(variant.name)"
+                  >
+                    <mat-icon>assignment_turned_in</mat-icon>
+                  </button>
+                } @else {
+                  <button
+                    mat-mini-fab
+                    matTooltip="Invalidate variant"
+                    color="primary"
+                    class="flex items-center"
+                    (click)="removeValidation(variant.name)"
+                  >
+                    <mat-icon>assignment_late</mat-icon>
+                  </button>
+                }
+              }
+              <button
+                mat-mini-fab
+                color="primary"
+                class="flex items-center"
+                (click)="deleteSavedVariants(variant.name)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
           </div>
           @for (info of variant.variants; track $index; let itemLast = $last) {
             @for (item of info | keyvalue; track $index) {
@@ -55,6 +92,24 @@
             {{ variant.createdAt | date: "yyyy-MM-dd HH:mm:ss" }}</span
           >
           <br />
+          @if (variant.validatedByMedicalDirector) {
+            <span class="text-xs">
+              Validation comment: {{ variant.validationComment }}
+            </span>
+            <br />
+            <span class="text-xs"
+              >Validated by: {{ variant.validator?.firstName }}
+              {{ variant.validator?.lastName }} ({{
+                variant.validator?.email
+              }})</span
+            >
+            <br />
+            <span class="text-xs"
+              >Validated at:
+              {{ variant.validatedAt | date: "yyyy-MM-dd HH:mm:ss" }}</span
+            >
+            <br />
+          }
         </div>
         @if (!$last) {
           <div class="w-full h-1 bg-primary-60 my-1"></div>
@@ -72,7 +127,13 @@
       (page)="pageChange($event)"
     ></mat-paginator>
     <div class="flex flex-row justify-between items-center">
-      @if (hub) {
+      @if (noValidatedVariants()) {
+        <div class="text-left">
+          No validated variants available for reporting
+          <br />
+          Please get in touch with medical directory for validations
+        </div>
+      } @else if (hub) {
         @switch (hub) {
           @case ("RSCM") {
             <button

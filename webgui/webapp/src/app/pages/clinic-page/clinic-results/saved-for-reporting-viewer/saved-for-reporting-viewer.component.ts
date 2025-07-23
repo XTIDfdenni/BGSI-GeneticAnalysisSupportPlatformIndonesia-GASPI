@@ -26,6 +26,8 @@ import { SpinnerService } from 'src/app/services/spinner.service';
 import { environment } from 'src/environments/environment';
 import { REPORTING_CONFIGS } from '../hub_configs';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/services/auth.service';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 type SavedVariants = {
   name: string;
@@ -33,7 +35,15 @@ type SavedVariants = {
   variants: any[];
   annotations: string[];
   createdAt: string;
+  validatedByMedicalDirector: boolean;
+  validationComment: string;
+  validatedAt: string;
   user?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+  validator?: {
     email: string;
     firstName: string;
     lastName: string;
@@ -69,6 +79,7 @@ export class MyCustomPaginatorIntl implements MatPaginatorIntl {
     MatButtonModule,
     MatIconModule,
     MatCardModule,
+    MatTooltipModule,
   ],
   templateUrl: './saved-for-reporting-viewer.component.html',
   styleUrl: './saved-for-reporting-viewer.component.scss',
@@ -89,6 +100,7 @@ export class SavedForReportingViewerComponent
   private savedVariantsChangedSubscription: Subscription | null = null;
 
   constructor(
+    protected auth: AuthService,
     private cs: ClinicService,
     private dg: MatDialog,
     private ss: SpinnerService,
@@ -106,6 +118,12 @@ export class SavedForReportingViewerComponent
     if (this.savedVariantsChangedSubscription) {
       this.savedVariantsChangedSubscription.unsubscribe();
     }
+  }
+
+  noValidatedVariants() {
+    return this.variants.every(
+      (variant) => !variant.validatedByMedicalDirector,
+    );
   }
 
   resetPagination() {
@@ -133,6 +151,52 @@ export class SavedForReportingViewerComponent
     } else {
       this.list(event.pageIndex);
     }
+  }
+
+  async addValidation(name: string) {
+    const { ValidateVariantToReportDialogComponent } = await import(
+      '../validate-variant-to-report-dialog/validate-variant-to-report-dialog.component'
+    );
+
+    this.dg.open(ValidateVariantToReportDialogComponent, {
+      data: {
+        name,
+        requestId: this.requestId,
+        projectName: this.projectName,
+      },
+    });
+  }
+
+  async removeValidation(name: string) {
+    const { ActionConfirmationDialogComponent } = await import(
+      '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
+    );
+
+    const dialogRef = this.dg.open(ActionConfirmationDialogComponent, {
+      data: {
+        title: 'Invalidate Variants',
+        message: `Are you sure you want to invalidate these variants?`,
+        confirmText: 'Invalidate',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.ss.start();
+        this.cs
+          .removeValidation(this.projectName, this.requestId, name)
+          .pipe(catchError(() => of(null)))
+          .subscribe((res) => {
+            if (res) {
+              this.tstr.success('Annotation invalidated', 'Success');
+              this.cs.savedVariantsChanged.next();
+            } else {
+              this.tstr.error('Failed to invalidate annotation', 'Error');
+            }
+            this.ss.end();
+          });
+      }
+    });
   }
 
   async deleteSavedVariants(name: string) {
