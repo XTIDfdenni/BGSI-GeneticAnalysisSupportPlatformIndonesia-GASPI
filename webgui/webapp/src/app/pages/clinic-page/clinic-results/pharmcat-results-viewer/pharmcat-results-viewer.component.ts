@@ -416,6 +416,8 @@ export class PharmcatResultsViewerComponent {
     this.diplotypeDataRows.next([]);
     this.variantDataRows.next([]);
     this.warningDataRows.next([]);
+    this.ss.start();
+
     this.cs
       .getClinicResults(requestId, projectName, null, page, null, pipeline)
       .pipe(catchError(() => of(null)))
