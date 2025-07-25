@@ -50,6 +50,19 @@ type SavedVariants = {
   };
 };
 
+type JobEntry = {
+  job_id: string;
+  job_name: string;
+  validatedByMedicalDirector: boolean;
+  validationComment: string;
+  validatedAt: string;
+  validator?: {
+    email: string;
+    firstName: string;
+    lastName: string;
+  };
+};
+
 @Injectable()
 export class MyCustomPaginatorIntl implements MatPaginatorIntl {
   changes = new Subject<void>();
@@ -96,6 +109,7 @@ export class SavedForReportingViewerComponent
   protected pageSize = 5;
   protected hub =
     environment.hub_name in REPORTING_CONFIGS ? environment.hub_name : null;
+  protected jobEntry: JobEntry | null = null;
   private pageTokens = new Map<number, any>();
   private savedVariantsChangedSubscription: Subscription | null = null;
 
@@ -134,6 +148,7 @@ export class SavedForReportingViewerComponent
     try {
       this.resetPagination();
       this.list(0);
+      this.loadJobStatus();
     } catch (error) {
       console.log(error);
     }
@@ -141,6 +156,7 @@ export class SavedForReportingViewerComponent
 
   ngOnChanges(_: SimpleChanges): void {
     this.list(0);
+    this.loadJobStatus();
   }
 
   pageChange(event: PageEvent) {
@@ -153,29 +169,53 @@ export class SavedForReportingViewerComponent
     }
   }
 
-  async addValidation(name: string) {
+  async loadJobStatus() {
+    this.cs
+      .getClinicJob(this.projectName, this.requestId)
+      .pipe(catchError(() => of(null)))
+      .subscribe((res) => {
+        if (res) {
+          if (!res.success) {
+            this.tstr.error(res.message, 'Error');
+          } else {
+            this.jobEntry = res.job;
+            console.log(res);
+          }
+        } else {
+          this.tstr.error('Failed to load job status', 'Error');
+        }
+      });
+  }
+
+  async addValidation(name?: string) {
     const { ValidateVariantToReportDialogComponent } = await import(
       '../validate-variant-to-report-dialog/validate-variant-to-report-dialog.component'
     );
 
-    this.dg.open(ValidateVariantToReportDialogComponent, {
+    const dialogRef = this.dg.open(ValidateVariantToReportDialogComponent, {
       data: {
         name,
         requestId: this.requestId,
         projectName: this.projectName,
       },
     });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      this.loadJobStatus();
+    });
   }
 
-  async removeValidation(name: string) {
+  async removeValidation(name?: string) {
     const { ActionConfirmationDialogComponent } = await import(
       '../../../../components/action-confirmation-dialog/action-confirmation-dialog.component'
     );
 
     const dialogRef = this.dg.open(ActionConfirmationDialogComponent, {
       data: {
-        title: 'Invalidate Variants',
-        message: `Are you sure you want to invalidate these variants?`,
+        title: name ? 'Invalidate Variants' : 'Invalidate negative reporting',
+        message: name
+          ? `Are you sure you want to invalidate these variants?`
+          : `Are you sure you want to invalidate negative reporting?`,
         confirmText: 'Invalidate',
       },
     });
@@ -183,18 +223,33 @@ export class SavedForReportingViewerComponent
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.ss.start();
-        this.cs
-          .removeValidation(this.projectName, this.requestId, name)
-          .pipe(catchError(() => of(null)))
-          .subscribe((res) => {
-            if (res) {
-              this.tstr.success('Annotation invalidated', 'Success');
-              this.cs.savedVariantsChanged.next();
-            } else {
-              this.tstr.error('Failed to invalidate annotation', 'Error');
-            }
-            this.ss.end();
-          });
+        if (name) {
+          this.cs
+            .removeValidation(this.projectName, this.requestId, name)
+            .pipe(catchError(() => of(null)))
+            .subscribe((res) => {
+              if (res) {
+                this.tstr.success('Annotation invalidated', 'Success');
+                this.cs.savedVariantsChanged.next();
+              } else {
+                this.tstr.error('Failed to invalidate annotation', 'Error');
+              }
+              this.ss.end();
+            });
+        } else {
+          this.cs
+            .removeNoVariantsValidation(this.projectName, this.requestId)
+            .pipe(catchError(() => of(null)))
+            .subscribe((res) => {
+              if (res) {
+                this.tstr.success('Annotation invalidated', 'Success');
+                this.cs.savedVariantsChanged.next();
+              } else {
+                this.tstr.error('Failed to invalidate annotation', 'Error');
+              }
+              this.ss.end();
+            });
+        }
       }
     });
   }

@@ -153,7 +153,7 @@ module "webgui" {
   bui-ssm-parameter-name  = var.bui-ssm-parameter-name
   web_acl_arn             = module.security.web_acl_arn
   hub_name                = var.hub_name
-  svep-warning-thresholds = var.svep-warning-thresholds
+  clinic-warning-thresholds = var.clinic-warning-thresholds
 
   common-tags = merge(var.common-tags, {
     "NAME" = "portal-frontend"
