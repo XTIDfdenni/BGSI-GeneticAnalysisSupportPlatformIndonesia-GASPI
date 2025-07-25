@@ -60,7 +60,7 @@ export class BoxDataComponent implements OnInit {
   }
 
   private generateFlagInfo(): void {
-    const thresholds = environment.svep_warning_thresholds;
+    const thresholds = environment.clinic_warning_thresholds;
     const scoreFields = {
       Qual: { value: this.row['qual'], threshold: thresholds.qual },
       DP: { value: this.row['dp'], threshold: thresholds.dp },
