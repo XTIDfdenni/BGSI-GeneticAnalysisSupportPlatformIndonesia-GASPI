@@ -297,6 +297,7 @@ export class LookupResultsViewerComponent
       )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
+        // TODO: remove this result initialization once backend is fixed
         this.results = {
           config: {
             lookup: {
