@@ -297,21 +297,21 @@ export class LookupResultsViewerComponent
       )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
-        // TODO: remove this result initialization once backend is fixed
-        this.results = {
-          config: {
-            lookup: {
-              chr_header: 'chr',
-              start_header: 'start',
-              end_header: 'end',
-            },
-          },
-          url: '',
-          pages: {},
-          content: '',
-          page: 0,
-          chromosome: '',
-        };
+        // // TODO: remove this result initialization once backend is fixed
+        // this.results = {
+        //   config: {
+        //     lookup: {
+        //       chr_header: 'chr',
+        //       start_header: 'start',
+        //       end_header: 'end',
+        //     },
+        //   },
+        //   url: '',
+        //   pages: {},
+        //   content: '',
+        //   page: 0,
+        //   chromosome: '',
+        // };
 
         if (!data) {
           this.tstr.error('Failed to load data', 'Error');
