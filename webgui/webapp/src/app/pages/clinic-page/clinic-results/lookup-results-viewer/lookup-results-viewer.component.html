@@ -5,7 +5,7 @@
 <mat-card class="mt-4">
   <mat-card-content>
     <!-- No Results Alert - Add this if needed -->
-    @if (originalRows.length === 0 && !results) {
+    @if (originalRows.length === 0 && !isLoading) {
       <app-no-results-alert></app-no-results-alert>
     }
     <!-- Lookup Configuration Accordion -->
@@ -48,7 +48,8 @@
                 Analysis Summary
               </h4>
               <p class="text-gray-700 text-sm">
-                This lookup analysis processes genomic variants by querying the chromosome, start position, and end position within the VCF file.
+                This lookup analysis processes genomic variants by querying the chromosome ({{ results?.config?.lookup?.chr_header }}),
+                start position ({{ results?.config?.lookup?.start_header }}), and end position ({{ results?.config?.lookup?.end_header }}) within the VCF file.
               </p>
             </div>
           </div>

@@ -184,7 +184,7 @@ export class PharmcatResultsViewerComponent {
   protected resultsLength = 0;
   protected pageIndex = 0;
   rows: any[] = [];
-  protected isLoading: boolean = true;
+  protected isLoading: boolean = false;
 
   constructor(
     protected cs: ClinicService,
@@ -417,6 +417,7 @@ export class PharmcatResultsViewerComponent {
     this.variantDataRows.next([]);
     this.warningDataRows.next([]);
     this.ss.start();
+    this.isLoading = true;
 
     this.cs
       .getClinicResults(requestId, projectName, null, page, null, pipeline)

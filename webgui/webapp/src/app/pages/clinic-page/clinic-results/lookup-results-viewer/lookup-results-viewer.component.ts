@@ -138,6 +138,7 @@ export class LookupResultsViewerComponent
   protected resultsLength = 0;
   protected pageIndex = 0;
   filteredColumns: Observable<string[]> | undefined;
+  protected isLoading = false;
 
   constructor(
     protected cs: ClinicService,
@@ -284,6 +285,7 @@ export class LookupResultsViewerComponent
     this.originalRows = [];
     this.dataRows.next([]);
     this.ss.start();
+    this.isLoading = true;
     this.cs
       .getClinicResults(
         requestId,
@@ -295,13 +297,30 @@ export class LookupResultsViewerComponent
       )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
+        this.results = {
+          config: {
+            lookup: {
+              chr_header: 'chr',
+              start_header: 'start',
+              end_header: 'end',
+            },
+          },
+          url: '',
+          pages: {},
+          content: '',
+          page: 0,
+          chromosome: '',
+        };
+
         if (!data) {
           this.tstr.error('Failed to load data', 'Error');
         } else {
           this.results = data;
+
           this.updateTable(data);
         }
         this.ss.end();
+        this.isLoading = false;
       });
   }
 
@@ -312,11 +331,6 @@ export class LookupResultsViewerComponent
     }
     this.results = result;
     // TODO: Remove this check once the backend is fixed to always return config
-    this.results!.config!.lookup = {
-      chr_header: 'Chromosome',
-      start_header: 'Start Position',
-      end_header: 'End Position',
-    };
 
     const lines = result.content.split('\n');
     this.originalRows = lines
