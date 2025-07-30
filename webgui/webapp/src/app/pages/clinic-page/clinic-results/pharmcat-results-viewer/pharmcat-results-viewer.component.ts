@@ -77,6 +77,7 @@ type PharmcatResult = {
       DRUGS: string[];
     };
   };
+  missingToRef: boolean | null;
 };
 
 @Injectable()
@@ -170,7 +171,7 @@ export class PharmcatResultsViewerComponent {
   protected warningDataRows = new BehaviorSubject<any[]>([]);
   protected warningDataView = new Observable<any[]>();
   protected warningCurrentRenderedRows: any[] = [];
-
+  protected missingToRef: boolean | null = null;
   protected annotationForm: FormGroup = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -437,6 +438,7 @@ export class PharmcatResultsViewerComponent {
   updateTable(result: PharmcatResult): void {
     this.results = result;
     this.resultsLength = result.pages[result.page];
+    this.missingToRef = result.missingToRef;
     const resultJson = JSON.parse(result.content);
 
     const diplotypes = resultJson.diplotypes;

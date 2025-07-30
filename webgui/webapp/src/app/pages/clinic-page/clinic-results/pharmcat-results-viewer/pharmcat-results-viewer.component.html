@@ -98,7 +98,7 @@
     <h2 class="text-warning-10">Warnings</h2>
     <div class="flex flex-row space-x-1, items-center mb-2">
       @if (warningDataRows.value.length > 0) {
-        <mat-accordion class="w-full">
+        <mat-accordion class="w-full mb-2">
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>Show warnings</mat-panel-title>
@@ -142,7 +142,13 @@
         <p>No warnings to show</p>
       }
     </div>
-
+    @if (missingToRef) {
+      <div class="flex flex-row space-x-1 items-center mb-2">
+        <span class="font-bold">
+          Missing variants were treated as reference when interpreting results.
+        </span>
+      </div>
+    }
     <h2>Diplotypes Table</h2>
     @if (diplotypeHasRows) {
       <div class="flex flex-row space-x-1 items-center mb-2">
