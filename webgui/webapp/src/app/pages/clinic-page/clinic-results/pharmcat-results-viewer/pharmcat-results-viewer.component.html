@@ -479,7 +479,30 @@
             (matSortChange)="resortVariants($event)"
           >
             @for (column of variantColumns; track $index) {
-              @if (column === "Related Diplotypes") {
+              @if (column === "Status") {
+                <!-- Status Column with Flag -->
+                <ng-container [matColumnDef]="column">
+                  <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="whitespace-nowrap text-center"
+                  >
+                    {{ column }}
+                  </th>
+                  <td mat-cell *matCellDef="let element" class="text-center">
+                    @if (shouldShowFlag(element)) {
+                      <div
+                        class="flex justify-center items-center rounded-full cursor-pointer"
+                        [matTooltip]="getFlagMessage(element)"
+                        style="width: 24px; height: 24px; margin: 0 auto;"
+                        [style.background]="getFlagColor(element)"
+                      >
+                        <mat-icon class="text-white">priority_high</mat-icon>
+                      </div>
+                    }
+                  </td>
+                </ng-container>
+              } @else if (column === "Related Diplotypes") {
                 <ng-container [matColumnDef]="column">
                   <th
                     mat-header-cell
