@@ -362,6 +362,52 @@ export class PharmcatResultsViewerComponent implements OnInit {
     return this.generateFlagInfo(row).message;
   }
 
+  getClinicThresholds(): any {
+    return environment.clinic_warning_thresholds || null;
+  }
+
+  getQualityThresholds(): Array<{
+    label: string;
+    value: string;
+    description: string;
+  }> {
+    const thresholds = environment.clinic_warning_thresholds;
+    if (!thresholds) return [];
+
+    return [
+      {
+        label: 'Filter Status',
+        value: thresholds.filter || 'PASS',
+        description: 'Expected filter status for variant quality',
+      },
+      {
+        label: 'Quality Score (QUAL)',
+        value: thresholds.qual?.toString() || '10',
+        description: 'Minimum quality score threshold',
+      },
+      {
+        label: 'Read Depth (DP)',
+        value: thresholds.dp?.toString() || '100',
+        description: 'Minimum read depth coverage',
+      },
+      {
+        label: 'Genotype Quality (GQ)',
+        value: thresholds.gq?.toString() || '10',
+        description: 'Minimum genotype quality score',
+      },
+      {
+        label: 'Mapping Quality (MQ)',
+        value: thresholds.mq?.toString() || '5',
+        description: 'Minimum mapping quality score',
+      },
+      {
+        label: 'Quality by Depth (QD)',
+        value: thresholds.qd?.toString() || '12.1',
+        description: 'Minimum quality score normalized by depth',
+      },
+    ];
+  }
+
   addFilter(type: FilterType) {
     const isVariant = type === 'variants';
 

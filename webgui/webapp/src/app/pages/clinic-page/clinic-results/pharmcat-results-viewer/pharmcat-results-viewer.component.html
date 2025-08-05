@@ -21,7 +21,7 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
             <!-- Organizations -->
             @if (getOrganisations().length > 0) {
               <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -78,6 +78,36 @@
                       <span class="text-sm text-purple-700 capitalize">{{
                         drug
                       }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Quality Thresholds -->
+            @if (getClinicThresholds()) {
+              <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                <h4
+                  class="font-semibold text-indigo-800 mb-3 flex items-center"
+                >
+                  <mat-icon class="mr-2 text-sm">high_quality</mat-icon>
+                  Quality Thresholds
+                </h4>
+                <div class="max-h-40 overflow-y-auto space-y-2">
+                  @for (threshold of getQualityThresholds(); track $index) {
+                    <div class="bg-white rounded p-2 border border-indigo-100">
+                      <div class="flex justify-between items-center">
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-medium text-indigo-700 truncate">
+                            {{ threshold.label }}
+                          </div>
+                        </div>
+                        <div
+                          class="text-xs text-indigo-600 font-mono bg-indigo-50 px-1 py-0.5 rounded ml-2"
+                        >
+                          {{ threshold.value }}
+                        </div>
+                      </div>
                     </div>
                   }
                 </div>
@@ -395,7 +425,7 @@
                       option of filteredColumnsVariants | async;
                       track option
                     ) {
-                      @if (option !== "selected") {
+                      @if (option !== "selected" && option !== "Status") {
                         <mat-option [value]="option">
                           {{ option }}
                         </mat-option>
@@ -497,7 +527,16 @@
                         style="width: 24px; height: 24px; margin: 0 auto;"
                         [style.background]="getFlagColor(element)"
                       >
-                        <mat-icon class="text-white">priority_high</mat-icon>
+                        <!-- Alternative 1: Use different icon -->
+                        <mat-icon class="text-white" style="font-size: 16px; width: 16px; height: 16px;">warning</mat-icon>
+
+                        <!-- Alternative 2: Use text-based exclamation
+                        <span class="text-white font-bold text-sm">!</span>
+                        -->
+
+                        <!-- Alternative 3: Use Unicode symbol
+                        <span class="text-white text-sm">⚠</span>
+                        -->
                       </div>
                     }
                   </td>
