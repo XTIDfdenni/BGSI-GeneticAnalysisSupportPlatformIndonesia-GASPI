@@ -267,7 +267,7 @@
                   />
                   <mat-autocomplete #auto="matAutocomplete">
                     @for (option of filteredColumns | async; track option) {
-                      @if (option !== "selected") {
+                      @if (option !== "selected" && option !== "Status") {
                         <mat-option [value]="option">
                           {{ option }}
                         </mat-option>

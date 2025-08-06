@@ -321,27 +321,27 @@ export class LookupResultsViewerComponent
       },
       {
         label: 'Quality Score (QUAL)',
-        value: thresholds.qual?.toString() || '10',
+        value: thresholds.qual?.toString(),
         description: 'Minimum quality score threshold',
       },
       {
         label: 'Read Depth (DP)',
-        value: thresholds.dp?.toString() || '100',
+        value: thresholds.dp?.toString(),
         description: 'Minimum read depth coverage',
       },
       {
         label: 'Genotype Quality (GQ)',
-        value: thresholds.gq?.toString() || '10',
+        value: thresholds.gq?.toString(),
         description: 'Minimum genotype quality score',
       },
       {
         label: 'Mapping Quality (MQ)',
-        value: thresholds.mq?.toString() || '5',
+        value: thresholds.mq?.toString(),
         description: 'Minimum mapping quality score',
       },
       {
         label: 'Quality by Depth (QD)',
-        value: thresholds.qd?.toString() || '12.1',
+        value: thresholds.qd?.toString(),
         description: 'Minimum quality score normalized by depth',
       },
     ];
