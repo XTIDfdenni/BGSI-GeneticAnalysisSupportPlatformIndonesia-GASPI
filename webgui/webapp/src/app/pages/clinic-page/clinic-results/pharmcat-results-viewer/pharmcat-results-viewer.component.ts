@@ -144,6 +144,12 @@ export class PharmcatResultsViewerComponent implements OnInit {
     'Status', // Add Status column as first column
     ...COLUMNS[environment.hub_name].pharmcatCols.variantCols,
   ];
+
+  // Computed property untuk display columns (exclude quality scores)
+  get displayColumns(): string[] {
+    const qualityColumns = ['qual', 'filter', 'dp', 'gq', 'mq', 'qd'];
+    return this.variantColumns.filter((col) => !qualityColumns.includes(col));
+  }
   protected warningColumns: string[] =
     COLUMNS[environment.hub_name].pharmcatCols.warningCols;
 
@@ -316,9 +322,10 @@ export class PharmcatResultsViewerComponent implements OnInit {
     const fullMessage = messages.join(' and ');
 
     // Determine color based on content
-    // Gray if filter is missing AND all score values are missing (no actual score violations)
+    // Gray hanya jika filter is missing (., -, atau empty) DAN tidak ada score violations DAN ada missing keys
     const filterIsMissing =
       filterValue === '.' ||
+      filterValue === '-' ||
       filterValue === '' ||
       filterValue === null ||
       filterValue === undefined;
@@ -335,6 +342,7 @@ export class PharmcatResultsViewerComponent implements OnInit {
   private getFilterMessage(filterValue: string): string {
     if (
       filterValue === '.' ||
+      filterValue === '-' ||
       filterValue === '' ||
       filterValue === null ||
       filterValue === undefined
@@ -360,52 +368,6 @@ export class PharmcatResultsViewerComponent implements OnInit {
 
   getFlagMessage(row: any): string {
     return this.generateFlagInfo(row).message;
-  }
-
-  getClinicThresholds(): any {
-    return environment.clinic_warning_thresholds || null;
-  }
-
-  getQualityThresholds(): Array<{
-    label: string;
-    value: string;
-    description: string;
-  }> {
-    const thresholds = environment.clinic_warning_thresholds;
-    if (!thresholds) return [];
-
-    return [
-      {
-        label: 'Filter Status',
-        value: thresholds.filter || 'PASS',
-        description: 'Expected filter status for variant quality',
-      },
-      {
-        label: 'Quality Score (QUAL)',
-        value: thresholds.qual?.toString(),
-        description: 'Minimum quality score threshold',
-      },
-      {
-        label: 'Read Depth (DP)',
-        value: thresholds.dp?.toString(),
-        description: 'Minimum read depth coverage',
-      },
-      {
-        label: 'Genotype Quality (GQ)',
-        value: thresholds.gq?.toString(),
-        description: 'Minimum genotype quality score',
-      },
-      {
-        label: 'Mapping Quality (MQ)',
-        value: thresholds.mq?.toString(),
-        description: 'Minimum mapping quality score',
-      },
-      {
-        label: 'Quality by Depth (QD)',
-        value: thresholds.qd?.toString(),
-        description: 'Minimum quality score normalized by depth',
-      },
-    ];
   }
 
   addFilter(type: FilterType) {
@@ -597,6 +559,58 @@ export class PharmcatResultsViewerComponent implements OnInit {
     const orgs = this.getOrganisations();
     const uniqueOrgs = [...new Set(orgs.map((org) => org.gene))];
     return uniqueOrgs;
+  }
+
+  /**
+   * Check if clinic thresholds are available
+   */
+  getClinicThresholds(): boolean {
+    return !!environment.clinic_warning_thresholds;
+  }
+
+  /**
+   * Get quality thresholds for display
+   */
+  getQualityThresholds(): Array<{
+    label: string;
+    value: string;
+    description: string;
+  }> {
+    const thresholds = environment.clinic_warning_thresholds;
+    if (!thresholds) return [];
+
+    return [
+      {
+        label: 'Filter Status',
+        value: thresholds.filter || 'PASS',
+        description: 'Expected filter status for variant quality',
+      },
+      {
+        label: 'Quality Score (QUAL)',
+        value: thresholds.qual?.toString() || '20',
+        description: 'Minimum quality score threshold',
+      },
+      {
+        label: 'Read Depth (DP)',
+        value: thresholds.dp?.toString() || '10',
+        description: 'Minimum read depth coverage',
+      },
+      {
+        label: 'Genotype Quality (GQ)',
+        value: thresholds.gq?.toString() || '15',
+        description: 'Minimum genotype quality score',
+      },
+      {
+        label: 'Mapping Quality (MQ)',
+        value: thresholds.mq?.toString() || '30',
+        description: 'Minimum mapping quality score',
+      },
+      {
+        label: 'Quality by Depth (QD)',
+        value: thresholds.qd?.toString() || '20',
+        description: 'Minimum quality score normalized by depth',
+      },
+    ];
   }
 
   resortDiplotypes(sort: Sort) {

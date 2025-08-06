@@ -284,6 +284,11 @@ export class LookupResultsViewerComponent
     }
   }
 
+  get displayColumns(): string[] {
+    const qualityColumns = ['qual', 'filter', 'dp', 'gq', 'mq', 'qd'];
+    return this.columns.filter((col) => !qualityColumns.includes(col));
+  }
+
   // Methods to get flag info for templates
   getFlagInfo(row: any): FlagInfo {
     return this.generateFlagInfo(row);

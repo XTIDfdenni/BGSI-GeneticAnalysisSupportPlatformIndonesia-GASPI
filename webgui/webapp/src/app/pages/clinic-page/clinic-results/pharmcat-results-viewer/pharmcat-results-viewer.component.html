@@ -267,7 +267,7 @@
                   />
                   <mat-autocomplete #auto="matAutocomplete">
                     @for (option of filteredColumns | async; track option) {
-                      @if (option !== "selected" && option !== "Status") {
+                      @if (option !== "selected") {
                         <mat-option [value]="option">
                           {{ option }}
                         </mat-option>
@@ -527,16 +527,7 @@
                         style="width: 24px; height: 24px; margin: 0 auto;"
                         [style.background]="getFlagColor(element)"
                       >
-                        <!-- Alternative 1: Use different icon -->
-                        <mat-icon class="text-white" style="font-size: 16px; width: 16px; height: 16px;">warning</mat-icon>
-
-                        <!-- Alternative 2: Use text-based exclamation
-                        <span class="text-white font-bold text-sm">!</span>
-                        -->
-
-                        <!-- Alternative 3: Use Unicode symbol
-                        <span class="text-white text-sm">⚠</span>
-                        -->
+                        <mat-icon class="text-white">priority_high</mat-icon>
                       </div>
                     }
                   </td>
