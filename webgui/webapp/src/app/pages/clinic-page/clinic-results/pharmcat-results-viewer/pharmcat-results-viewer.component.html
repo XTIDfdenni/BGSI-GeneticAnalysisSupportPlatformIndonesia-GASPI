@@ -571,8 +571,8 @@
               }
             }
 
-            <tr mat-header-row *matHeaderRowDef="variantColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: variantColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayColumns"></tr>
           </table>
         </div>
       </div>

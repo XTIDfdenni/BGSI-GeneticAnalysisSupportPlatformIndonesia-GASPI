@@ -285,12 +285,12 @@
               }
             }
 
-            <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="columns"></tr>
             <ng-template
               let-row
               matRowDef
               cdkVirtualFor
-              [matRowDefColumns]="displayColumns"
+              [matRowDefColumns]="columns"
               [cdkVirtualForOf]="dataRows"
             >
               <tr mat-row></tr>

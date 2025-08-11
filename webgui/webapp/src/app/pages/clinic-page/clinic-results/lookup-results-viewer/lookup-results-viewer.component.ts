@@ -166,11 +166,11 @@ export class LookupResultsViewerComponent
   private generateFlagInfo(row: any): FlagInfo {
     const thresholds = environment.clinic_warning_thresholds;
     const scoreFields = {
-      Qual: { value: row['qual'], threshold: thresholds.qual },
-      DP: { value: row['dp'], threshold: thresholds.dp },
-      GQ: { value: row['gq'], threshold: thresholds.gq },
-      MQ: { value: row['mq'], threshold: thresholds.mq },
-      QD: { value: row['qd'], threshold: thresholds.qd },
+      Qual: { value: row['Qual'], threshold: thresholds.qual },
+      DP: { value: row['Read Depth'], threshold: thresholds.dp },
+      GQ: { value: row['Genotype Quality'], threshold: thresholds.gq },
+      MQ: { value: row['Mapping Quality'], threshold: thresholds.mq },
+      QD: { value: row['Quality by Depth'], threshold: thresholds.qd },
     };
 
     const belowThreshold: string[] = [];
@@ -197,7 +197,7 @@ export class LookupResultsViewerComponent
     });
 
     // Check filter condition
-    const filterValue = row['filter'];
+    const filterValue = row['Filter'];
     const hasFilterIssue = ![thresholds.filter, '-', ''].includes(filterValue);
     const hasScoreIssues = belowThreshold.length > 0;
     const hasMissingKeys = missingKeys.length > 0;
@@ -282,11 +282,6 @@ export class LookupResultsViewerComponent
     } else {
       return 'Filter is not Passed';
     }
-  }
-
-  get displayColumns(): string[] {
-    const qualityColumns = ['qual', 'filter', 'dp', 'gq', 'mq', 'qd'];
-    return this.columns.filter((col) => !qualityColumns.includes(col));
   }
 
   // Methods to get flag info for templates
