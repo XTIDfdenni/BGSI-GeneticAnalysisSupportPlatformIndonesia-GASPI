@@ -145,11 +145,6 @@ export class PharmcatResultsViewerComponent implements OnInit {
     ...COLUMNS[environment.hub_name].pharmcatCols.variantCols,
   ];
 
-  // Computed property untuk display columns (exclude quality scores)
-  get displayColumns(): string[] {
-    const qualityColumns = ['qual', 'filter', 'dp', 'gq', 'mq', 'qd'];
-    return this.variantColumns.filter((col) => !qualityColumns.includes(col));
-  }
   protected warningColumns: string[] =
     COLUMNS[environment.hub_name].pharmcatCols.warningCols;
 
@@ -233,11 +228,11 @@ export class PharmcatResultsViewerComponent implements OnInit {
   private generateFlagInfo(row: any): FlagInfo {
     const thresholds = environment.clinic_warning_thresholds;
     const scoreFields = {
-      Qual: { value: row['qual'], threshold: thresholds.qual },
-      DP: { value: row['dp'], threshold: thresholds.dp },
-      GQ: { value: row['gq'], threshold: thresholds.gq },
-      MQ: { value: row['mq'], threshold: thresholds.mq },
-      QD: { value: row['qd'], threshold: thresholds.qd },
+      Qual: { value: row['Qual'], threshold: thresholds.qual },
+      DP: { value: row['Read Depth'], threshold: thresholds.dp },
+      GQ: { value: row['Genotype Quality'], threshold: thresholds.gq },
+      MQ: { value: row['Mapping Quality'], threshold: thresholds.mq },
+      QD: { value: row['Quality by Depth'], threshold: thresholds.qd },
     };
 
     const belowThreshold: string[] = [];
@@ -264,7 +259,7 @@ export class PharmcatResultsViewerComponent implements OnInit {
     });
 
     // Check filter condition
-    const filterValue = row['filter'];
+    const filterValue = row['Filter'];
     const hasFilterIssue = ![thresholds.filter, '-', ''].includes(filterValue);
     const hasScoreIssues = belowThreshold.length > 0;
     const hasMissingKeys = missingKeys.length > 0;

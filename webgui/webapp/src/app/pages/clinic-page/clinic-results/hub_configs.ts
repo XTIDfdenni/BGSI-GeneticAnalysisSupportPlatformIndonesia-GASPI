@@ -28,10 +28,10 @@ export const COLUMNS: { [key: string]: any } = {
         'Qual',
         'Filter',
         'Zygosity',
-        'dp',
-        'gq',
-        'mq',
-        'qd',
+        'Read Depth', // dp
+        'Genotype Quality', // gq
+        'Mapping Quality', // mq
+        'Quality by Depth', // qd
         'AF (Afr)',
         'AF (Eas)',
         'AF (Fin)',
@@ -109,19 +109,17 @@ export const COLUMNS: { [key: string]: any } = {
   RSIGNG: {
     lookupCols: [
       'selected',
-      'No',
       'PharmGKB ID',
       'Level',
       'Variant',
       'Gene',
-      'Drugs',
       'Alleles',
-      'Allele Function',
+      'REF/ALT',
+      'Zygosity',
+      'Drugs',
       'Phenotype Categories',
-      'Phenotype',
       'Implication',
-      'Recommendation',
-      'Pediatric',
+      'Phenotype',
       'chr',
       'start',
       'end',
@@ -131,10 +129,10 @@ export const COLUMNS: { [key: string]: any } = {
       'VCF pos',
       'Qual',
       'Filter',
-      'Read Depth', // dp
-      'Genotype Quality', // gq
-      'Mapping Quality', // mq
-      'Quality by Depth', // qd
+      'Read Depth',
+      'Genotype Quality',
+      'Mapping Quality',
+      'Quality by Depth',
       'AF (Afr)',
       'AF (Eas)',
       'AF (Fin)',
@@ -236,10 +234,10 @@ export const COLUMNS: { [key: string]: any } = {
         'Qual',
         'Filter',
         'Zygosity',
-        'dp',
-        'gq',
-        'mq',
-        'qd',
+        'Read Depth', // dp
+        'Genotype Quality', // gq
+        'Mapping Quality', // mq
+        'Quality by Depth', // qd
         'AF (Afr)',
         'AF (Eas)',
         'AF (Fin)',
@@ -255,15 +253,16 @@ export const COLUMNS: { [key: string]: any } = {
     },
     lookupCols: [
       'selected',
-      'No',
       'PharmGKB ID',
       'Level',
       'Variant',
       'Gene',
-      'Drugs',
       'Alleles',
-      'Allele Function',
+      'REF/ALT',
+      'Zygosity',
+      'Drugs',
       'Phenotype Categories',
+      'Implication',
       'Phenotype',
       'chr',
       'start',
