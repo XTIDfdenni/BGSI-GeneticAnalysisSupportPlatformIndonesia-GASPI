@@ -78,7 +78,7 @@
         @for (ch of letters; track ch) {
           <div
             (click)="selectLetter(ch)"
-            class="px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 cursor-pointer"
+            class="px-2 py-1 rounded hover:bg-gray-200 cursor-pointer"
             [class.text-[#16B3AC]]="selectedLetter === ch"
             [class.font-semibold]="selectedLetter === ch"
             [class.text-xl]="selectedLetter === ch"
@@ -95,6 +95,10 @@
             </div>
             <div>{{ list.definition }}</div>
           </div>
+        }
+
+        @if (listGlossary.length === 0) {
+          <div class="text-gray-500 text-center">No glossary terms found</div>
         }
       </div>
     </div>
