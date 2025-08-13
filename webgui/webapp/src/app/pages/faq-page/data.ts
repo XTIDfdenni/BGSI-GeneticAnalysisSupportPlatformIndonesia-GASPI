@@ -581,7 +581,8 @@ export const glossaryData: glossaryItem[] = [
     table: 'Pharmacogenomics_PharmCat',
     sub: '',
     keyword: 'Call',
-    definition: 'Information about the found alleles – REF/ALT alleles.',
+    definition:
+      'Information about the found alleles following the zigosity in the VCF. For example, if GT 1/1 and REF/ALT is T>C, then the Call field will be CC.',
   },
   {
     table: 'Pharmacogenomics_PharmCat',
