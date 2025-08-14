@@ -910,7 +910,7 @@ export const glossaryData: glossaryItem[] = [
   {
     table: 'Pharmacogenomics_Lookup_RSJPD',
     sub: '',
-    keyword: 'PMIDs (:question:)',
+    keyword: 'PMIDs',
     definition:
       'Consists of a list of PubMed IDs related to the variant found, which acts as an external link that could direct the User to the PubMed page.',
   },
