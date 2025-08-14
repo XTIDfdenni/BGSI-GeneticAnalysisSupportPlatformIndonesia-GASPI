@@ -137,7 +137,7 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <div class="flex flex-col">
-              <div class="flex flex-row space-x-1 items-center gap-2">
+              <div class="flex flex-row space-x-1 items-center gap-2 mb-4">
                 <mat-form-field class="w-[200px] self-center">
                   <mat-label>Filter</mat-label>
                   <input
@@ -163,6 +163,14 @@
                     Add Filter
                   </button>
                 </div>
+                <mat-icon
+                  class="text-primary-50 mb-[1.25rem]"
+                  [matTooltip]="
+                    'The filter uses the AND logic to combine the values within the available result columns to pinpoint the variant(s) containing the specified entries.'
+                  "
+                >
+                  info
+                </mat-icon>
               </div>
 
               <div class="flex flex-wrap gap-4">
