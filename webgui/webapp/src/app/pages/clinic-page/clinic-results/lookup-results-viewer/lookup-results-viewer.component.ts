@@ -71,6 +71,8 @@ type LookupResult = {
     };
     pharmcat?: any;
   };
+  noResultsMessage: string;
+  noResultsMessageType: string;
 };
 
 @Component({
@@ -297,28 +299,21 @@ export class LookupResultsViewerComponent
       )
       .pipe(catchError(() => of(null)))
       .subscribe((data) => {
-        // // TODO: remove this result initialization once backend is fixed
-        // this.results = {
-        //   config: {
-        //     lookup: {
-        //       chr_header: 'chr',
-        //       start_header: 'start',
-        //       end_header: 'end',
-        //     },
-        //   },
-        //   url: '',
-        //   pages: {},
-        //   content: '',
-        //   page: 0,
-        //   chromosome: '',
-        // };
-
         if (!data) {
           this.tstr.error('Failed to load data', 'Error');
         } else {
+          if (data?.noResultsMessage) {
+            const noResultsMessageType = data.noResultsMessageType || 'Warning';
+            if (noResultsMessageType === 'Error') {
+              this.tstr.error(data.noResultsMessage, noResultsMessageType);
+            } else {
+              this.tstr.warning(data.noResultsMessage, noResultsMessageType);
+            }
+          }
           this.results = data;
-
-          this.updateTable(data);
+          if (this.results?.content) {
+            this.updateTable(data);
+          }
         }
         this.ss.end();
         this.isLoading = false;

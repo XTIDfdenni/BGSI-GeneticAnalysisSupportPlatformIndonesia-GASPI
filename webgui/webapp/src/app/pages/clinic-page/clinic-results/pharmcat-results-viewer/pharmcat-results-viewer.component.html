@@ -1,10 +1,12 @@
 <mat-card class="mt-4">
   <mat-card-content>
-    <!-- No Result Alert -->
+    <!-- No Results Alert -->
     @if (
-      !diplotypeHasRows && variantDataRows.value.length === 0 && !isLoading
+      !diplotypeHasRows && !variantHasRows && !isLoading
     ) {
-      <app-no-results-alert></app-no-results-alert>
+      <app-no-results-alert
+        [message]="results?.noResultsMessage" 
+      ></app-no-results-alert>
     }
 
     <!-- PharmCAT Configuration Accordion -->

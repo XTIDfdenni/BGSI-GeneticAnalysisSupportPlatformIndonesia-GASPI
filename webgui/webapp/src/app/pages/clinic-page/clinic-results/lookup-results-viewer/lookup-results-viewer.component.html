@@ -1,12 +1,10 @@
-
-
-
-
 <mat-card class="mt-4">
   <mat-card-content>
-    <!-- No Results Alert - Add this if needed -->
+    <!-- No Results Alert -->
     @if (originalRows.length === 0 && !isLoading) {
-      <app-no-results-alert></app-no-results-alert>
+        <app-no-results-alert
+          [message]="results?.noResultsMessage"   
+        ></app-no-results-alert>
     }
     <!-- Lookup Configuration Accordion -->
     <!-- @if (results?.config?.lookup && hasLookupConfig()) { -->
