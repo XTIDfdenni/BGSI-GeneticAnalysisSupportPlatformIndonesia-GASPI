@@ -71,6 +71,8 @@ type LookupResult = {
     };
     pharmcat?: any;
   };
+  noResultsMessage: string;
+  noResultsMessageType: string;
 };
 
 interface FlagInfo {
@@ -497,8 +499,18 @@ export class LookupResultsViewerComponent
         if (!data) {
           this.tstr.error('Failed to load data', 'Error');
         } else {
+          if (data?.noResultsMessage) {
+            const noResultsMessageType = data.noResultsMessageType || 'Warning';
+            if (noResultsMessageType === 'Error') {
+              this.tstr.error(data.noResultsMessage, noResultsMessageType);
+            } else {
+              this.tstr.warning(data.noResultsMessage, noResultsMessageType);
+            }
+          }
           this.results = data;
-          this.updateTable(data);
+          if (this.results?.content) {
+            this.updateTable(data);
+          }
         }
         this.ss.end();
         this.isLoading = false;

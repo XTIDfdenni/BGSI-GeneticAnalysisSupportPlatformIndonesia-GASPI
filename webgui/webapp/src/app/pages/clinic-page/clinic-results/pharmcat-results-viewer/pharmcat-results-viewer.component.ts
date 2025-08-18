@@ -74,6 +74,8 @@ type PharmcatResult = {
     };
   };
   missingToRef: boolean | null;
+  noResultsMessage: string;
+  noResultsMessageType: string;
 };
 
 type FilterType = 'variants' | 'diplotypes';
@@ -749,9 +751,19 @@ export class PharmcatResultsViewerComponent implements OnInit {
         if (!data) {
           this.tstr.error('Failed to load data', 'Error');
         } else {
+          console.log(data);
+          if (data?.noResultsMessage) {
+            const noResultsMessageType = data.noResultsMessageType || 'Warning';
+            if (noResultsMessageType === 'Error') {
+              this.tstr.error(data.noResultsMessage, noResultsMessageType);
+            } else {
+              this.tstr.warning(data.noResultsMessage, noResultsMessageType);
+            }
+          }
           this.results = data;
-
-          this.updateTable(data);
+          if (this.results?.content) {
+            this.updateTable(data);
+          }
         }
         this.isLoading = false;
         this.ss.end();
@@ -762,7 +774,7 @@ export class PharmcatResultsViewerComponent implements OnInit {
     this.results = result;
     this.resultsLength = result.pages[result.page];
     this.missingToRef = result.missingToRef;
-    const resultJson = JSON.parse(result.content);
+    const resultJson = result.content ? JSON.parse(result.content) : {};
 
     const diplotypes = resultJson.diplotypes;
     this.diplotypeOriginalRows = diplotypes.map((diplotype: any) => {
