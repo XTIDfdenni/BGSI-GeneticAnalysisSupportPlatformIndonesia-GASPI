@@ -351,19 +351,28 @@
       <div
         class="overflow-x-auto border-solid border-1 rounded-[4px] border-cyan-700 p-2"
       >
-        <div class="max-h-[500px] overflow-y-auto">
-          <div class="flex flex-col gap-2">
-            @for (row of diplotypeDataRows.value; track row) {
-              <app-rspon-box-data-view
-                [row]="row"
-                [selected]="(cs.selectedVariants | async)!.has(cs.hashRow(row))"
-                [variantHasRows]="variantHasRows"
-                (change)="handleSelectionChange(row, $event)"
-                (filter)="filterRelatedVariants($event)"
-              />
-            }
+        <cdk-virtual-scroll-viewport
+          appCustomVirtualScroll
+          #diplotypeViewport
+          [style.height.px]="500"
+          class="diplotype-viewport"
+        >
+          <div class="max-h-[500px] overflow-y-auto">
+            <div class="flex flex-col gap-2">
+              @for (row of diplotypeRows; track row) {
+                <app-rspon-box-data-view
+                  [row]="row"
+                  [selected]="
+                    (cs.selectedVariants | async)!.has(cs.hashRow(row))
+                  "
+                  [variantHasRows]="variantHasRows"
+                  (change)="handleSelectionChange(row, $event)"
+                  (filter)="filterRelatedVariants($event)"
+                />
+              }
+            </div>
           </div>
-        </div>
+        </cdk-virtual-scroll-viewport>
       </div>
     } @else {
       <div class="flex flex-row space-x-1 items-center mb-2">
