@@ -57,6 +57,7 @@ import { environment } from 'src/environments/environment';
 import { RsponBoxDataViewComponent } from './rspon-box-data-view/rspon-box-data-view.component';
 import { NoResultsAlertComponent } from '../no-results-alert/no-results-alert.component';
 import { AutoCompleteComponent } from '../auto-complete/auto-complete.component';
+import { Router } from '@angular/router';
 
 type PharmcatResult = {
   url?: string;
@@ -201,6 +202,7 @@ export class PharmcatResultsViewerComponent implements OnInit {
     private tstr: ToastrService,
     private dg: MatDialog,
     private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   //handle on init
@@ -723,6 +725,10 @@ export class PharmcatResultsViewerComponent implements OnInit {
       data: { projectName: this.projectName, requestId: this.requestId },
     });
   }
+
+  handleRedirectFAQ = () => {
+    this.router.navigate(['/faq']);
+  };
 
   ngOnChanges(changes: SimpleChanges): void {
     this.refetch(
