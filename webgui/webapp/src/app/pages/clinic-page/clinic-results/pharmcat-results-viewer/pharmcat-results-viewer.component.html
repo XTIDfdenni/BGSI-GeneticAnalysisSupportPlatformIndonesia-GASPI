@@ -1,7 +1,7 @@
 <mat-card class="mt-4">
   <mat-card-content>
     <!-- No Results Alert -->
-    @if (!diplotypeHasRows && !variantHasRows && !isLoading) {
+    @if (!diplotypeHasRows && !isLoading) {
       <app-no-results-alert
         [message]="results?.noResultsMessage"
       ></app-no-results-alert>
